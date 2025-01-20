@@ -15,10 +15,8 @@ function App() {
     switch (bootStage) {
       case 'bios':
         return <Display width={800} height={600}><BiosScreenCanvas onComplete={() => setBootStage('windows-boot')} /></Display>;
-        /*return <Display><BiosScreen onComplete={() => setBootStage('windows-boot')} /></Display>;*/
       case 'windows-boot':
         return <Display><WindowsXPBootScreenCanvas onComplete={() => setBootStage('desktop')} /></Display>;
-        //return <WindowsXPBootScreen onComplete={() => setBootStage('desktop')} />;
       case 'desktop':
         return <Desktop />;
       default:
