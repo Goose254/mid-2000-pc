@@ -1,17 +1,22 @@
 import React from 'react';
 import TaskbarBackgroundGradient from '../../../assets/taskbar-gradient.png';
-import StartButtonDefaultBackground from '../../../assets/start-button-default-background.png';
-import StartButtonHoverBackground from '../../../assets/start-button-hover-background.png';
-import StartButtonActiveBackground from '../../../assets/start-button-active-background.png';
+import StartButtonDefaultBackgroundLeft from '../../../assets/start-button-default-background-left.png';
+import StartButtonHoverBackgroundCenter from '../../../assets/start-button-default-background-center.png';
+import StartButtonActiveBackgroundRight from '../../../assets/start-button-default-background-right.png';
+import StartButtonLogo from '../../../assets/start-button-logo.png';
 
 const startButtonStyles = {
-  width: '130px',
+  height: '30px',
+  padding: '0 26px 0 6px',
   color: 'white',
   fontFamily: 'Franklin Gothic',
   fontSize: '19px',
   fontStyle: 'italic',
-  textShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)',
-  background: `url(${StartButtonDefaultBackground})`,
+  textShadow: '1px 1px 2px rgba(0, 0, 0, 0.6)',
+  backgroundImage: `url(${StartButtonDefaultBackgroundLeft}), url(${StartButtonActiveBackgroundRight}), url(${StartButtonHoverBackgroundCenter})`,
+  backgroundPosition: 'left top, right top, left top',
+  backgroundRepeat: 'no-repeat, no-repeat',
+  backgroundSize: 'contain, contain, calc(100% - 8px) 100%',
 }
 
 const taskbarStyles = {
@@ -27,9 +32,9 @@ export const Taskbar: React.FC = () => {
   return (
     <div style={taskbarStyles}>
       <button style={startButtonStyles}>
+        <img src={StartButtonLogo} style={{ display: 'inline-block', filter: 'drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6))' }} />
         démarrer
       </button>
-      <div className="flex-1 border-l border-[#1042B8] ml-2"></div>
       <div className="text-white text-sm">
         {new Date().toLocaleTimeString()}
       </div>
