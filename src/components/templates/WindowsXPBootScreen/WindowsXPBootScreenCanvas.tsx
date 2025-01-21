@@ -3,6 +3,7 @@ import XPBootLogo from "../../../assets/xp-boot-logo.png"
 import XPBootBar from "../../../assets/xp-boot-bar.png"
 import XPBootCopyrightText from "../../../assets/xp-boot-copyright-text.png"
 import XPBootMicrosoftLogo from "../../../assets/xp-boot-microsoft-logo.png"
+import { BootStage } from "../../../App";
 
 /**
  * Ce composant dessine un écran de boot Windows XP sur un canvas :
@@ -10,7 +11,7 @@ import XPBootMicrosoftLogo from "../../../assets/xp-boot-microsoft-logo.png"
  * - logo Windows XP centré
  * - barre de progression animée
  */
-const WindowsXPBootScreenCanvas: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) => void }> = ({ onComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Largeur/hauteur du canvas (vous pouvez adapter les dimensions voulues)
@@ -194,7 +195,7 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: () => void }> = ({ onCom
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(onComplete, 8000);
+    const timer = setTimeout(() => onComplete('desktop'), 8000);
     return () => clearTimeout(timer);
   }, [onComplete]);
 

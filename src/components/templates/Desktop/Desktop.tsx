@@ -103,6 +103,11 @@ export const Desktop: React.FC = () => {
           label="My Documents"
           onClick={() => toggleWindow('my-documents')}
         />
+        <DesktopIcon
+          icon={<div className="text-white">{"[]"}</div>}
+          label="Reboot"
+          onClick={() => window.location.reload()}
+        />
       </div>
 
       {windows.map(window => window.isOpen && (

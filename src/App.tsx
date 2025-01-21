@@ -5,8 +5,9 @@ import DisplayProvider from './contexts/Display/DisplayProvider';
 import Display from './components/wrapper/Display';
 import WindowsXPBootScreenCanvas from './components/templates/WindowsXPBootScreen/WindowsXPBootScreenCanvas';
 import BiosScreenCanvas from './components/templates/BiosScreen/BiosScreenCanvas';
+import BiosSetupCanvas from './components/templates/BiosSetup/BiosSetupCanvas';
 
-type BootStage = 'bios' | 'windows-boot' | 'desktop';
+export type BootStage = 'bios' | 'bios-setup' | 'windows-boot' | 'desktop';
 
 function App() {
   const [bootStage, setBootStage] = useState<BootStage>('bios');
@@ -14,9 +15,11 @@ function App() {
   const renderStage = () => {
     switch (bootStage) {
       case 'bios':
-        return <Display width={800} height={600}><BiosScreenCanvas onComplete={() => setBootStage('windows-boot')} /></Display>;
+        return <Display width={800} height={600}><BiosScreenCanvas onComplete={(bootStage = 'bios') => setBootStage(bootStage)} /></Display>;
+      case 'bios-setup':
+        return <Display width={800} height={600}><BiosSetupCanvas onExit={() => setBootStage('bios')} /></Display>;
       case 'windows-boot':
-        return <Display><WindowsXPBootScreenCanvas onComplete={() => setBootStage('desktop')} /></Display>;
+        return <Display><WindowsXPBootScreenCanvas onComplete={(bootStage = 'bios') => setBootStage(bootStage)} /></Display>;
       case 'desktop':
         return <Desktop />;
       default:

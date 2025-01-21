@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 
 interface WindowProps {
@@ -49,7 +49,7 @@ export const Window: React.FC<WindowProps> = ({
     setIsResizing(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isDragging || isResizing) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
