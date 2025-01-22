@@ -2,23 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Window } from '../../organisms/Window/Window';
 import { Taskbar } from '../../organisms/Taskbar/Taskbar';
 import XPWallpaper from '../../../assets/xp-wallpaper.jpg'
+import MyComputerIcon from '../../../assets/windows-icons/explorer.exe_14_100-9.png';
+import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
 import WindowsXPStartupSound from '../../../assets/sounds/windows-xp-startup.mp3';
-
-interface DesktopIconProps {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}
-
-const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, onClick }) => (
-  <div 
-    className="w-20 flex flex-col items-center p-2 cursor-pointer text-white hover:bg-white/10"
-    onClick={onClick}
-  >
-    <div className="text-4xl mb-1">{icon}</div>
-    <div className="text-xs text-center">{label}</div>
-  </div>
-);
+import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
 
 export const Desktop: React.FC = () => {
   const [windows, setWindows] = useState<Array<{
@@ -92,20 +79,20 @@ export const Desktop: React.FC = () => {
         backgroundImage: `url(${XPWallpaper})`
       }}
     >
-      <div className="p-4 grid grid-cols-4 gap-4">
+      <div className="">
         <DesktopIcon
-          icon={<div className="text-white">{"[]"}</div>}
-          label="My Computer"
+          icon={<img src={MyComputerIcon} />}
+          label="Poste de travail"
           onClick={() => toggleWindow('my-computer')}
         />
         <DesktopIcon
-          icon={<div className="text-white">{"[]"}</div>}
-          label="My Documents"
+          icon={<img src={MyDocumentsIcon} />}
+          label="Mes Documents"
           onClick={() => toggleWindow('my-documents')}
         />
         <DesktopIcon
           icon={<div className="text-white">{"[]"}</div>}
-          label="Reboot"
+          label="Reboot Reboot Reboot Reboot Reboot"
           onClick={() => window.location.reload()}
         />
       </div>

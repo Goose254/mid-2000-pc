@@ -37,7 +37,7 @@ export const Taskbar: React.FC = () => {
       <StartMenu ref={startMenuRef} isVisible={startMenuVisible} />
 
       <button ref={startButtonRef} id="start-button" className={startMenuVisible ? 'active' : ''} onClick={() => toggleStartMenu()}>
-        <img src={StartButtonLogo} style={{ display: 'inline-block', filter: 'drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6))' }} />
+        <img src={StartButtonLogo} />
         démarrer
       </button>
 

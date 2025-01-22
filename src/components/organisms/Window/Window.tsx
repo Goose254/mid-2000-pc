@@ -64,7 +64,7 @@ export const Window: React.FC<WindowProps> = ({
     if (!isMaximized) {
       setBeforeMaximized({ position, size });
       setPosition({ x: 0, y: 0 });
-      setSize({ width: window.innerWidth, height: window.innerHeight - 40 }); // 40px for taskbar
+      setSize({ width: window.innerWidth, height: window.innerHeight - 30 }); // 30px for taskbar
       setIsMaximized(true);
     } else {
       setPosition(beforeMaximized.position);
@@ -78,7 +78,8 @@ export const Window: React.FC<WindowProps> = ({
   };
 
   const style = {
-    transform: `translate(${position.x}px, ${position.y}px)`,
+    top: `${position.y}px`,
+    left: `${position.x}px`,
     width: `${size.width}px`,
     height: `${size.height}px`,
   };
@@ -86,7 +87,7 @@ export const Window: React.FC<WindowProps> = ({
   return (
     <div
       ref={windowRef}
-      className="absolute bg-[#ECE9D8] shadow-xl border border-gray-400 flex flex-col"
+      className="fixed bg-[#FFF]"
       style={style}
     >
       <div onMouseDown={handleMouseDown}>

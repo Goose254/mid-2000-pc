@@ -10,3 +10,19 @@
     font-family: 'PerfectDOS';
     src: url(./assets/fonts/perfect-dos.ttf) format('truetype');
 }
+
+@font-face {
+    font-family: 'Tahoma';
+    src: url(./assets/fonts/tahoma.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Franklin Gothic';
+    src: url(./assets/fonts/franklin-gothic.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'Franklin Gothic';
+    src: url(./assets/fonts/franklin-gothic-italic.otf) format('opentype');
+    font-style: italic;
+}
