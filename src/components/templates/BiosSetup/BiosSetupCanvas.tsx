@@ -17,55 +17,69 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
     [
       {
         label: 'Stardand CMOS Features',
+        description: 'Time, Date, Hard Disk Type...',
         submenu: ['test'],
       },
       {
         label: 'Advanced BIOS Features',
+        description: 'Virus Protection, Boot Sequence...',
         submenu: ['test'],
       },
       {
         label: 'Advanced Chipset Features',
+        description: 'AT clock, DRAM timings...',
         submenu: ['test'],
       },
       {
         label: 'Integrated Peripherials',
+        description: 'Onboard I/O, IRQ, DMA Assignment...',
         submenu: ['test'],
       },
       {
         label: 'Power Management Setup',
+        description: 'Sleep timer, Suspend timer...',
         submenu: ['test'],
       },
       {
         label: 'PnP/PCI Configurations',
+        description: 'IRQ Settings, Latency Timers...',
         submenu: ['test'],
       },
       {
         label: 'PC Health Status',
+        description: 'Temperatures, case opened...',
         submenu: ['test'],
       }
     ],
     [
       {
         label: 'Frequency/Voltage Control',
+        description: 'Bus/CPU Clocks, Operating Voltages...',
         submenu: ['test'],
       },
       {
         label: 'Load Fail-Safe Defaults',
+        description: 'Load BIOS Defaults except Standard CMOS SETUP',
       },
       {
         label: 'Load Optimized Defaults',
+        description: 'Load Setup Defaults except Standard CMOS SETUP',
       },
       {
         label: 'Set Supervisor Password',
+        description: 'Change/Set/Disable Password',
       },
       {
         label: 'Set User Password',
+        description: 'Change/Set/Disable Password',
       },
       {
         label: 'Save & Exit Setup',
+        description: 'Save Data to CMOS & Exit SETUP',
       },
       {
         label: 'Exit Without Saving',
+        description: 'Abandon all Datas & Exit SETUP',
       }
     ],
   ];
@@ -91,19 +105,22 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
     // --- Nom du BIOS en haut ---
     ctx.fillStyle = 'white';
     ctx.font = "16px 'PerfectDOS'";
-    ctx.fillText("CMOS Setup Utility - Copyright (C) 1984-2005 Award Software", 135, 20);
+    ctx.fillText("CMOS Setup Utility - Copyright (C) 1984-2005 Award Software", 55, 20);
 
     // --- Dessin des onglets ---
     // Ex: [Main] [Advanced] [Power] [Boot] [Exit]
-    const menuXStart = 30;
-    const menuYStart = 80;
+    const menuXStart = 25;
+    const menuYStart = 70;
     let currentX = menuXStart;
     let currentY = menuYStart;
 
     menus.forEach((column, menuXIndex) => {
       column.forEach((menu, menuYIndex) => {
         const label = menu.label;
+        const description = menu.description;
+
         let textColor = '#FF5';
+
         // Onglet sélectionné => surbrillance
         if (menuXIndex === selectedMenuXIndex && menuYIndex === selectedMenuYIndex) {
           ctx.fillStyle = '#A00';
@@ -112,13 +129,16 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
         }
         // Dessiner un rectangle (larg ~ 100 px, haut 24 px)
         if (menu.submenu) {
-          ctx.fillRect(currentX, currentY - 14, ctx.measureText(label).width + (menu.submenu ? 16 : 0), 20);
+          ctx.fillRect(currentX, currentY - 14, ctx.measureText(label).width + (menu.submenu ? 16 : 0), 19);
         } else {
-          ctx.fillRect(currentX + 16, currentY - 14, ctx.measureText(label).width + (menu.submenu ? 16 : 0), 20);
+          ctx.fillRect(currentX + 16, currentY - 14, ctx.measureText(label).width + (menu.submenu ? 16 : 0), 19);
         }
-  
+
         // Dessiner le texte du label
         if (menuXIndex === selectedMenuXIndex && menuYIndex === selectedMenuYIndex) {
+          // Menu description text
+          ctx.fillStyle = textColor;
+          ctx.fillText(description, Math.round((width / 2) - (ctx.measureText(description).width / 2)), 366);
           textColor = 'white';
         }
         ctx.fillStyle = textColor;
@@ -135,17 +155,17 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
           ctx.fill(trianglePath);
         }
   
-        currentY += 35; // espace entre onglets
+        currentY += 30; // espace entre onglets
       });
-      currentX += 400;
+      currentX += 320;
       currentY = menuYStart;
     });
 
     // --- Dessin d’une barre de statut en bas (ex: "F1 Help, ESC Exit, etc.") ---
     ctx.fillStyle = 'white';
-    ctx.fillText("Esc : Quit", 15, 485);
-    ctx.fillText("F10 : Save & Exit Setup", 15, 505);
-    ctx.fillText("\u2191 \u2193 \u2190 \u2192    : Select Item", (width / 2) + 15, 485);
+    ctx.fillText("Esc : Quit", 15, 303);
+    ctx.fillText("F10 : Save & Exit Setup", 15, 320);
+    ctx.fillText("\u2191 \u2193 \u2190 \u2192    : Select Item", (width / 2) + 15, 303);
 
     ctx.fillStyle = '#FFF';
     ctx.fillRect(0, 30, width, 1)
@@ -158,9 +178,9 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
     ctx.fillRect(width - 5, 32, 2, height - 39)
     ctx.fillRect(3, height - 7, width - 6, 1)
 
-    ctx.fillRect(3, height - 80, width - 6, 1)
-    ctx.fillRect(3, height - 140, width - 6, 1)
-    ctx.fillRect((width / 2) - 1, 32, 2, 428)
+    ctx.fillRect(3, height - 70, width - 6, 1)
+    ctx.fillRect(3, height - 118, width - 6, 1)
+    ctx.fillRect((width / 2) - 1, 32, 2, height - 150)
   };
 
   /**
@@ -179,11 +199,26 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
       e.preventDefault();
     } else if (key === 'ArrowUp') {
       // Option précédente
+      setSelectedMenuYIndex((prev) => {
+        if (prev > 0) {
+          return prev;
+        } else {
+          setSelectedMenuXIndex((prev) => (prev > 0 ? prev - 1 : menus.length - 1));
+          return menus[selectedMenuXIndex].length;
+        }
+      });
       setSelectedMenuYIndex((prev) => (prev > 0 ? prev - 1 : menus[selectedMenuXIndex].length - 1));
       e.preventDefault();
     } else if (key === 'ArrowDown') {
       // Option suivante
-      setSelectedMenuYIndex((prev) => (prev < menus[selectedMenuXIndex].length - 1 ? prev + 1 : 0));
+      setSelectedMenuYIndex((prev) => {
+        if (prev < menus[selectedMenuXIndex].length - 1) {
+          return prev + 1;
+        } else {
+          setSelectedMenuXIndex((prev) => (prev < menus.length - 1 ? prev + 1 : 0));
+          return 0;
+        }
+      });
       e.preventDefault();
     } else if (key === 'Enter') {
       // Valider l’option
@@ -205,8 +240,8 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
     if (!canvas) return;
 
     // Dimensions fixées par ex.
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 640;
+    canvas.height = 400;
 
     // Fonction de dessin initial
     drawSetupScreen();
