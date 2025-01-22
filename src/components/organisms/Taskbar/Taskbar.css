@@ -22,7 +22,7 @@
         url(../../../assets/start-button-hover-background-center.png);
 }
 
-#start-button:active, #start-button:focus {
+#start-button.active {
     background-image:
         url(../../../assets/start-button-active-background-left.png),
         url(../../../assets/start-button-active-background-right.png),
