@@ -28,6 +28,7 @@ export const Taskbar: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutsideStartMenu)
 
     return () => {
+      document.removeEventListener('mousedown', handleClickOutsideStartMenu)
       clearInterval(dateTimer)
     }
   }, [startMenuRef, startButtonRef, toggleStartMenu])
