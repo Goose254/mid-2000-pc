@@ -5,6 +5,7 @@ import XPWallpaper from '../../../assets/xp-wallpaper.jpg'
 import MyComputerIcon from '../../../assets/windows-icons/explorer.exe_14_100-9.png';
 import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
 import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-9.png';
+import TashbinIcon from '../../../assets/windows-icons/explorer.exe_14_108-7.png';
 import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
 
 export const Desktop: React.FC = () => {
@@ -84,6 +85,11 @@ export const Desktop: React.FC = () => {
           icon={<img src={ShutdownComputerIcon} />}
           label="Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot"
           onDoubleClick={() => window.location.reload()}
+        />
+        <DesktopIcon
+          icon={<img src={TashbinIcon} />}
+          label="Corbeille"
+          onDoubleClick={() => toggleWindow('my-documents')}
         />
       </div>
 
