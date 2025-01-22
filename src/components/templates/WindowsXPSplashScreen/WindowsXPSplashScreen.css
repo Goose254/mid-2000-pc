@@ -1,0 +1,37 @@
+#splash-screen-container {
+    background-size: 100% 100%;
+    background-position: 0px 0px, 0px 0px;
+    background-image: radial-gradient(50% 50% at 100px 100%, #F4953830 0%, #F4953800 100%), linear-gradient(0deg, #00309c 0%, #00309c 100%);
+}
+
+#splash-screen-top-separator {
+    height: 2px;
+    margin-top: 78px;
+    background: rgb(255,255,255);
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 100%);
+}
+
+#splash-screen-content {
+    height: calc(100vh - 156px);
+    background-size: 100% 100%;
+    background-position: 0px 0px, 0px 0px;
+    background-image: radial-gradient(200px 200px at 100px 100px, #FFFFFF60 0%, #FFFFFF00 100%), linear-gradient(0deg, #5a7edc 0%, #5a7edc 100%);
+}
+
+#splash-screen-bottom-separator {
+    height: 2px;
+    background: rgb(244,149,56);
+    background: linear-gradient(90deg, rgba(244,149,56,0) 0%, rgba(244,149,56,1) 30%, rgba(244,149,56,0) 100%);
+}
+
+#splash-screen-welcome {
+    position: absolute;
+    top: calc(50vh - 38px);
+    left: 50vw;
+    color: white;
+    font-size: 38px;
+    font-family: 'Franklin Gothic';
+    font-style: italic;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}

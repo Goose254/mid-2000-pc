@@ -38,4 +38,6 @@
 .desktop-icon.active .desktop-icon-label {
     background-color: #316ac5;
     text-shadow: none;
+    line-clamp: unset;
+    -webkit-line-clamp: unset;
 }

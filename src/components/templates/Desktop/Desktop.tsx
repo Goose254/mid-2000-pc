@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Window } from '../../organisms/Window/Window';
 import { Taskbar } from '../../organisms/Taskbar/Taskbar';
 import XPWallpaper from '../../../assets/xp-wallpaper.jpg'
 import MyComputerIcon from '../../../assets/windows-icons/explorer.exe_14_100-9.png';
 import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
-import WindowsXPStartupSound from '../../../assets/sounds/windows-xp-startup.mp3';
+import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-9.png';
 import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
 
 export const Desktop: React.FC = () => {
@@ -55,16 +55,6 @@ export const Desktop: React.FC = () => {
       isOpen: false
     }
   ]);
-  const xpStartupSoundAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    xpStartupSoundAudioRef.current = new Audio(WindowsXPStartupSound);
-      
-    // Exemple : on joue le beep au montage ou à un moment précis
-    xpStartupSoundAudioRef.current.play().catch((err) => {
-      console.log('Erreur lors de la lecture audio:', err);
-    });
-  }, [])
 
   const toggleWindow = (id: string) => {
     setWindows(windows.map(window => 
@@ -91,8 +81,8 @@ export const Desktop: React.FC = () => {
           onDoubleClick={() => toggleWindow('my-documents')}
         />
         <DesktopIcon
-          icon={<div className="text-white">{"[]"}</div>}
-          label="Reboot Reboot Reboot Reboot Reboot"
+          icon={<img src={ShutdownComputerIcon} />}
+          label="Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot Reboot"
           onDoubleClick={() => window.location.reload()}
         />
       </div>

@@ -195,7 +195,7 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => onComplete('desktop'), 8000);
+    const timer = setTimeout(() => onComplete('windows-splash-screen'), 8000);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
