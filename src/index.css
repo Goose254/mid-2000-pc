@@ -26,3 +26,21 @@
     src: url(./assets/fonts/franklin-gothic-italic.otf) format('opentype');
     font-style: italic;
 }
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    src: url(./assets/fonts/trebuchet-ms.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    src: url(./assets/fonts/trebuchet-ms-bold.ttf) format('truetype');
+    font-style: normal;
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    src: url(./assets/fonts/trebuchet-ms-italic.ttf) format('truetype');
+    font-style: italic;
+}

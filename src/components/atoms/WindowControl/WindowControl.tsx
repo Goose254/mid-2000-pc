@@ -1,30 +1,25 @@
 import React from 'react';
+import './WindowControl.css'
 
 interface WindowControlProps {
-  type: 'minimize' | 'maximize' | 'close';
+  type: 'minimize' | 'maximize' | 'restore' | 'help' | 'close';
   onClick: () => void;
 }
 
 export const WindowControl: React.FC<WindowControlProps> = ({ type, onClick }) => {
-  const baseClasses = "p-1 hover:bg-opacity-20 rounded-sm";
+  const baseClasses = "title-bar-button";
   const variants = {
-    minimize: "hover:bg-gray-200",
-    maximize: "hover:bg-gray-200",
-    close: "hover:bg-red-500 hover:text-white"
-  };
-
-  const icons = {
-    minimize: "-",
-    maximize: "[]",
-    close: "X"
+    minimize: "minimize",
+    maximize: "maximize",
+    restore: "restore",
+    help: "help",
+    close: "close"
   };
 
   return (
     <button 
       className={`${baseClasses} ${variants[type]}`}
       onClick={onClick}
-    >
-      {icons[type]}
-    </button>
+    ></button>
   );
 };

@@ -3,7 +3,9 @@ import { Window } from '../../organisms/Window/Window';
 import { Taskbar } from '../../organisms/Taskbar/Taskbar';
 import XPWallpaper from '../../../assets/xp-wallpaper.jpg'
 import MyComputerIcon from '../../../assets/windows-icons/explorer.exe_14_100-9.png';
+import MyComputerSmallIcon from '../../../assets/windows-icons/explorer.exe_14_100-11.png';
 import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
+import FolderSmallIcon from '../../../assets/windows-icons/shell32.dll_14_5-8.png';
 import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-9.png';
 import TashbinIcon from '../../../assets/windows-icons/explorer.exe_14_108-7.png';
 import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
@@ -12,12 +14,14 @@ export const Desktop: React.FC = () => {
   const [windows, setWindows] = useState<Array<{
     id: string;
     title: string;
+    icon?: React.ReactElement;
     content: React.ReactNode;
     isOpen: boolean;
   }>>([
     {
       id: 'my-computer',
-      title: 'My Computer',
+      title: 'Poste de travail',
+      icon: <img src={MyComputerSmallIcon} />,
       content: (
         <div className="p-4">
           <h2 className="text-lg mb-4">My Computer</h2>
@@ -37,7 +41,8 @@ export const Desktop: React.FC = () => {
     },
     {
       id: 'my-documents',
-      title: 'My Documents',
+      title: 'Mes Documents',
+      icon: <img src={FolderSmallIcon} />,
       content: (
         <div className="p-4">
           <h2 className="text-lg mb-4">My Documents</h2>
@@ -97,6 +102,7 @@ export const Desktop: React.FC = () => {
         <Window
           key={window.id}
           title={window.title}
+          icon={window.icon}
           onClose={() => toggleWindow(window.id)}
           initialPosition={{ x: 100 + Math.random() * 100, y: 100 + Math.random() * 100 }}
         >

@@ -1,25 +1,36 @@
 import React from 'react';
 import { WindowControl } from '../../atoms/WindowControl/WindowControl';
+import './TitleBar.css';
 
 interface TitleBarProps {
   title: string;
+  icon?: React.ReactElement;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
+  isMaximized: boolean;
 }
 
 export const TitleBar: React.FC<TitleBarProps> = ({
   title,
+  icon,
   onMinimize,
   onMaximize,
   onClose,
+  isMaximized,
 }) => {
   return (
-    <div className="h-8 bg-gradient-to-r from-[#0a246a] via-[#3a6af0] to-[#0a246a] flex items-center justify-between px-2 select-none cursor-move">
-      <span className="text-white text-sm">{title}</span>
-      <div className="flex space-x-1">
+    <div className={`title-bar-container ${isMaximized && "maximized"}`} onDoubleClick={onMaximize}>
+      <div className="title-bar-title-wrapper">
+        <div className="title-bar-title-icon">{icon ? icon : ''}</div>
+        <div className="title-bar-title-label">{title}</div>
+      </div>
+      <div className="title-bar-window-controls-wrapper">
         <WindowControl type="minimize" onClick={onMinimize} />
-        <WindowControl type="maximize" onClick={onMaximize} />
+        {isMaximized ?
+          <WindowControl type="restore" onClick={onMaximize} /> :
+          <WindowControl type="maximize" onClick={onMaximize} />
+        }
         <WindowControl type="close" onClick={onClose} />
       </div>
     </div>

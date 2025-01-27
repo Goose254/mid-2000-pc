@@ -1,0 +1,101 @@
+.window {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+.window-left-border {
+    display: flex;
+    width: 4px;
+    height: 100%;
+    background-image:
+        url(../../../assets/window-borders/window-left-border-active-top.png),
+        url(../../../assets/window-borders/window-left-border-active-bottom.png),
+        url(../../../assets/window-borders/window-left-border-active-center.png);
+    background-position: left top, left bottom, left center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: auto, auto, 4px calc(100% - 8px);
+    cursor: ew-resize;
+}
+
+.window-right-border {
+    display: flex;
+    width: 4px;
+    height: 100%;
+    background-image:
+        url(../../../assets/window-borders/window-right-border-active-top.png),
+        url(../../../assets/window-borders/window-right-border-active-bottom.png),
+        url(../../../assets/window-borders/window-right-border-active-center.png);
+    background-position: left top, left bottom, left center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: auto, auto, 4px calc(100% - 8px);
+    cursor: ew-resize;
+}
+
+.window-bottom-border {
+    display: flex;
+    width: 100%;
+    height: 4px;
+    background-image:
+        url(../../../assets/window-borders/window-bottom-border-active-left.png),
+        url(../../../assets/window-borders/window-bottom-border-active-right.png),
+        url(../../../assets/window-borders/window-bottom-border-active-center.png);
+    background-position: left top, right top, left top;
+    background-repeat: no-repeat, no-repeat;
+    background-size: auto, auto, 100% 4px;
+    cursor: ns-resize;
+}
+
+.window-content-wrapper {
+    display: flex;
+    height: calc(100% - 29px);
+    background-color: #ece9d8;
+}
+
+.window.maximized .window-content-wrapper {
+    height: calc(100% - 26px);
+}
+
+.window-content {
+    display: flex;
+    flex-grow: 1;
+}
+
+.window-corner-resize {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+}
+
+.window-corner-resize.ne {
+    right: 0;
+    top: 0;
+    cursor: ne-resize;
+}
+
+.window-corner-resize.se {
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
+}
+
+.window-corner-resize.sw {
+    left: 0;
+    bottom: 0;
+    cursor: sw-resize;
+}
+
+.window-corner-resize.nw {
+    left: 0;
+    top: 0;
+    cursor: nw-resize;
+}
+
+.window-top-resize {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    left: 0;
+    top: 0;
+    cursor: ns-resize;
+}
