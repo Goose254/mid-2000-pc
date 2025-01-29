@@ -46,6 +46,27 @@
     cursor: ns-resize;
 }
 
+.window.inactive .window-left-border {
+    background-image:
+        url(../../../assets/window-borders/window-left-border-inactive-top.png),
+        url(../../../assets/window-borders/window-left-border-inactive-bottom.png),
+        url(../../../assets/window-borders/window-left-border-inactive-center.png);
+}
+
+.window.inactive .window-right-border {
+    background-image:
+        url(../../../assets/window-borders/window-right-border-inactive-top.png),
+        url(../../../assets/window-borders/window-right-border-inactive-bottom.png),
+        url(../../../assets/window-borders/window-right-border-inactive-center.png);
+}
+
+.window.inactive .window-bottom-border {
+    background-image:
+        url(../../../assets/window-borders/window-bottom-border-inactive-left.png),
+        url(../../../assets/window-borders/window-bottom-border-inactive-right.png),
+        url(../../../assets/window-borders/window-bottom-border-inactive-center.png);
+}
+
 .window-content-wrapper {
     display: flex;
     height: calc(100% - 29px);

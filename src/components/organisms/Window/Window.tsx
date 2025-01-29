@@ -26,6 +26,7 @@ export const Window: React.FC<WindowProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<ResizePole>('none');
   const [isMaximized, setIsMaximized] = useState(false);
+  const [isInactive, setIsInactive] = useState<boolean>(false);
   const [beforeMaximized, setBeforeMaximized] = useState({ position, size });
   
   const dragStart = useRef({ x: 0, y: 0 });
@@ -43,6 +44,7 @@ export const Window: React.FC<WindowProps> = ({
 
   const handleResizing = (e: React.MouseEvent, pole: ResizePole) => {
     e.stopPropagation();
+    setIsInactive(false);
 
     if (isMaximized) return;
 
@@ -134,6 +136,21 @@ export const Window: React.FC<WindowProps> = ({
     }
   }, [isDragging, isResizing]);
 
+  useEffect(() => {
+    const handleClickOutsideWindow = (e: MouseEvent) => {
+      if (
+        windowRef.current && !windowRef.current.contains(e.target as Node)
+      ) {
+        setIsInactive(true)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutsideWindow)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideWindow)
+    }
+  }, [windowRef])
+
   const handleMaximize = () => {
     if (!isMaximized) {
       setBeforeMaximized({ position, size });
@@ -159,7 +176,7 @@ export const Window: React.FC<WindowProps> = ({
   };
 
   return (
-    <div ref={windowRef} className={`window ${isMaximized ? "maximized" : ""}`} style={style}>
+    <div ref={windowRef} className={`window ${isMaximized ? "maximized" : ""} ${isInactive ? "inactive" : ""}`} style={style} onMouseDown={() => setIsInactive(false)}>
       {!isMaximized && (
         <>
           <div className="window-top-resize" onMouseDown={(e) => handleResizing(e, 'n')} />
