@@ -6,9 +6,14 @@ interface WindowProps {
   title: string;
   icon?: React.ReactElement;
   children: React.ReactNode;
+  zPosition: number;
   initialPosition?: { x: number; y: number };
   initialSize?: { width: number; height: number };
-  onClose?: () => void;
+  isActive: boolean;
+  onClose: () => void;
+  onActive: () => void;
+  onInactive: () => void;
+  onMinimize: () => void;
 }
 
 type ResizePole = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'none';
@@ -17,21 +22,29 @@ export const Window: React.FC<WindowProps> = ({
   title,
   icon,
   children,
+  zPosition,
   initialPosition = { x: 100, y: 100 },
   initialSize = { width: 600, height: 400 },
-  onClose
+  isActive,
+  onClose,
+  onActive,
+  onInactive,
+  onMinimize
 }) => {
   const [position, setPosition] = useState(initialPosition);
   const [size, setSize] = useState(initialSize);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<ResizePole>('none');
   const [isMaximized, setIsMaximized] = useState(false);
-  const [isInactive, setIsInactive] = useState<boolean>(false);
   const [beforeMaximized, setBeforeMaximized] = useState({ position, size });
   
   const dragStart = useRef({ x: 0, y: 0 });
   const resizeStart = useRef({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+
+  const setWindowActive = () => {
+    onActive();
+  }
 
   const handleDragging = (e: React.MouseEvent) => {
     if (isMaximized) return;
@@ -44,7 +57,7 @@ export const Window: React.FC<WindowProps> = ({
 
   const handleResizing = (e: React.MouseEvent, pole: ResizePole) => {
     e.stopPropagation();
-    setIsInactive(false);
+    setWindowActive();
 
     if (isMaximized) return;
 
@@ -141,13 +154,13 @@ export const Window: React.FC<WindowProps> = ({
       if (
         windowRef.current && !windowRef.current.contains(e.target as Node)
       ) {
-        setIsInactive(true)
+        onInactive();
       }
     }
-    document.addEventListener('mousedown', handleClickOutsideWindow)
+    document.addEventListener('mousedown', handleClickOutsideWindow);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutsideWindow)
+      document.removeEventListener('mousedown', handleClickOutsideWindow);
     }
   }, [windowRef])
 
@@ -165,7 +178,7 @@ export const Window: React.FC<WindowProps> = ({
   };
 
   const handleMinimize = () => {
-    // Implement minimize animation
+    onMinimize();
   };
 
   const style = {
@@ -173,10 +186,11 @@ export const Window: React.FC<WindowProps> = ({
     left: `${position.x}px`,
     width: `${size.width}px`,
     height: `${size.height}px`,
+    zIndex: zPosition,
   };
 
   return (
-    <div ref={windowRef} className={`window ${isMaximized ? "maximized" : ""} ${isInactive ? "inactive" : ""}`} style={style} onMouseDown={() => setIsInactive(false)}>
+    <div ref={windowRef} className={`window ${isMaximized ? "maximized" : ""} ${isActive ? "" : "inactive"}`} style={style} onMouseDown={() => setWindowActive()}>
       {!isMaximized && (
         <>
           <div className="window-top-resize" onMouseDown={(e) => handleResizing(e, 'n')} />

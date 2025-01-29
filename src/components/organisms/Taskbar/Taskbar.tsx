@@ -3,8 +3,20 @@ import StartButtonLogo from '../../../assets/start-button-logo.png';
 import './Taskbar.css';
 import moment from 'moment';
 import { StartMenu } from '../StartMenu/StartMenu';
+import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
 
-export const Taskbar: React.FC = () => {
+type TaskbarProps = {
+  windows: Array<{
+    id: string;
+    title: string;
+    icon?: React.ReactElement;
+    isMinimized: boolean;
+    isActive: boolean;
+  }>;
+  onClickWindowIcon: (id: string) => void;
+};
+
+export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) => {
   const [date, setDate] = useState<Date>(new Date())
   const [startMenuVisible, setStartMenuVisible] = useState<boolean>(false)
   const startMenuRef = useRef<HTMLDivElement | null>(null)
@@ -41,6 +53,10 @@ export const Taskbar: React.FC = () => {
         <img src={StartButtonLogo} />
         démarrer
       </button>
+
+      {windows.map((win) => (
+        <TaskbarButton key={win.id} window={win} onMouseDown={onClickWindowIcon} />
+      ))}
 
       <div id="taskbar-tools">
         {moment(date).format('HH:mm')}

@@ -1,0 +1,39 @@
+.taskbar-button {
+    display: flex;
+    width: 160px;
+    height: 25px;
+    align-items: center;
+    padding: 0 12px;
+    margin-top: 3px;
+    background-image:
+        url(../../../assets/taskbar-buttons/taskbar-button-inactive-default-left.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-inactive-default-right.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-inactive-default-center.png);
+    background-position: left top, right top, left top;
+    background-repeat: no-repeat, no-repeat;
+    background-size: contain, contain, calc(100% - 6px) 100%;
+    color: white;
+    font-family: 'Tahoma';
+    font-size: 11px;
+}
+
+.taskbar-button:hover {
+    background-image:
+        url(../../../assets/taskbar-buttons/taskbar-button-inactive-hover-left.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-inactive-hover-right.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-inactive-hover-center.png);
+}
+
+.taskbar-button.active {
+    background-image:
+        url(../../../assets/taskbar-buttons/taskbar-button-active-default-left.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-active-default-right.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-active-default-center.png);
+}
+
+.taskbar-button.active:hover {
+    background-image:
+        url(../../../assets/taskbar-buttons/taskbar-button-active-hover-left.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-active-hover-right.png),
+        url(../../../assets/taskbar-buttons/taskbar-button-active-hover-center.png);
+}

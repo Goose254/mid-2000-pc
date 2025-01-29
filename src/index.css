@@ -9,6 +9,10 @@
     user-select: none;
 }
 
+#root button {
+    cursor: default;
+}
+
 @font-face {
     font-family: 'PerfectDOS';
     src: url(./assets/fonts/perfect-dos.ttf) format('truetype');
