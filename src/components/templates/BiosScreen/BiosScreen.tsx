@@ -39,7 +39,7 @@ export const BiosScreen: React.FC<{ onComplete: () => void }> = ({ onComplete })
   }, [onComplete]);
 
   return (
-    <div className="bg-black min-h-screen p-4">
+    <div className="bg-black min-h-screen p-4 cursor-none">
       {lines.map((line, index) => (
         <BiosLine key={index} text={line.text} delay={line.delay} />
       ))}

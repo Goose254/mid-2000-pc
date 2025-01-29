@@ -182,6 +182,7 @@ export const Desktop: React.FC = () => {
         .map((window) => (
           <Window
             key={window.id}
+            id={window.id}
             title={window.title}
             icon={window.icon}
             onClose={() => closeWindow(window.id)}

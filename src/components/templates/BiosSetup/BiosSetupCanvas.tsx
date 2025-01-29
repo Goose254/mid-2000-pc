@@ -264,7 +264,7 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMenuXIndex, selectedMenuYIndex]);
 
-  return <canvas ref={canvasRef} style={{ outline: 'none' }} />;
+  return <canvas ref={canvasRef} style={{ outline: 'none' }} className="cursor-none" />;
 };
 
 export default BiosSetupCanvas;

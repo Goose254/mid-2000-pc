@@ -13,7 +13,7 @@ interface TaskbarButtonProps {
 
 export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ window, onMouseDown }) => {
   const handleMouseDown = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
+    //e.stopPropagation();
     onMouseDown(id);
   }
 
@@ -21,11 +21,14 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ window, onMouseDow
     <div
       onMouseDown={(e) => handleMouseDown(e, window.id)}
       className={`taskbar-button ${window.isActive ? 'active' : ''}`}
+      data-window-id={window.id}
     >
-      {window.icon && (
-      <div style={{ marginRight: 4 }}>{window.icon}</div>
-      )}
-      <span>{window.title}</span>
+      <div className="taskbar-button-content">
+        {window.icon && (
+        <div style={{ marginRight: 4 }}>{window.icon}</div>
+        )}
+        <span>{window.title}</span>
+      </div>
     </div>
   )
 };

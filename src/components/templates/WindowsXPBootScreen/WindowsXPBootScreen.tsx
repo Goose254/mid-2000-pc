@@ -8,7 +8,7 @@ export const WindowsXPBootScreen: React.FC<{ onComplete: () => void }> = ({ onCo
   }, [onComplete]);
 
   return (
-    <div className="min-h-full bg-black flex flex-col items-center justify-center">
+    <div className="min-h-full bg-black flex flex-col items-center justify-center cursor-none">
       <div className="w-64 h-48 relative">
         <div className="absolute inset-0 flex items-center justify-center">
           <img

@@ -234,7 +234,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
     }
   }, [setEnterSetup])
 
-  return <canvas ref={canvasRef} />;
+  return <canvas ref={canvasRef} className="cursor-none" />;
 };
 
 export default BiosScreenCanvas;

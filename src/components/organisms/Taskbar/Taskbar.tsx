@@ -54,9 +54,11 @@ export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) 
         démarrer
       </button>
 
-      {windows.map((win) => (
-        <TaskbarButton key={win.id} window={win} onMouseDown={onClickWindowIcon} />
-      ))}
+      <div className="taskbar-window-buttons">
+        {windows.map((win) => (
+          <TaskbarButton key={win.id} window={win} onMouseDown={onClickWindowIcon} />
+        ))}
+      </div>
 
       <div id="taskbar-tools">
         {moment(date).format('HH:mm')}

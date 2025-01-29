@@ -2,8 +2,6 @@
     display: flex;
     width: 160px;
     height: 25px;
-    align-items: center;
-    padding: 0 12px;
     margin-top: 3px;
     background-image:
         url(../../../assets/taskbar-buttons/taskbar-button-inactive-default-left.png),
@@ -36,4 +34,11 @@
         url(../../../assets/taskbar-buttons/taskbar-button-active-hover-left.png),
         url(../../../assets/taskbar-buttons/taskbar-button-active-hover-right.png),
         url(../../../assets/taskbar-buttons/taskbar-button-active-hover-center.png);
+}
+
+.taskbar-button-content {
+    display: flex;
+    padding: 0 10px;
+    align-items: center;
+    pointer-events: none;
 }

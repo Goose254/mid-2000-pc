@@ -3,6 +3,7 @@ import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import './Window.css';
 
 interface WindowProps {
+  id: string;
   title: string;
   icon?: React.ReactElement;
   children: React.ReactNode;
@@ -19,6 +20,7 @@ interface WindowProps {
 type ResizePole = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'none';
 
 export const Window: React.FC<WindowProps> = ({
+  id,
   title,
   icon,
   children,
@@ -151,8 +153,9 @@ export const Window: React.FC<WindowProps> = ({
 
   useEffect(() => {
     const handleClickOutsideWindow = (e: MouseEvent) => {
+      const targetWindowId = (e.target as HTMLDivElement)?.getAttribute("data-window-id") || null
       if (
-        windowRef.current && !windowRef.current.contains(e.target as Node)
+        windowRef.current && !windowRef.current.contains(e.target as Node) && targetWindowId !== id
       ) {
         onInactive();
       }
