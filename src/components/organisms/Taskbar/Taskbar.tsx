@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import StartButtonLogo from '../../../assets/start-button-logo.png';
 import './Taskbar.css';
 import moment from 'moment';
 import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
+import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
 
 type TaskbarProps = {
   windows: Array<{
@@ -18,13 +19,16 @@ type TaskbarProps = {
 
 export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) => {
   const [date, setDate] = useState<Date>(new Date())
-  const [startMenuVisible, setStartMenuVisible] = useState<boolean>(false)
   const startMenuRef = useRef<HTMLDivElement | null>(null)
   const startButtonRef = useRef<HTMLButtonElement | null>(null)
 
-  const toggleStartMenu = useCallback(() => {
-    setStartMenuVisible(!startMenuVisible)
-  }, [startMenuVisible])
+  const toggleStartMenu = useDesktopStore(
+    (state) => state.toggleStartMenu
+  );
+
+  const isStartMenuVisible = useDesktopStore(
+    (state) => state.isStartMenuVisible
+  );
 
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 1000)
@@ -47,9 +51,9 @@ export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) 
 
   return (
     <div id="taskbar">
-      <StartMenu ref={startMenuRef} isVisible={startMenuVisible} />
+      <StartMenu ref={startMenuRef} isVisible={isStartMenuVisible} />
 
-      <button ref={startButtonRef} id="start-button" className={startMenuVisible ? 'active' : ''} onClick={() => toggleStartMenu()}>
+      <button ref={startButtonRef} id="start-button" className={isStartMenuVisible ? 'active' : ''} onClick={() => toggleStartMenu()}>
         <img src={StartButtonLogo} />
         démarrer
       </button>

@@ -6,12 +6,12 @@ import MyComputerIcon from '../../../assets/windows-icons/explorer.exe_14_100-9.
 import MyComputerSmallIcon from '../../../assets/windows-icons/explorer.exe_14_100-11.png';
 import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
 import FolderSmallIcon from '../../../assets/windows-icons/shell32.dll_14_5-8.png';
-import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-9.png';
 import TashbinIcon from '../../../assets/windows-icons/shell32.dll_14_254-7.png';
 import AboutIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-9.png';
 import AboutSmallIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-11.png';
 import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
 import { WindowsShutdownOverlay } from '../WindowsShutdownOverlay/WindowsShutdownOverlay';
+import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
 
 type DesktopWindow = {
   id: string;
@@ -26,11 +26,10 @@ type DesktopWindow = {
 export const Desktop: React.FC = () => {
   const [windows, setWindows] = useState<DesktopWindow[]>([]);
   const [maxZIndex, setMaxZIndex] = useState<number>(1);
-  const [isShutdownOverlayVisible, setIsShutdownOverlayVisible] = useState<boolean>(false);
 
-  const toggleShutdownOverlay = () => {
-    setIsShutdownOverlayVisible(!isShutdownOverlayVisible)
-  }
+  const isShutdownOverlayVisible = useDesktopStore(
+    (state) => state.isShutdownOverlayVisible
+  );
 
   /**
    * Ouvre ou restaure la fenêtre si elle est déjà ouverte.
@@ -179,11 +178,6 @@ export const Desktop: React.FC = () => {
           onDoubleClick={openMyDocuments}
         />
         <DesktopIcon
-          icon={<img src={ShutdownComputerIcon} />}
-          label="Reboot"
-          onDoubleClick={() => toggleShutdownOverlay()}
-        />
-        <DesktopIcon
           icon={<img src={TashbinIcon} />}
           label="Corbeille"
           onDoubleClick={() => {
@@ -228,7 +222,7 @@ export const Desktop: React.FC = () => {
         onClickWindowIcon={toggleMinimizeWindow}
       />
       
-      {isShutdownOverlayVisible && <WindowsShutdownOverlay onCancel={toggleShutdownOverlay} />}
+      {isShutdownOverlayVisible && <WindowsShutdownOverlay />}
     </div>
   );
 };

@@ -73,9 +73,11 @@
 }
 
 #start-menu-actions button:hover {
-    margin: 4px;
-    padding: 4px;
     background: #316ac5;
+}
+
+#start-menu-actions button:active {
+    transform: translate(1px, 1px);
 }
 
 #start-menu-actions button img {
