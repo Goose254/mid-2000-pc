@@ -8,6 +8,9 @@
     -ms-user-select: none;
     user-select: none;
     cursor: url(./assets/cursors/default.cur), default;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+    font-smooth: never;
 }
 
 #root button {

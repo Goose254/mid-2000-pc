@@ -70,7 +70,7 @@
 .window-content-wrapper {
     display: flex;
     height: calc(100% - 29px);
-    background-color: #ece9d8;
+    background-color: #fff;
 }
 
 .window.maximized .window-content-wrapper {
@@ -80,6 +80,7 @@
 .window-content {
     display: flex;
     flex-grow: 1;
+    flex-direction: column;
 }
 
 .window-corner-resize {

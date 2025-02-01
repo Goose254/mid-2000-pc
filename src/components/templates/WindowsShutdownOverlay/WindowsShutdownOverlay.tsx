@@ -15,7 +15,7 @@ export const WindowsShutdownOverlay: React.FC = () => {
     const timer = setTimeout(() => {
       const overlayContainerStyle = document.getElementById("shutdown-overlay-container")
 
-      if (overlayContainerStyle) overlayContainerStyle.style.backdropFilter = 'grayscale(100%)';
+      if (overlayContainerStyle) overlayContainerStyle.style.backdropFilter = 'grayscale(100%) brightness(90%)';
     }, 500)
 
     return () => clearTimeout(timer)

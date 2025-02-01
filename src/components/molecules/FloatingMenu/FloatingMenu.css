@@ -1,0 +1,10 @@
+.xp-floating-menu {
+    position: absolute;
+    width: fit-content;
+    padding: 2px;
+    background-color: white;
+    font-family: 'Tahoma';
+    font-size: 11px;
+    border: 1px solid #aca899;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4);
+}

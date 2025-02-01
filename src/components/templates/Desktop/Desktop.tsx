@@ -9,9 +9,15 @@ import FolderSmallIcon from '../../../assets/windows-icons/shell32.dll_14_5-8.pn
 import TashbinIcon from '../../../assets/windows-icons/shell32.dll_14_254-7.png';
 import AboutIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-9.png';
 import AboutSmallIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-11.png';
+import WindowToolbarWindowsIcon from '../../../assets/explorer-toolbar-windows-icon.png';
 import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
 import { WindowsShutdownOverlay } from '../WindowsShutdownOverlay/WindowsShutdownOverlay';
 import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
+import { WindowToolbar } from '../../atoms/WindowToolbar/WindowToolbar';
+import { MenuItem } from '../../atoms/MenuItem/MenuItem';
+import { FloatingMenu } from '../../molecules/FloatingMenu/FloatingMenu';
+import { MenuSeparator } from '../../atoms/MenuSeparator/MenuSeparator';
+import { WindowToolbarMenuButton } from '../../atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
 
 type DesktopWindow = {
   id: string;
@@ -145,7 +151,85 @@ export const Desktop: React.FC = () => {
       'my-documents',
       'Mes Documents',
       <img src={FolderSmallIcon} />,
-      <div>Contenu Mes Documents</div>
+      <>
+        <WindowToolbar>
+          <WindowToolbarMenuButton label="Fichier">
+            <FloatingMenu>
+              <MenuItem aria-disabled>Créer un raccourci</MenuItem>
+              <MenuItem aria-disabled>Supprimer</MenuItem>
+              <MenuItem aria-disabled>Renommer</MenuItem>
+              <MenuItem aria-disabled>Propriétés</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Fermer</MenuItem>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Edition">
+            <FloatingMenu>
+              <MenuItem>Annuler Déplacer</MenuItem>
+              <MenuSeparator />
+              <MenuItem aria-disabled>Couper</MenuItem>
+              <MenuItem aria-disabled>Copier</MenuItem>
+              <MenuItem aria-disabled>Coller</MenuItem>
+              <MenuItem aria-disabled>Coller le raccourci</MenuItem>
+              <MenuSeparator />
+              <MenuItem aria-disabled>Copier dans un dossier...</MenuItem>
+              <MenuItem aria-disabled>Déplacer vers un dossier...</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Sélectionner tout</MenuItem>
+              <MenuItem>Inverser la sélection</MenuItem>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Affichage">
+            <FloatingMenu>
+              <MenuItem>Barre d'outils</MenuItem>
+              <MenuItem>Barre d'état</MenuItem>
+              <MenuItem>Volet d'exploration</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Miniatures</MenuItem>
+              <MenuItem>Mosaïques</MenuItem>
+              <MenuItem>Icônes</MenuItem>
+              <MenuItem>Liste</MenuItem>
+              <MenuItem>Détails</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Réorganiser les icônes par</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Choisir les détails...</MenuItem>
+              <MenuItem>Atteindre</MenuItem>
+              <MenuItem>Actualiser</MenuItem>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Favoris">
+            <FloatingMenu>
+              <MenuItem>Ajouter aux Favoris...</MenuItem>
+              <MenuItem>Organiser les Favoris...</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Liens</MenuItem>
+              <MenuItem>Guide des stations de radio</MenuItem>
+              <MenuItem>MSN.com</MenuItem>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Outils">
+            <FloatingMenu>
+              <MenuItem>Connecter un lecteur réseau...</MenuItem>
+              <MenuItem>Déconnecter un lecteur réseau...</MenuItem>
+              <MenuItem>Synchroniser...</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Options des dossiers...</MenuItem>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="?">
+            <FloatingMenu>
+              <MenuItem>Centre d'aide et de support</MenuItem>
+              <MenuSeparator />
+              <MenuItem>Cette copie de Windows est-elle légale ?</MenuItem>
+              <MenuItem>À propos de Windows</MenuItem>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <img src={WindowToolbarWindowsIcon} style={{ marginLeft: 'auto', borderLeft: '1px solid #aca899' }} />
+        </WindowToolbar>
+        <WindowToolbar><></></WindowToolbar>
+        <WindowToolbar><></></WindowToolbar>
+      </>
     );
   };
 

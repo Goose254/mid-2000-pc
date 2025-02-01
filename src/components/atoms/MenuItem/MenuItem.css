@@ -1,0 +1,22 @@
+.xp-menu-item {
+    width: 100%;
+    padding: 0 16px 1px 16px;
+    background-color: white;
+    font-family: 'Tahoma';
+    font-size: 11px;
+    color: black;
+    text-align: start;
+}
+
+.xp-menu-item[aria-disabled="true"] {
+    color: #aca899;
+}
+
+.xp-menu-item:hover {
+    color: white;
+    background-color: #316ac5;
+}
+
+.xp-menu-item[aria-disabled="true"]:hover {
+    color: #aca899;
+}

@@ -1,0 +1,41 @@
+.xp-window-toolbar-menu-button {
+    max-height: 22px;
+    margin: 1px 0 2px 0;
+    padding: 0px 8px 1px 8px;
+}
+
+.xp-window-toolbar-menu-button > div {
+    visibility: hidden;
+    opacity: 0;
+    margin-top: 1px;
+    margin-left: -8px;
+    transition: none;
+}
+
+.inactive .xp-window-toolbar-menu-button {
+    color: #aca899;
+}
+
+.xp-window-toolbar-menu-button:hover {
+    color: white;
+    background-color: #316ac5;
+}
+
+.xp-window-toolbar-menu-button:focus > div {
+    visibility: visible;
+    opacity: 1;
+    transition: 0.15s;
+}
+
+.inner-container:has(> .xp-window-toolbar-menu-button:focus) > .xp-window-toolbar-menu-button:focus > div {
+    visibility: hidden;
+    opacity: 0;
+    transition: none;
+}
+
+.inner-container:has(> .xp-window-toolbar-menu-button:focus) > .xp-window-toolbar-menu-button:hover > div {
+    visibility: visible;
+    opacity: 1;
+    z-index: 1;
+    transition: 0.15s;
+}
