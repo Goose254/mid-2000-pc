@@ -15,7 +15,7 @@
     background-position: left top, left bottom, left center;
     background-repeat: no-repeat, no-repeat;
     background-size: auto, auto, 4px calc(100% - 8px);
-    cursor: ew-resize;
+    cursor: url(../../../assets/cursors/ew-resize.cur), ew-resize;
 }
 
 .window-right-border {
@@ -29,7 +29,7 @@
     background-position: left top, left bottom, left center;
     background-repeat: no-repeat, no-repeat;
     background-size: auto, auto, 4px calc(100% - 8px);
-    cursor: ew-resize;
+    cursor: url(../../../assets/cursors/ew-resize.cur), ew-resize;
 }
 
 .window-bottom-border {
@@ -43,7 +43,7 @@
     background-position: left top, right top, left top;
     background-repeat: no-repeat, no-repeat;
     background-size: auto, auto, 100% 4px;
-    cursor: ns-resize;
+    cursor: url(../../../assets/cursors/ns-resize.cur), ns-resize;
 }
 
 .window.inactive .window-left-border {
@@ -91,25 +91,25 @@
 .window-corner-resize.ne {
     right: 0;
     top: 0;
-    cursor: ne-resize;
+    cursor: url(../../../assets/cursors/nesw-resize.cur), ne-resize;
 }
 
 .window-corner-resize.se {
     right: 0;
     bottom: 0;
-    cursor: se-resize;
+    cursor: url(../../../assets/cursors/nwse-resize.cur), se-resize;
 }
 
 .window-corner-resize.sw {
     left: 0;
     bottom: 0;
-    cursor: sw-resize;
+    cursor: url(../../../assets/cursors/nesw-resize.cur), sw-resize;
 }
 
 .window-corner-resize.nw {
     left: 0;
     top: 0;
-    cursor: nw-resize;
+    cursor: url(../../../assets/cursors/nwse-resize.cur), nw-resize;
 }
 
 .window-top-resize {
@@ -118,5 +118,5 @@
     height: 4px;
     left: 0;
     top: 0;
-    cursor: ns-resize;
+    cursor: url(../../../assets/cursors/ns-resize.cur), ns-resize;
 }

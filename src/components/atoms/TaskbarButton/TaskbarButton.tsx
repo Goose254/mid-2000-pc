@@ -27,7 +27,7 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ window, onMouseDow
         {window.icon && (
         <div style={{ marginRight: 4 }}>{window.icon}</div>
         )}
-        <span>{window.title}</span>
+        <div className="taskbar-button-content-label">{window.title}</div>
       </div>
     </div>
   )

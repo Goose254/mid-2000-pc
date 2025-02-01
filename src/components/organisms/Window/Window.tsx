@@ -215,12 +215,6 @@ export const Window: React.FC<WindowProps> = ({
         {!isMaximized && <div className="window-left-border" onMouseDown={(e) => handleResizing(e, 'w')}></div>}
         <div className="window-content">
           {children}
-          {size.width}<br/>
-          {size.height}<br/>
-          {'--------------'}<br/>
-          {'--------------'}<br/>
-          {position.x}<br/>
-          {position.y}<br/>
         </div>
         {!isMaximized && <div className="window-right-border" onMouseDown={(e) => handleResizing(e, 'e')}></div>}
       </div>

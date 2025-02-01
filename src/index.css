@@ -7,10 +7,11 @@
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    cursor: url(./assets/cursors/default.cur), default;
 }
 
 #root button {
-    cursor: default;
+    cursor: url(./assets/cursors/default.cur), default;
 }
 
 @font-face {

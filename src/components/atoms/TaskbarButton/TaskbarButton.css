@@ -42,3 +42,9 @@
     align-items: center;
     pointer-events: none;
 }
+
+.taskbar-button-content .taskbar-button-content-label {
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}

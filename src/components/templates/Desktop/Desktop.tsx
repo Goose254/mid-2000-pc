@@ -7,8 +7,11 @@ import MyComputerSmallIcon from '../../../assets/windows-icons/explorer.exe_14_1
 import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
 import FolderSmallIcon from '../../../assets/windows-icons/shell32.dll_14_5-8.png';
 import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-9.png';
-import TashbinIcon from '../../../assets/windows-icons/explorer.exe_14_108-7.png';
+import TashbinIcon from '../../../assets/windows-icons/shell32.dll_14_254-7.png';
+import AboutIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-9.png';
+import AboutSmallIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-11.png';
 import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
+import { WindowsShutdownOverlay } from '../WindowsShutdownOverlay/WindowsShutdownOverlay';
 
 type DesktopWindow = {
   id: string;
@@ -23,6 +26,11 @@ type DesktopWindow = {
 export const Desktop: React.FC = () => {
   const [windows, setWindows] = useState<DesktopWindow[]>([]);
   const [maxZIndex, setMaxZIndex] = useState<number>(1);
+  const [isShutdownOverlayVisible, setIsShutdownOverlayVisible] = useState<boolean>(false);
+
+  const toggleShutdownOverlay = () => {
+    setIsShutdownOverlayVisible(!isShutdownOverlayVisible)
+  }
 
   /**
    * Ouvre ou restaure la fenêtre si elle est déjà ouverte.
@@ -37,13 +45,13 @@ export const Desktop: React.FC = () => {
         if (existing.isMinimized) {
           return prev.map((w) =>
             w.id === id
-              ? { ...w, isMinimized: false, zIndex: maxZIndex + 1 }
+              ? { ...w, isMinimized: false, isActive: true, zIndex: maxZIndex + 1 }
               : w
           );
         }
         // Sinon, on la met juste au premier plan
         return prev.map((w) =>
-          w.id === id ? { ...w, zIndex: maxZIndex + 1 } : w
+          w.id === id ? { ...w, isActive: true, zIndex: maxZIndex + 1 } : w
         );
       }
 
@@ -142,6 +150,15 @@ export const Desktop: React.FC = () => {
     );
   };
 
+  const openAbout = () => {
+    openWindow(
+      'about',
+      'À propos de cette expérience',
+      <img src={AboutSmallIcon} />,
+      <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>
+    );
+  };
+
   return (
     <div
       className="min-h-screen bg-cover bg-center relative overflow-hidden"
@@ -164,7 +181,7 @@ export const Desktop: React.FC = () => {
         <DesktopIcon
           icon={<img src={ShutdownComputerIcon} />}
           label="Reboot"
-          onDoubleClick={() => window.location.reload()}
+          onDoubleClick={() => toggleShutdownOverlay()}
         />
         <DesktopIcon
           icon={<img src={TashbinIcon} />}
@@ -173,6 +190,11 @@ export const Desktop: React.FC = () => {
             // Exemple : ouvre "Mes Documents" pour la démonstration
             openMyDocuments();
           }}
+        />
+        <DesktopIcon
+          icon={<img src={AboutIcon} />}
+          label="À propos"
+          onDoubleClick={openAbout}
         />
       </div>
 
@@ -205,6 +227,8 @@ export const Desktop: React.FC = () => {
         windows={windows}
         onClickWindowIcon={toggleMinimizeWindow}
       />
+      
+      {isShutdownOverlayVisible && <WindowsShutdownOverlay onCancel={toggleShutdownOverlay} />}
     </div>
   );
 };
