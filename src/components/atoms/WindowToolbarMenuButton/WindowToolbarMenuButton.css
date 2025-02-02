@@ -1,7 +1,7 @@
 .xp-window-toolbar-menu-button {
     max-height: 22px;
     margin: 1px 0 2px 0;
-    padding: 0px 8px 1px 8px;
+    padding: 1px 8px 0px 8px;
 }
 
 .xp-window-toolbar-menu-button > div {
@@ -9,7 +9,7 @@
     opacity: 0;
     margin-top: 1px;
     margin-left: -8px;
-    transition: none;
+    transition: 0s all 0.05s;
 }
 
 .inactive .xp-window-toolbar-menu-button {
@@ -30,7 +30,7 @@
 .inner-container:has(> .xp-window-toolbar-menu-button:focus) > .xp-window-toolbar-menu-button:focus > div {
     visibility: hidden;
     opacity: 0;
-    transition: none;
+    transition: 0s all 0.05s;
 }
 
 .inner-container:has(> .xp-window-toolbar-menu-button:focus) > .xp-window-toolbar-menu-button:hover > div {

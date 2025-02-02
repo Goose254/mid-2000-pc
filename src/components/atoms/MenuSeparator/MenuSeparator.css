@@ -1,7 +1,7 @@
 .xp-menu-separator {
-    width: calc(100% - 8px);
-    margin: 4px;
-    padding: 0 16px;
+    grid-column: left-start / right-end;
+    width: calc(100% - 4px);
+    margin: 4px 2px;
     background-color: white;
     font-family: 'Tahoma';
     font-size: 11px;

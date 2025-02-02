@@ -1,11 +1,28 @@
 .xp-menu-item {
-    width: 100%;
-    padding: 0 16px 1px 16px;
+    display: grid;
+    /* On indique qu’on reprend les colonnes définies dans le parent */
+    grid-template-columns: subgrid;
+    /* On occupe toutes les colonnes du parent sur une rangée */
+    grid-column: left-start / right-end; /* équivaut souvent à 1 / -1 */
+
+    padding: 0 22px 1px 0;
     background-color: white;
     font-family: 'Tahoma';
     font-size: 11px;
     color: black;
     text-align: start;
+}
+
+.xp-menu-item .shortcut {
+    padding-left: 10px;
+}
+
+.xp-menu-item.has-submenu > .right-element::before {
+    content: "►";
+    position: absolute;
+    right: 4px;
+    margin-top: -1px;
+    transform: scale(0.56, 1);
 }
 
 .xp-menu-item[aria-disabled="true"] {
@@ -19,4 +36,18 @@
 
 .xp-menu-item[aria-disabled="true"]:hover {
     color: #aca899;
+}
+
+.xp-menu-item > div {
+    visibility: hidden;
+    opacity: 0;
+    left: calc(100% - 4px);
+    margin-top: -3px;
+    transition: 0s all 0.1s;
+}
+
+.xp-menu-item:hover > div {
+    visibility: visible;
+    opacity: 1;
+    transition: 0.15s all;
 }
