@@ -3,16 +3,20 @@ import styles from './MenuItem.module.scss';
 
 interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
-  shortcut?: string;
-  variant?: 'xp';
+  icon?: string;
+  info?: string;
+  variant?: 'contextual' | 'startPrimary' | 'startSecondary';
+  primary?: boolean
   children?: React.ReactNode;
   className?: string;
 }
 
 export const MenuItem: React.FC<MenuItemProps> = ({
   label,
-  shortcut,
-  variant = 'xp',
+  icon,
+  info,
+  variant = 'contextual',
+  primary = false,
   children,
   className,
   ...props
@@ -20,16 +24,23 @@ export const MenuItem: React.FC<MenuItemProps> = ({
   // Pour la variante "xp", on utilise la classe "xp-menu-item" du module SCSS.
   // Si un sous-menu est présent, on ajoute également la classe "has-submenu".
   const rootClasses = [
-    styles.xpMenuItem,
+    styles[variant],
     children ? styles.hasSubmenu : "",
     className || ""
   ].join(" ").trim();
 
+  const labelClasses = [
+    styles.label,
+    primary ? styles.primary : "",
+  ].join(" ").trim()
+
   return (
     <div className={rootClasses} {...props}>
-      <span className={styles.leftElement}></span>
-      <span className={styles.label}>{label}</span>
-      <span className={styles.shortcut}>{shortcut || ''}</span>
+      <span className={styles.leftElement}>
+        {icon && <img src={icon} />}
+      </span>
+      <span className={labelClasses}>{label}</span>
+      <span className={styles.info}>{info || ''}</span>
       <span className={styles.rightElement}></span>
       {children}
     </div>

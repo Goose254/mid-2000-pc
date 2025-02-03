@@ -1,45 +1,28 @@
-// Déclaration des variables pour factoriser les valeurs communes
-$menu-bg: white;
-$menu-hover-bg: #316ac5;
-$menu-color: black;
-$menu-hover-color: white;
-$menu-disabled-color: #aca899;
-$menu-font-family: 'Tahoma';
-$menu-font-size: 11px;
-$menu-padding: 0 22px 1px 0;
-$shortcut-padding-left: 10px;
-$arrow-content: "►";
-$arrow-right: 4px;
-$arrow-margin-top: -1px;
-$arrow-transform: scale(0.56, 1);
-$transition-initial: 0s all 0.1s;
-$transition-hover: 0.15s all;
-
-.xpMenuItem {
+.contextual {
   display: grid;
   grid-template-columns: subgrid;
   grid-column: left-start / right-end;
-  padding: $menu-padding;
-  background-color: $menu-bg;
-  font-family: $menu-font-family;
-  font-size: $menu-font-size;
-  color: $menu-color;
+  padding: 0 22px 1px 0;
+  background-color: white;
+  font-family: 'Tahoma';
+  font-size: 11px;
+  color: black;
   text-align: start;
 
   // La classe shortcut utilisée à l'intérieur du menu item
-  .shortcut {
-    padding-left: $shortcut-padding-left;
+  .info {
+    padding-left: 10px;
   }
 
   // Pour les items ayant un sous-menu
   &.hasSubmenu {
     > .rightElement {
       &::before {
-        content: $arrow-content;
+        content: "►";
         position: absolute;
-        right: $arrow-right;
-        margin-top: $arrow-margin-top;
-        transform: $arrow-transform;
+        right: 4px;
+        margin-top: -1px;
+        transform: scale(0.56, 1);
       }
     }
   }
@@ -50,28 +33,89 @@ $transition-hover: 0.15s all;
     opacity: 0;
     left: calc(100% - 4px);
     margin-top: -3px;
-    transition: $transition-initial;
+    transition: 0s all 0.1s;
   }
 
   // Hover sur l'item (sauf si désactivé)
   &:hover {
-    color: $menu-hover-color;
-    background-color: $menu-hover-bg;
+    color: white;
+    background-color: #316ac5;
 
     > div {
       visibility: visible;
       opacity: 1;
-      transition: $transition-hover;
+      transition: 0.15s all;
     }
   }
 
   // Items désactivés
   &[aria-disabled="true"] {
-    color: $menu-disabled-color;
+    color: #aca899;
   }
   
   // Pour que l'état hover sur un item désactivé conserve la couleur
   &[aria-disabled="true"]:hover {
-    color: $menu-disabled-color;
+    color: #aca899;
+  }
+}
+
+.startPrimary {
+  display: grid;
+  font-family: 'Tahoma';
+  font-size: 11px;
+  padding: 1px;
+  margin-top: 5px;
+
+  &:hover {
+    background-color: #316ac5;
+
+    .label, .info {
+      color: white;
+    }
+  }
+
+  // 2 lignes, 3 colonnes (par exemple)
+  // "left" = colonne 1, "label" et "info" = colonne 2, "right" = colonne 3
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+
+  // Définition des zones nommées
+  grid-template-areas:
+    "left label right"
+    "left info right";
+
+  .leftElement {
+    display: flex;
+    align-items: center;
+    grid-area: left;
+
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .label {
+    grid-area: label / label / info;
+    padding-top: 7px;
+    padding-left: 3px;
+    //text-wrap: nowrap;
+
+    &.primary {
+      grid-area: label;
+      padding-top: 0;
+      height: 10px;
+      font-weight: bold;
+    }
+  }
+
+  .info {
+    grid-area: info;
+    padding-left: 4px;
+    color: #808080;
+  }
+
+  .rightElement {
+    grid-area: right;
   }
 }

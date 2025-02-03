@@ -1,8 +1,21 @@
 import React from 'react';
 import styles from './StartMenu.module.scss';
-import CloseSessionIcon from '../../../assets/windows-icons/shell32.dll_14_45-10.png';
-import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-10.png';
-import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
+
+import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
+
+import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
+
+import CloseSessionIcon from '@/assets/windows-icons/shell32.dll_14_45-10.png';
+import ShutdownComputerIcon from '@/assets/windows-icons/shell32.dll_14_28-10.png';
+import IEIcon from '@/assets/program-icons/IEXPLORE.EXE_14_32528-7.png';
+import OEIcon from '@/assets/program-icons/msoeres.dll_14_52-7.png';
+import WMPIcon from '@/assets/program-icons/setup_wm.exe_14_71-7.png';
+import TourIcon from '@/assets/windows-icons/tourstrt.exe_14_100-7.png';
+import MSNIcon from '@/assets/windows-icons/shell32.dll_14_239-7.png';
+import WMMIcon from '@/assets/program-icons/WMM2RES.dll_14_128-7.png';
+import CalcIcon from '@/assets/windows-icons/calc.exe_14_SC-6.png';
+import WABIcon from '@/assets/program-icons/wab32res.dll_14_1911-6.png';
+import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 
 interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   isVisible: boolean;
@@ -27,7 +40,18 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
               <div className={styles.startMenuAccountName}>Utilisateur</div>
             </div>
             <div className={styles.startMenuLists}>
-              <div className={styles.startMenuLeftList}></div>
+              <div className={styles.startMenuLeftList}>
+                <MenuItem variant="startPrimary" label="Internet" info="Internet Explorer" icon={IEIcon} primary={true} />
+                <MenuItem variant="startPrimary" label="Courrier électronique" info="Outlook Express" icon={OEIcon} primary={true} />
+                <MenuSeparator variant="startPrimary" />
+                <MenuItem variant="startPrimary" label="Lecteur Windows Media" icon={WMPIcon} />
+                <MenuItem variant="startPrimary" label="Visite guidée de Windows XP" icon={TourIcon} />
+                <MenuItem variant="startPrimary" label="MSN" icon={MSNIcon} />
+                <MenuItem variant="startPrimary" label="Windows Movie Maker" icon={WMMIcon} />
+                <MenuItem variant="startPrimary" label="Calculatrice" icon={CalcIcon} />
+                <MenuItem variant="startPrimary" label="Carnet d'adresses" icon={WABIcon} />
+                <MenuSeparator variant="startPrimary" />
+              </div>
               <div className={styles.startMenuRightList}></div>
             </div>
             <div className={styles.startMenuActions}>

@@ -53,9 +53,10 @@ $default-avatar: url(../../../assets/default-avatar.png);
 
 .startMenuLeftList,
 .startMenuRightList {
-  display: inline-block;
+  display: block;
   width: 50%;
   height: 100%;
+  padding: 4px 6px;
 }
 
 .startMenuActions {

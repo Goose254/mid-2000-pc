@@ -196,17 +196,17 @@ export const Desktop: React.FC = () => {
           </WindowToolbarMenuButton>
           <WindowToolbarMenuButton label="Edition">
             <FloatingMenu>
-              <MenuItem label="Annuler Déplacer" shortcut="Ctrl+Z"/>
+              <MenuItem label="Annuler Déplacer" info="Ctrl+Z"/>
               <MenuSeparator />
-              <MenuItem label="Couper" shortcut="Ctrl+X" aria-disabled/>
-              <MenuItem label="Copier" shortcut="Ctrl+C" aria-disabled/>
-              <MenuItem label="Coller" shortcut="Ctrl+V" aria-disabled/>
+              <MenuItem label="Couper" info="Ctrl+X" aria-disabled/>
+              <MenuItem label="Copier" info="Ctrl+C" aria-disabled/>
+              <MenuItem label="Coller" info="Ctrl+V" aria-disabled/>
               <MenuItem label="Coller le raccourci" aria-disabled/>
               <MenuSeparator />
               <MenuItem label="Copier dans un dossier..." aria-disabled/>
               <MenuItem label="Déplacer vers un dossier..." aria-disabled/>
               <MenuSeparator />
-              <MenuItem label="Sélectionner tout" shortcut="Ctrl+A"/>
+              <MenuItem label="Sélectionner tout" info="Ctrl+A"/>
               <MenuItem label="Inverser la sélection"/>
             </FloatingMenu>
           </WindowToolbarMenuButton>
@@ -225,9 +225,9 @@ export const Desktop: React.FC = () => {
               <MenuItem label="Barre d'état"/>
               <MenuItem label="Volet d'exploration">
                 <FloatingMenu>
-                  <MenuItem label="Rechercher" shortcut="Ctrl+E"/>
-                  <MenuItem label="Favoris" shortcut="Ctrl+I"/>
-                  <MenuItem label="Historique" shortcut="Ctrl+H"/>
+                  <MenuItem label="Rechercher" info="Ctrl+E"/>
+                  <MenuItem label="Favoris" info="Ctrl+I"/>
+                  <MenuItem label="Historique" info="Ctrl+H"/>
                   <MenuItem label="Dossiers"/>
                   <MenuSeparator />
                   <MenuItem label="Astuce du jour"/>
@@ -257,11 +257,11 @@ export const Desktop: React.FC = () => {
               <MenuItem label="Choisir les détails..."/>
               <MenuItem label="Atteindre">
                 <FloatingMenu>
-                  <MenuItem label="Précédente" shortcut="Alt+Flèche gauche" aria-disabled/>
-                  <MenuItem label="Suivante" shortcut="Alt+Flèche droite" aria-disabled/>
+                  <MenuItem label="Précédente" info="Alt+Flèche gauche" aria-disabled/>
+                  <MenuItem label="Suivante" info="Alt+Flèche droite" aria-disabled/>
                   <MenuItem label="Dossier parent"/>
                   <MenuSeparator />
-                  <MenuItem label="Page de démarrage" shortcut="Alt+Origine"/>
+                  <MenuItem label="Page de démarrage" info="Alt+Origine"/>
                   <MenuSeparator />
                   <MenuItem label="Poste de travail"/>
                 </FloatingMenu>
@@ -448,7 +448,7 @@ export const Desktop: React.FC = () => {
             <MenuSeparator />
             <MenuItem label="Coller" aria-disabled/>
             <MenuItem label="Coller le raccourci" aria-disabled/>
-            <MenuItem label="Annuler Déplacer" shortcut="Ctrl+Z"/>
+            <MenuItem label="Annuler Déplacer" info="Ctrl+Z"/>
             <MenuSeparator />
             <MenuItem label="Nouveau">
               <FloatingMenu>
