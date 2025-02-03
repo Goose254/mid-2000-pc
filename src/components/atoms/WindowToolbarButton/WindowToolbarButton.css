@@ -1,0 +1,58 @@
+.xp-window-toolbar-button {
+    display: flex;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    height: 38px;
+}
+
+.xp-window-toolbar-button > span {
+    display: inline-block;
+    align-self: center;
+}
+
+.xp-window-toolbal-button-icon {
+    margin-left: 5px;
+    margin-right: 2px;
+}
+
+.xp-window-toolbal-button-label {
+    margin-left: 2px;
+    margin-right: 7px;
+}
+
+.xp-window-toolbar-button:hover {
+    border: 1px solid #d8d2bd;
+    background: linear-gradient(180deg, rgba(251,250,248,1) 0%, rgba(240,240,233,1) 100%);
+    box-shadow: inset -1px -1px 1px 0px rgba(0, 0, 0, 0.1), inset 1px 2px 1px 0px rgba(255, 255, 255, 0.8);
+}
+
+.xp-window-toolbar-button:has(> .xp-floating-menu):focus, .xp-window-toolbar-button:active  {
+    border: 1px solid #9d9d92;
+    background: linear-gradient(180deg, #e1e1d8 0%, #e7e5e0 100%);
+    box-shadow: inset 0 0 1px 0px rgba(255, 255, 255, 0.8), inset 0px 1px 1px 0px rgba(0, 0, 0, 0.2);
+}
+
+.xp-window-toolbar-button:hover .xp-window-toolbal-button-icon img {
+    filter: saturate(150%) contrast(80%) brightness(110%);
+}
+
+.xp-window-toolbar-button > div {
+    visibility: hidden;
+    opacity: 0;
+    margin-top: 38px;
+    transition: 0s all 0.05s;
+}
+
+
+.xp-window-toolbar-button:focus > div {
+    visibility: visible;
+    opacity: 1;
+    z-index: 1;
+    transition: 0.15s;
+}
+
+.xp-window-toolbal-button-dropdown-addon {
+    font-size: 5pt;
+    transform: scale(1, 0.6);
+    padding-right: 3px;
+}

@@ -1,18 +1,12 @@
-.xp-menu-separator {
+.xp-menu-separator.horizontal {
     grid-column: left-start / right-end;
     width: calc(100% - 4px);
     margin: 4px 2px;
-    background-color: white;
-    font-family: 'Tahoma';
-    font-size: 11px;
     border-top: 1px solid #aca899;
 }
 
-.xp-menu-separator[aria-disabled="true"] {
-    color: antiquewhite;
-}
-
-.xp-menu-separator:not([aria-disabled="true"]):hover {
-    color: white;
-    background-color: #316ac5;
+.xp-menu-separator.vertical {
+    height: auto;
+    margin: 2px 3px 1px 2px;
+    border-left: 1px solid #d8d2bd;
 }

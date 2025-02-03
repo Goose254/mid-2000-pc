@@ -1,23 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Window } from '../../organisms/Window/Window';
-import { Taskbar } from '../../organisms/Taskbar/Taskbar';
-import XPWallpaper from '../../../assets/xp-wallpaper.jpg';
-import MyComputerIcon from '../../../assets/windows-icons/explorer.exe_14_100-9.png';
-import MyComputerSmallIcon from '../../../assets/windows-icons/explorer.exe_14_100-11.png';
-import MyDocumentsIcon from '../../../assets/windows-icons/shell32.dll_14_235-9.png';
-import FolderSmallIcon from '../../../assets/windows-icons/shell32.dll_14_5-8.png';
-import TashbinIcon from '../../../assets/windows-icons/shell32.dll_14_254-7.png';
-import AboutIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-9.png';
-import AboutSmallIcon from '../../../assets/windows-icons/hnetwiz.dll_14_10001-11.png';
-import WindowToolbarWindowsIcon from '../../../assets/explorer-toolbar-windows-icon.png';
-import { DesktopIcon } from '../../atoms/DesktopIcon/DesktopIcon';
-import { WindowsShutdownOverlay } from '../WindowsShutdownOverlay/WindowsShutdownOverlay';
-import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
-import { WindowToolbar } from '../../atoms/WindowToolbar/WindowToolbar';
-import { MenuItem } from '../../atoms/MenuItem/MenuItem';
-import { FloatingMenu } from '../../molecules/FloatingMenu/FloatingMenu';
-import { MenuSeparator } from '../../atoms/MenuSeparator/MenuSeparator';
-import { WindowToolbarMenuButton } from '../../atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
+
+import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
+
+import { DesktopIcon } from '@/components/atoms/DesktopIcon/DesktopIcon';
+import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
+import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
+import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar';
+import { WindowToolbarButton } from '@/components/atoms/WindowToolbarButton/WindowToolbarButton';
+import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
+import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
+import { Window } from '@/components/organisms/Window/Window';
+import { Taskbar } from '@/components/organisms/Taskbar/Taskbar';
+import { WindowsShutdownOverlay } from '@/components/templates/WindowsShutdownOverlay/WindowsShutdownOverlay';
+
+import XPWallpaper from '@/assets/xp-wallpaper.jpg';
+import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-9.png';
+import MyComputerSmallIcon from '@/assets/windows-icons/explorer.exe_14_100-11.png';
+import MyDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_235-9.png';
+import FolderSmallIcon from '@/assets/windows-icons/shell32.dll_14_5-8.png';
+import TashbinIcon from '@/assets/windows-icons/shell32.dll_14_254-7.png';
+import AboutIcon from '@/assets/windows-icons/hnetwiz.dll_14_10001-9.png';
+import AboutSmallIcon from '@/assets/windows-icons/hnetwiz.dll_14_10001-11.png';
+import WindowToolbarWindowsIcon from '@/assets/explorer-toolbar-windows-icon.png';
+import BackwardIcon from '@/assets/explorer-icons/back.png';
+import FoldersIcon from '@/assets/explorer-icons/folders.png';
+import ForwardIcon from '@/assets/explorer-icons/forward.png';
+import SearchIcon from '@/assets/explorer-icons/search.png';
+import UpIcon from '@/assets/explorer-icons/up.png';
+import ViewsIcon from '@/assets/explorer-icons/views.png';
 
 type DesktopWindow = {
   id: string;
@@ -45,6 +55,11 @@ export const Desktop: React.FC = () => {
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault(); // Empêche le menu contextuel natif du navigateur
+
+    if (event.target !== event.currentTarget) {
+      // Ça veut dire qu'on a cliqué dans un enfant
+      return; 
+    }
 
     setContextMenu({
       visible: true,
@@ -290,7 +305,32 @@ export const Desktop: React.FC = () => {
           </WindowToolbarMenuButton>
           <img src={WindowToolbarWindowsIcon} style={{ marginLeft: 'auto', borderLeft: '1px solid #aca899' }} />
         </WindowToolbar>
-        <WindowToolbar><></></WindowToolbar>
+        <WindowToolbar>
+          <WindowToolbarButton icon={BackwardIcon} label="Précédente">
+            <FloatingMenu>
+              <MenuItem label="Poste de travail"/>
+            </FloatingMenu>
+          </WindowToolbarButton>
+          <WindowToolbarButton icon={ForwardIcon}>
+            <FloatingMenu>
+              <MenuItem label="Mes documents"/>
+            </FloatingMenu>
+          </WindowToolbarButton>
+          <WindowToolbarButton icon={UpIcon}></WindowToolbarButton>
+          <MenuSeparator direction="vertical"/>
+          <WindowToolbarButton icon={SearchIcon} label="Rechercher"></WindowToolbarButton>
+          <WindowToolbarButton icon={FoldersIcon} label="Dossiers"></WindowToolbarButton>
+          <MenuSeparator direction="vertical"/>
+          <WindowToolbarButton icon={ViewsIcon}>
+            <FloatingMenu>
+              <MenuItem label="Miniatures"/>
+              <MenuItem label="Mosaïques"/>
+              <MenuItem label="Icônes"/>
+              <MenuItem label="Liste"/>
+              <MenuItem label="Détails"/>
+            </FloatingMenu>
+          </WindowToolbarButton>
+        </WindowToolbar>
         <WindowToolbar><></></WindowToolbar>
       </>
     );
@@ -314,10 +354,10 @@ export const Desktop: React.FC = () => {
       }
     };
 
-    document.addEventListener("click", handleClickOutsideContextMenu);
+    document.addEventListener("mousedown", handleClickOutsideContextMenu);
 
     return () => {
-      document.removeEventListener("click", handleClickOutsideContextMenu);
+      document.removeEventListener("mousedown", handleClickOutsideContextMenu);
     };
   }, []);
 

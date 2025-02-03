@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import BiosLogo from '../../../assets/bios-logo.png';
 import BiosEnergyStarLogo from '../../../assets/bios-energy-star-logo.png';
 import PostBeep from '../../../assets/sounds/post-beep.mp3';
@@ -20,11 +20,11 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
   // 4) Ajout d'un état pour entrer en mode SETUP à la fin du POST
   const [enterSetup, setEnterSetup] = useState(false);
 
-  // Mémoire totale installée (ex: 2 Go = 2097152 K)
+  // Mémoire totale installée (ex: 2Go = 2097152K)
   const totalMemory = 2097152;
 
   // 4) Tableau BIOS, ligne Memory marquée avec un objet
-  const biosMessages = [
+  const biosMessages = useMemo(() => [
     'ASUS A8N-SLI Premium ACPI BIOS Revision 1011-001',
     ' ',
     'Main Processor: AMD Athlon(tm) 64 Processor 4000+',
@@ -36,15 +36,15 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
     'Primary IDE Slave    : None',
     'Secondary IDE Master : CD-W524E 1.0E',
     'Secondary IDE Slave  : None'
-  ];
+  ], []);
 
   // Chercher l'index de la ligne Memory
   const memoryTestLineIndex = biosMessages.findIndex(
-    (line) => typeof line === 'object' && (line as any).isMemoryTest
+    (line) => typeof line === 'object' && (line as { isMemoryTest: boolean }).isMemoryTest
   );
 
   // ---- Fonction pour dessiner (inspiré du code précédent) ----
-  const renderLines = (
+  const renderLines = useCallback((
     ctx: CanvasRenderingContext2D,
     upToIndex: number,
     memoryTestProgressValue: number
@@ -95,7 +95,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
       const line = biosMessages[i];
       let textToDraw = '';
 
-      if (typeof line === 'object' && (line as any).isMemoryTest) {
+      if (typeof line === 'object' && (line as { isMemoryTest: boolean }).isMemoryTest) {
         // On gère la ligne dynamic
         if (memoryTestProgressValue < totalMemory) {
           textToDraw = `Memory Testing: ${memoryTestProgressValue}K`;
@@ -109,7 +109,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
 
       drawLine(ctx, textToDraw, i, 20, 94);
     }
-  };
+  }, [biosMessages, enterSetup]);
 
   const drawLine = (
     ctx: CanvasRenderingContext2D,
@@ -157,7 +157,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
     }, 400);
 
     return () => clearInterval(lineInterval);
-  }, [pauseLineReveal, memoryTestProgress, enterSetup]); 
+  }, [pauseLineReveal, memoryTestProgress, enterSetup, biosMessages.length, renderLines]); 
   // On inclut pauseLineReveal, memoryTestProgress pour redessiner quand ça change
 
   // ---- useEffect pour gérer la pause lorsque la ligne Memory est atteinte ----
@@ -208,7 +208,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
         return () => clearTimeout(timer);
       }
     }
-  }, [memoryTestProgress, currentLineIndex, enterSetup, onComplete]);
+  }, [memoryTestProgress, currentLineIndex, enterSetup, onComplete, biosMessages.length, renderLines]);
 
   useEffect(() => {    
     // Charger/beep

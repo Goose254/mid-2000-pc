@@ -8,6 +8,18 @@ export default tseslint.config(
   { ignores: ['dist'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    settings: {
+      // Configuration du résolveur de modules pour ESLint afin d'utiliser tsconfig.json
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true, // Pour résoudre les packages @types
+          project: './tsconfig.json'
+        }
+      },
+      react: {
+        version: 'detect' // Détection automatique de la version de React
+      }
+    },
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -23,6 +35,7 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      'no-unused-var': 'warn',
     },
   }
 );
