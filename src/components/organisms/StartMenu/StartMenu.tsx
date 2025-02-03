@@ -15,6 +15,19 @@ import MSNIcon from '@/assets/windows-icons/shell32.dll_14_239-7.png';
 import WMMIcon from '@/assets/program-icons/WMM2RES.dll_14_128-7.png';
 import CalcIcon from '@/assets/windows-icons/calc.exe_14_SC-6.png';
 import WABIcon from '@/assets/program-icons/wab32res.dll_14_1911-6.png';
+
+import MyDocumentsIcon from '@/assets/windows-icons/mydocs.dll_14_100-10.png';
+import MyRecentDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_21-9.png';
+import MyImagesIcon from '@/assets/windows-icons/mydocs.dll_14_101-10.png';
+import MyMusicIcon from '@/assets/windows-icons/shell32.dll_14_237-10.png';
+import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-10.png';
+import ConfigurationPanelIcon from '@/assets/windows-icons/shell32.dll_14_137-10.png';
+import DefaultProgramsIcon from '@/assets/windows-icons/moricons.dll_14_114-10.png';
+import PrintersIcon from '@/assets/windows-icons/shell32.dll_14_138-9.png';
+import HelpAndSupportIcon from '@/assets/windows-icons/shell32.dll_14_263-10.png';
+import SearchIcon from '@/assets/windows-icons/shell32.dll_14_23-10.png';
+import RunIcon from '@/assets/windows-icons/shell32.dll_14_160-9.png';
+
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 
 interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -52,7 +65,21 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 <MenuItem variant="startPrimary" label="Carnet d'adresses" icon={WABIcon} />
                 <MenuSeparator variant="startPrimary" />
               </div>
-              <div className={styles.startMenuRightList}></div>
+              <div className={styles.startMenuRightList}>
+                <MenuItem variant="startSecondary" label="Mes documents" icon={MyDocumentsIcon} primary={true} />
+                <MenuItem variant="startSecondary" label="Mes documents récents" icon={MyRecentDocumentsIcon} primary={true} />
+                <MenuItem variant="startSecondary" label="Mes images" icon={MyImagesIcon} primary={true} />
+                <MenuItem variant="startSecondary" label="Ma musique" icon={MyMusicIcon} primary={true} />
+                <MenuItem variant="startSecondary" label="Poste de travail" icon={MyComputerIcon} primary={true} />
+                <MenuSeparator variant="startSecondary" />
+                <MenuItem variant="startSecondary" label="Panneau de configuration" icon={ConfigurationPanelIcon} />
+                <MenuItem variant="startSecondary" label="Configurer les programmes par défaut" icon={DefaultProgramsIcon} />
+                <MenuItem variant="startSecondary" label="Imprimantes et télécopieurs" icon={PrintersIcon} />
+                <MenuSeparator variant="startSecondary" />
+                <MenuItem variant="startSecondary" label="Aide et support" icon={HelpAndSupportIcon} />
+                <MenuItem variant="startSecondary" label="Rechercher" icon={SearchIcon} />
+                <MenuItem variant="startSecondary" label="Exécuter..." icon={RunIcon} />
+              </div>
             </div>
             <div className={styles.startMenuActions}>
               <button>

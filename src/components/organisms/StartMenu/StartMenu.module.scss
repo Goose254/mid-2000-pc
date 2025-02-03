@@ -47,16 +47,22 @@ $default-avatar: url(../../../assets/default-avatar.png);
 }
 
 .startMenuLists {
+  display: flex;
   width: 100%;
   height: 372px;
 }
 
 .startMenuLeftList,
 .startMenuRightList {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 50%;
   height: 100%;
   padding: 4px 6px;
+}
+
+.startMenuRightList {
+  padding-right: 8px;
 }
 
 .startMenuActions {

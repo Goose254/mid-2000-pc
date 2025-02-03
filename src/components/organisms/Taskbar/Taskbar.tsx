@@ -43,7 +43,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) 
       document.removeEventListener('mousedown', handleClickOutsideStartMenu);
       clearInterval(dateTimer);
     };
-  }, [toggleStartMenu]);
+  }, [startMenuRef, startButtonRef, toggleStartMenu]);
 
   return (
     <div className={styles.taskbar}>

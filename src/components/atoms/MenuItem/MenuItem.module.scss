@@ -99,7 +99,8 @@
     grid-area: label / label / info;
     padding-top: 7px;
     padding-left: 3px;
-    //text-wrap: nowrap;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
 
     &.primary {
       grid-area: label;
@@ -117,5 +118,55 @@
 
   .rightElement {
     grid-area: right;
+  }
+}
+
+.startSecondary {
+  display: flex;
+  font-family: 'Tahoma';
+  font-size: 11px;
+  padding: 1px;
+  margin-top: 5px;
+  align-items: center;
+
+  &:hover {
+    background-color: #316ac5;
+
+    .label, .info {
+      color: white;
+    }
+  }
+
+  .leftElement {
+    display: flex;
+    align-items: center;
+    grid-area: left;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .label {
+    color: #0a246a;
+    display: -webkit-box;
+    padding-left: 4px;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 11px;
+
+    &.primary {
+      grid-area: label;
+      padding-top: 0;
+      height: 10px;
+      font-weight: bold;
+    }
+  }
+
+  .info {
+    color: #0a246a;
+    display: none;
   }
 }
