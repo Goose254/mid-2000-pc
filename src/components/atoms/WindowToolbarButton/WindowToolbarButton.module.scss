@@ -1,0 +1,78 @@
+// Variables de configuration
+$border-initial: 1px solid transparent;
+$border-hover: 1px solid #d8d2bd;
+$border-active: 1px solid #9d9d92;
+$border-radius: 3px;
+$button-height: 38px;
+$transition-out: 0.05s;
+$transition-in: 0.15s;
+
+// Styles de base du bouton
+.xpWindowToolbarButton {
+  display: flex;
+  border: $border-initial;
+  border-radius: $border-radius;
+  height: $button-height;
+
+  // Tous les span enfants
+  > span {
+    display: inline-block;
+    align-self: center;
+  }
+
+  // État hover
+  &:hover {
+    border: $border-hover;
+    background: linear-gradient(180deg, rgba(251,250,248,1) 0%, rgba(240,240,233,1) 100%);
+    box-shadow: inset -1px -1px 1px 0 rgba(0, 0, 0, 0.1), inset 1px 2px 1px 0 rgba(255, 255, 255, 0.8);
+
+    // Appliquer un filtre sur l'image de l'icône lors du hover
+    .xpWindowToolbarButtonIcon {
+      img {
+        filter: saturate(150%) contrast(80%) brightness(110%);
+      }
+    }
+  }
+
+  // États : actif ou focus quand le bouton contient un enfant .xp-floating-menu
+  &.hasChildren:focus,
+  &:active {
+    border: $border-active;
+    background: linear-gradient(180deg, #e1e1d8 0%, #e7e5e0 100%);
+    box-shadow: inset 0 0 1px 0 rgba(255, 255, 255, 0.8), inset 0px 1px 1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  // Contenu supplémentaire (ex : dropdown) : masqué par défaut
+  > div {
+    visibility: hidden;
+    opacity: 0;
+    margin-top: $button-height;
+    transition: 0s all $transition-out;
+  }
+  
+  // Affichage du contenu supplémentaire en focus
+  &:focus > div {
+    visibility: visible;
+    opacity: 1;
+    z-index: 1;
+    transition: $transition-in;
+  }
+}
+
+// Styles spécifiques aux éléments internes
+
+.xpWindowToolbarButtonIcon {
+  margin-left: 5px;
+  margin-right: 2px;
+}
+
+.xpWindowToolbarButtonLabel {
+  margin-left: 2px;
+  margin-right: 7px;
+}
+
+.xpWindowToolbarButtonDropdownAddon {
+  font-size: 5pt;
+  transform: scale(1, 0.6);
+  padding-right: 3px;
+}

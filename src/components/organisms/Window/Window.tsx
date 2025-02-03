@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
-import './Window.css';
+import styles from './Window.module.scss';
 
 interface WindowProps {
   id: string;
@@ -46,7 +46,7 @@ export const Window: React.FC<WindowProps> = ({
 
   const setWindowActive = () => {
     onActive();
-  }
+  };
 
   const handleDragging = (e: React.MouseEvent) => {
     if (isMaximized) return;
@@ -67,7 +67,7 @@ export const Window: React.FC<WindowProps> = ({
     resizeStart.current = {
       x: e.clientX,
       y: e.clientY
-    }
+    };
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -107,12 +107,12 @@ export const Window: React.FC<WindowProps> = ({
         break;
       case 'sw':
         newWidth -= e.clientX - resizeStart.current.x;
-        newXPosition = position.x + e.clientX - resizeStart.current.x;
+        newXPosition = position.x + (e.clientX - resizeStart.current.x);
         newHeight += e.clientY - resizeStart.current.y;
         break;
       case 'w':
         newWidth -= e.clientX - resizeStart.current.x;
-        newXPosition = position.x + e.clientX - resizeStart.current.x;
+        newXPosition = position.x + (e.clientX - resizeStart.current.x);
         break;
       case 'nw':
         newWidth -= e.clientX - resizeStart.current.x;
@@ -124,14 +124,8 @@ export const Window: React.FC<WindowProps> = ({
         break;
     }
     if (isResizing !== 'none') {
-      setSize({
-        width: newWidth,
-        height: newHeight
-      });
-      setPosition({
-        x: newXPosition,
-        y: newYPosition
-      });
+      setSize({ width: newWidth, height: newHeight });
+      setPosition({ x: newXPosition, y: newYPosition });
     }
   };
 
@@ -153,25 +147,27 @@ export const Window: React.FC<WindowProps> = ({
 
   useEffect(() => {
     const handleClickOutsideWindow = (e: MouseEvent) => {
-      const targetWindowId = (e.target as HTMLDivElement)?.getAttribute("data-window-id") || null
+      const targetWindowId = (e.target as HTMLDivElement)?.getAttribute("data-window-id") || null;
       if (
-        windowRef.current && !windowRef.current.contains(e.target as Node) && targetWindowId !== id
+        windowRef.current &&
+        !windowRef.current.contains(e.target as Node) &&
+        targetWindowId !== id
       ) {
         onInactive();
       }
-    }
+    };
     document.addEventListener('mousedown', handleClickOutsideWindow);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutsideWindow);
-    }
-  }, [windowRef])
+    };
+  }, [windowRef]);
 
   const handleMaximize = () => {
     if (!isMaximized) {
       setBeforeMaximized({ position, size });
       setPosition({ x: 0, y: 0 });
-      setSize({ width: window.innerWidth, height: window.innerHeight - 30 }); // 30px for taskbar
+      setSize({ width: window.innerWidth, height: window.innerHeight - 30 }); // 30px pour la taskbar
       setIsMaximized(true);
     } else {
       setPosition(beforeMaximized.position);
@@ -193,12 +189,17 @@ export const Window: React.FC<WindowProps> = ({
   };
 
   return (
-    <div ref={windowRef} className={`window ${isMaximized ? "maximized" : ""} ${isActive ? "" : "inactive"}`} style={style} onMouseDown={() => setWindowActive()}>
+    <div
+      ref={windowRef}
+      className={`${styles.window} ${isMaximized ? styles.maximized : ''} ${!isActive ? styles.inactive + " inactive" : ''}`}
+      style={style}
+      onMouseDown={() => setWindowActive()}
+    >
       {!isMaximized && (
         <>
-          <div className="window-top-resize" onMouseDown={(e) => handleResizing(e, 'n')} />
-          <div className="window-corner-resize nw" onMouseDown={(e) => handleResizing(e, 'nw')} />
-          <div className="window-corner-resize ne" onMouseDown={(e) => handleResizing(e, 'ne')} />
+          <div className={styles["window-top-resize"]} onMouseDown={(e) => handleResizing(e, 'n')} />
+          <div className={`${styles["window-corner-resize"]} ${styles.nw}`} onMouseDown={(e) => handleResizing(e, 'nw')} />
+          <div className={`${styles["window-corner-resize"]} ${styles.ne}`} onMouseDown={(e) => handleResizing(e, 'ne')} />
         </>
       )}
       <div onMouseDown={handleDragging}>
@@ -209,20 +210,25 @@ export const Window: React.FC<WindowProps> = ({
           onMaximize={handleMaximize}
           onClose={onClose || (() => {})}
           isMaximized={isMaximized}
+          isActive={isActive}
         />
       </div>
-      <div className="window-content-wrapper">
-        {!isMaximized && <div className="window-left-border" onMouseDown={(e) => handleResizing(e, 'w')}></div>}
-        <div className="window-content">
+      <div className={styles["window-content-wrapper"]}>
+        {!isMaximized && (
+          <div className={styles["window-left-border"]} onMouseDown={(e) => handleResizing(e, 'w')}></div>
+        )}
+        <div className={styles["window-content"]}>
           {children}
         </div>
-        {!isMaximized && <div className="window-right-border" onMouseDown={(e) => handleResizing(e, 'e')}></div>}
+        {!isMaximized && (
+          <div className={styles["window-right-border"]} onMouseDown={(e) => handleResizing(e, 'e')}></div>
+        )}
       </div>
       {!isMaximized && (
         <>
-          <div className="window-bottom-border" onMouseDown={(e) => handleResizing(e, 's')}></div>
-          <div className="window-corner-resize sw" onMouseDown={(e) => handleResizing(e, 'sw')} />
-          <div className="window-corner-resize se" onMouseDown={(e) => handleResizing(e, 'se')} />
+          <div className={styles["window-bottom-border"]} onMouseDown={(e) => handleResizing(e, 's')}></div>
+          <div className={`${styles["window-corner-resize"]} ${styles.sw}`} onMouseDown={(e) => handleResizing(e, 'sw')} />
+          <div className={`${styles["window-corner-resize"]} ${styles.se}`} onMouseDown={(e) => handleResizing(e, 'se')} />
         </>
       )}
     </div>

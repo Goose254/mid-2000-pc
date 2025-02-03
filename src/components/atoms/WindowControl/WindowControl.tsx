@@ -1,24 +1,22 @@
 import React from 'react';
-import './WindowControl.css'
+import styles from './WindowControl.module.scss';
 
 interface WindowControlProps {
   type: 'minimize' | 'maximize' | 'restore' | 'help' | 'close';
   onClick: () => void;
+  isActive: boolean;
 }
 
-export const WindowControl: React.FC<WindowControlProps> = ({ type, onClick }) => {
-  const baseClasses = "title-bar-button";
-  const variants = {
-    minimize: "minimize",
-    maximize: "maximize",
-    restore: "restore",
-    help: "help",
-    close: "close"
-  };
+export const WindowControl: React.FC<WindowControlProps> = ({ type, onClick, isActive }) => {
+  const baseClass = [
+    styles.titleBarButton,
+    styles[type],
+    isActive ? "" : styles.inactive,
+  ].join(" ").trim();
 
   return (
     <button 
-      className={`${baseClasses} ${variants[type]}`}
+      className={baseClass}
       onClick={onClick}
     ></button>
   );

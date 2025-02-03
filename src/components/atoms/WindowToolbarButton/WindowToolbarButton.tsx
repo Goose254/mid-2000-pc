@@ -1,34 +1,38 @@
 import React from 'react';
-import './WindowToolbarButton.css';
+import styles from './WindowToolbarButton.module.scss';
 
 interface WindowToolbarButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
-  icon: string
+  icon: string;
   label?: string;
   variant?: 'xp';
   children?: React.ReactNode;
   className?: string;
 }
 
-export const WindowToolbarButton: React.FC<WindowToolbarButtonProps> = ({ icon, label, variant = 'xp', children, className, ...props }) => {
-  const variantClasses = {
-    xp: "xp-window-toolbar-button",
-  };
+export const WindowToolbarButton: React.FC<WindowToolbarButtonProps> = ({
+  icon,
+  label,
+  variant = 'xp',
+  children,
+  className,
+  ...props
+}) => {
+  // Récupération de la classe de base depuis le module SCSS
+  const baseClass = styles.xpWindowToolbarButton;
+  const combinedClasses = [baseClass, children ? styles.hasChildren : null, className].filter(Boolean).join(" ");
 
   return (
-    <button
-      className={`${variantClasses[variant]} ${className ? className : ""}`}
-      {...props}
-    >
-      <span className="xp-window-toolbal-button-icon">
-        <img src={icon} />
+    <button className={combinedClasses} {...props}>
+      <span className={styles.xpWindowToolbarButtonIcon}>
+        <img src={icon} alt="Toolbar icon" />
       </span>
       {label && (
-        <span className="xp-window-toolbal-button-label">
+        <span className={styles.xpWindowToolbarButtonLabel}>
           {label}
         </span>
       )}
       {children && (
-        <span className="xp-window-toolbal-button-dropdown-addon">▼</span>
+        <span className={styles.xpWindowToolbarButtonDropdownAddon}>▼</span>
       )}
       {children}
     </button>

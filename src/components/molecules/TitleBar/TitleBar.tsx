@@ -1,6 +1,6 @@
 import React from 'react';
 import { WindowControl } from '../../atoms/WindowControl/WindowControl';
-import './TitleBar.css';
+import styles from './TitleBar.module.scss';
 
 interface TitleBarProps {
   title: string;
@@ -9,6 +9,7 @@ interface TitleBarProps {
   onMaximize: () => void;
   onClose: () => void;
   isMaximized: boolean;
+  isActive: boolean;
 }
 
 export const TitleBar: React.FC<TitleBarProps> = ({
@@ -18,20 +19,31 @@ export const TitleBar: React.FC<TitleBarProps> = ({
   onMaximize,
   onClose,
   isMaximized,
+  isActive,
 }) => {
+  // Application des classes du module SCSS pour le conteneur
+  const containerClasses = [
+    styles.titleBarContainer,
+    isMaximized ? styles.maximized : "",
+    isActive ? "" : styles.inactive
+  ].join(" ").trim();
+
   return (
-    <div className={`title-bar-container ${isMaximized && "maximized"}`} onDoubleClick={onMaximize}>
-      <div className="title-bar-title-wrapper">
-        <div className="title-bar-title-icon">{icon ? icon : ''}</div>
-        <div className="title-bar-title-label">{title}</div>
+    <div className={containerClasses} onDoubleClick={onMaximize}>
+      <div className={styles.titleBarTitleWrapper}>
+        <div className={styles.titleBarTitleIcon}>
+          {icon ? icon : null}
+        </div>
+        <div className={styles.titleBarTitleLabel}>{title}</div>
       </div>
-      <div className="title-bar-window-controls-wrapper">
-        <WindowControl type="minimize" onClick={onMinimize} />
-        {isMaximized ?
-          <WindowControl type="restore" onClick={onMaximize} /> :
-          <WindowControl type="maximize" onClick={onMaximize} />
-        }
-        <WindowControl type="close" onClick={onClose} />
+      <div className={styles.titleBarWindowControlsWrapper}>
+        <WindowControl type="minimize" onClick={onMinimize} isActive={isActive} />
+        {isMaximized ? (
+          <WindowControl type="restore" onClick={onMaximize} isActive={isActive} />
+        ) : (
+          <WindowControl type="maximize" onClick={onMaximize} isActive={isActive} />
+        )}
+        <WindowControl type="close" onClick={onClose} isActive={isActive} />
       </div>
     </div>
   );

@@ -1,0 +1,30 @@
+// Variables de configuration
+$menu-display: grid;
+$grid-template: 
+  [left-start] 16px 
+  [left-end label-start] auto 
+  [label-end shortcut-start] auto 
+  [shortcut-end right-start] 16px 
+  [right-end];
+$menu-position: absolute;
+$menu-width: max-content;
+$menu-padding: 2px;
+$menu-background: white;
+$menu-font-family: 'Tahoma';
+$menu-font-size: 11px;
+$menu-border: 1px solid #aca899;
+$menu-box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.4);
+
+.xpFloatingMenu {
+  display: $menu-display;
+  grid-template-columns: $grid-template;
+  position: $menu-position;
+  width: $menu-width;
+  padding: $menu-padding;
+  background-color: $menu-background;
+  font-family: $menu-font-family;
+  font-size: $menu-font-size;
+  border: $menu-border;
+  box-shadow: $menu-box-shadow;
+  z-index: 1;
+}

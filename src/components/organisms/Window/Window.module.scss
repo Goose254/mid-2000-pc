@@ -1,0 +1,148 @@
+// Variables éventuelles (vous pouvez les adapter si besoin)
+$border-width: 4px;
+$corner-size: 6px;
+$resizer-height: 4px;
+$inactive-left-border-top: url(../../../assets/window-borders/window-left-border-inactive-top.png);
+$inactive-left-border-bottom: url(../../../assets/window-borders/window-left-border-inactive-bottom.png);
+$inactive-left-border-center: url(../../../assets/window-borders/window-left-border-inactive-center.png);
+
+$active-left-border-top: url(../../../assets/window-borders/window-left-border-active-top.png);
+$active-left-border-bottom: url(../../../assets/window-borders/window-left-border-active-bottom.png);
+$active-left-border-center: url(../../../assets/window-borders/window-left-border-active-center.png);
+
+$active-right-border-top: url(../../../assets/window-borders/window-right-border-active-top.png);
+$active-right-border-bottom: url(../../../assets/window-borders/window-right-border-active-bottom.png);
+$active-right-border-center: url(../../../assets/window-borders/window-right-border-active-center.png);
+
+$active-bottom-border-left: url(../../../assets/window-borders/window-bottom-border-active-left.png);
+$active-bottom-border-right: url(../../../assets/window-borders/window-bottom-border-active-right.png);
+$active-bottom-border-center: url(../../../assets/window-borders/window-bottom-border-active-center.png);
+
+// Style de la fenêtre
+.window {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+
+  &.maximized {
+    .window-content-wrapper {
+      height: calc(100% - 26px);
+    }
+  }
+
+  &.inactive {
+    // Lorsqu'une fenêtre est inactive, on remplace les images de bord active
+    .window-left-border {
+      background-image: 
+        url(../../../assets/window-borders/window-left-border-inactive-top.png),
+        url(../../../assets/window-borders/window-left-border-inactive-bottom.png),
+        url(../../../assets/window-borders/window-left-border-inactive-center.png);
+    }
+    .window-right-border {
+      background-image: 
+        url(../../../assets/window-borders/window-right-border-inactive-top.png),
+        url(../../../assets/window-borders/window-right-border-inactive-bottom.png),
+        url(../../../assets/window-borders/window-right-border-inactive-center.png);
+    }
+    .window-bottom-border {
+      background-image: 
+        url(../../../assets/window-borders/window-bottom-border-inactive-left.png),
+        url(../../../assets/window-borders/window-bottom-border-inactive-right.png),
+        url(../../../assets/window-borders/window-bottom-border-inactive-center.png);
+    }
+  }
+}
+
+// Bordures latérales et inférieure (état actif par défaut)
+.window-left-border {
+  display: flex;
+  width: $border-width;
+  height: 100%;
+  background-image: 
+    $active-left-border-top,
+    $active-left-border-bottom,
+    $active-left-border-center;
+  background-position: left top, left bottom, left center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: auto, auto, $border-width calc(100% - 8px);
+  cursor: url(../../../assets/cursors/ew-resize.cur), ew-resize;
+}
+
+.window-right-border {
+  display: flex;
+  width: $border-width;
+  height: 100%;
+  background-image: 
+    $active-right-border-top,
+    $active-right-border-bottom,
+    $active-right-border-center;
+  background-position: left top, left bottom, left center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: auto, auto, $border-width calc(100% - 8px);
+  cursor: url(../../../assets/cursors/ew-resize.cur), ew-resize;
+}
+
+.window-bottom-border {
+  display: flex;
+  width: 100%;
+  height: $border-width;
+  background-image: 
+    $active-bottom-border-left,
+    $active-bottom-border-right,
+    $active-bottom-border-center;
+  background-position: left top, right top, left top;
+  background-repeat: no-repeat, no-repeat;
+  background-size: auto, auto, 100% $border-width;
+  cursor: url(../../../assets/cursors/ns-resize.cur), ns-resize;
+}
+
+// Contenu de la fenêtre
+.window-content-wrapper {
+  display: flex;
+  height: calc(100% - 29px);
+  background-color: #fff;
+}
+
+.window-content {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+// Éléments de redimensionnement aux coins
+.window-corner-resize {
+  position: absolute;
+  width: $corner-size;
+  height: $corner-size;
+
+  &.ne {
+    right: 0;
+    top: 0;
+    cursor: url(../../../assets/cursors/nesw-resize.cur), ne-resize;
+  }
+  &.se {
+    right: 0;
+    bottom: 0;
+    cursor: url(../../../assets/cursors/nwse-resize.cur), se-resize;
+  }
+  &.sw {
+    left: 0;
+    bottom: 0;
+    cursor: url(../../../assets/cursors/nesw-resize.cur), sw-resize;
+  }
+  &.nw {
+    left: 0;
+    top: 0;
+    cursor: url(../../../assets/cursors/nwse-resize.cur), nw-resize;
+  }
+}
+
+// Barre de redimensionnement supérieure
+.window-top-resize {
+  position: absolute;
+  width: 100%;
+  height: $resizer-height;
+  left: 0;
+  top: 0;
+  cursor: url(../../../assets/cursors/ns-resize.cur), ns-resize;
+}

@@ -1,0 +1,86 @@
+// Variables pour les assets
+$start-menu-bg: url(../../../assets/start-menu-background.png);
+$default-avatar: url(../../../assets/default-avatar.png);
+
+.startMenu {
+  position: fixed;
+  bottom: 30px;
+  left: 0;
+  width: 380px;
+  height: 478px;
+  background: $start-menu-bg no-repeat;
+  filter: drop-shadow(3px 3px 1px rgba(0, 0, 0, 0.4));
+
+  // Tous les img à l'intérieur du start-menu
+  img {
+    display: inline-block;
+  }
+}
+
+.startMenuAccount {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 65px;
+}
+
+.startMenuAvatar {
+  display: inline-block;
+  position: relative;
+  top: 9px;
+  left: 9px;
+  width: 48px;
+  height: 48px;
+  background: $default-avatar no-repeat;
+}
+
+.startMenuAccountName {
+  display: inline-block;
+  position: relative;
+  bottom: 9px;
+  left: 20px;
+  color: white;
+  font-family: 'Franklin Gothic';
+  font-size: 16px;
+  letter-spacing: 0.8px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.startMenuLists {
+  width: 100%;
+  height: 372px;
+}
+
+.startMenuLeftList,
+.startMenuRightList {
+  display: inline-block;
+  width: 50%;
+  height: 100%;
+}
+
+.startMenuActions {
+  height: 41px;
+  color: white;
+  font-family: 'Tahoma';
+  font-size: 11px;
+  text-align: end;
+
+  button {
+    margin: 4px;
+    padding: 4px;
+    line-height: 22px;
+
+    &:hover {
+      background: #316ac5;
+    }
+
+    &:active {
+      transform: translate(1px, 1px);
+    }
+
+    img {
+      margin-right: 1px;
+      vertical-align: top;
+    }
+  }
+}

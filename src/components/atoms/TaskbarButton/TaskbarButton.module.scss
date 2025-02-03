@@ -1,0 +1,76 @@
+// Variables de base
+$taskbar-button-path: '../../../assets/taskbar-buttons';
+$taskbar-bg-position: left top, right top, left top;
+$taskbar-bg-repeat: no-repeat, no-repeat;
+$taskbar-bg-size: contain, contain, calc(100% - 6px) 100%;
+$font-family: 'Tahoma';
+$font-size: 11px;
+
+// Groupes d'images d'arrière-plan par état
+$inactive-default: (
+  left: url(#{$taskbar-button-path}/taskbar-button-inactive-default-left.png),
+  right: url(#{$taskbar-button-path}/taskbar-button-inactive-default-right.png),
+  center: url(#{$taskbar-button-path}/taskbar-button-inactive-default-center.png)
+);
+
+$inactive-hover: (
+  left: url(#{$taskbar-button-path}/taskbar-button-inactive-hover-left.png),
+  right: url(#{$taskbar-button-path}/taskbar-button-inactive-hover-right.png),
+  center: url(#{$taskbar-button-path}/taskbar-button-inactive-hover-center.png)
+);
+
+$active-default: (
+  left: url(#{$taskbar-button-path}/taskbar-button-active-default-left.png),
+  right: url(#{$taskbar-button-path}/taskbar-button-active-default-right.png),
+  center: url(#{$taskbar-button-path}/taskbar-button-active-default-center.png)
+);
+
+$active-hover: (
+  left: url(#{$taskbar-button-path}/taskbar-button-active-hover-left.png),
+  right: url(#{$taskbar-button-path}/taskbar-button-active-hover-right.png),
+  center: url(#{$taskbar-button-path}/taskbar-button-active-hover-center.png)
+);
+
+// Mixin pour générer la propriété background-image à partir d'une map
+@mixin bg-images($images) {
+  background-image: map-get($images, left), map-get($images, right), map-get($images, center);
+}
+
+.taskbarButton {
+  display: flex;
+  width: 160px;
+  height: 25px;
+  margin-top: 3px;
+  @include bg-images($inactive-default);
+  background-position: $taskbar-bg-position;
+  background-repeat: $taskbar-bg-repeat;
+  background-size: $taskbar-bg-size;
+  color: white;
+  font-family: $font-family;
+  font-size: $font-size;
+  
+  &:hover {
+    @include bg-images($inactive-hover);
+  }
+  
+  &.active {
+    @include bg-images($active-default);
+    
+    &:hover {
+      @include bg-images($active-hover);
+    }
+  }
+}
+
+.taskbarButtonContent {
+  display: flex;
+  padding: 0 10px;
+  align-items: center;
+  pointer-events: none;
+  
+  .taskbarButtonContentLabel {
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+  }
+}

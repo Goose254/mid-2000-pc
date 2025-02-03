@@ -1,0 +1,91 @@
+// Chemin de base pour les images des boutons de fenêtre
+$window-buttons-path: '../../../assets/window-buttons';
+
+// Mixin qui définit la propriété background-image en fonction du type et de l'état
+@mixin set-bg($type, $state) {
+  @if $state == 'default' {
+    background-image: url(#{$window-buttons-path}/active-#{$type}-button-default.png);
+  } @else if $state == 'hover' {
+    background-image: url(#{$window-buttons-path}/active-#{$type}-button-hover.png);
+  } @else if $state == 'active' {
+    background-image: url(#{$window-buttons-path}/active-#{$type}-button-active.png);
+  } @else if $state == 'inactive' {
+    background-image: url(#{$window-buttons-path}/inactive-#{$type}-button.png);
+  }
+}
+
+.titleBarButton {
+  min-width: 21px;
+  min-height: 21px;
+  margin-left: 2px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  box-shadow: none;
+  transition: background 0.1s;
+  border: none;
+
+  &.close {
+    @include set-bg('close', 'default');
+    &.inactive {
+      @include set-bg('close', 'inactive');
+    }
+    &:hover {
+      @include set-bg('close', 'hover');
+    }
+    &:not(:disabled):active {
+      @include set-bg('close', 'active');
+    }
+  }
+  
+  &.minimize {
+    @include set-bg('minimize', 'default');
+    &.inactive {
+      @include set-bg('minimize', 'inactive');
+    }
+    &:hover {
+      @include set-bg('minimize', 'hover');
+    }
+    &:not(:disabled):active {
+      @include set-bg('minimize', 'active');
+    }
+  }
+  
+  &.maximize {
+    @include set-bg('maximize', 'default');
+    &.inactive {
+      @include set-bg('maximize', 'inactive');
+    }
+    &:hover {
+      @include set-bg('maximize', 'hover');
+    }
+    &:not(:disabled):active {
+      @include set-bg('maximize', 'active');
+    }
+  }
+  
+  &.restore {
+    @include set-bg('restore', 'default');
+    &.inactive {
+      @include set-bg('restore', 'inactive');
+    }
+    &:hover {
+      @include set-bg('restore', 'hover');
+    }
+    &:not(:disabled):active {
+      @include set-bg('restore', 'active');
+    }
+  }
+  
+  &.help {
+    @include set-bg('help', 'default');
+    &.inactive {
+      @include set-bg('help', 'inactive');
+    }
+    &:hover {
+      @include set-bg('help', 'hover');
+    }
+    &:not(:disabled):active {
+      @include set-bg('help', 'active');
+    }
+  }
+}

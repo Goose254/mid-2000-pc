@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import StartButtonLogo from '../../../assets/start-button-logo.png';
-import './Taskbar.css';
+import styles from './Taskbar.module.scss';
 import moment from 'moment';
 import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
@@ -18,53 +18,53 @@ type TaskbarProps = {
 };
 
 export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) => {
-  const [date, setDate] = useState<Date>(new Date())
-  const startMenuRef = useRef<HTMLDivElement | null>(null)
-  const startButtonRef = useRef<HTMLButtonElement | null>(null)
+  const [date, setDate] = useState<Date>(new Date());
+  const startMenuRef = useRef<HTMLDivElement | null>(null);
+  const startButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const toggleStartMenu = useDesktopStore(
-    (state) => state.toggleStartMenu
-  );
-
-  const isStartMenuVisible = useDesktopStore(
-    (state) => state.isStartMenuVisible
-  );
+  const toggleStartMenu = useDesktopStore((state) => state.toggleStartMenu);
+  const isStartMenuVisible = useDesktopStore((state) => state.isStartMenuVisible);
 
   useEffect(() => {
-    const dateTimer = setInterval(() => setDate(new Date()), 1000)
+    const dateTimer = setInterval(() => setDate(new Date()), 1000);
 
     const handleClickOutsideStartMenu = (e: MouseEvent) => {
       if (
         startMenuRef.current && !startMenuRef.current.contains(e.target as Node) &&
         startButtonRef.current && !startButtonRef.current.contains(e.target as Node)
       ) {
-        toggleStartMenu()
+        toggleStartMenu();
       }
-    }
-    document.addEventListener('mousedown', handleClickOutsideStartMenu)
+    };
+
+    document.addEventListener('mousedown', handleClickOutsideStartMenu);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutsideStartMenu)
-      clearInterval(dateTimer)
-    }
-  }, [startMenuRef, startButtonRef, toggleStartMenu])
+      document.removeEventListener('mousedown', handleClickOutsideStartMenu);
+      clearInterval(dateTimer);
+    };
+  }, [toggleStartMenu]);
 
   return (
-    <div id="taskbar">
+    <div className={styles.taskbar}>
       <StartMenu ref={startMenuRef} isVisible={isStartMenuVisible} />
 
-      <button ref={startButtonRef} id="start-button" className={isStartMenuVisible ? 'active' : ''} onClick={() => toggleStartMenu()}>
-        <img src={StartButtonLogo} />
+      <button
+        ref={startButtonRef}
+        className={`${styles.startButton} ${isStartMenuVisible ? styles.active : ''}`}
+        onClick={() => toggleStartMenu()}
+      >
+        <img src={StartButtonLogo} alt="Start button logo" />
         démarrer
       </button>
 
-      <div className="taskbar-window-buttons">
+      <div className={styles.taskbarWindowButtons}>
         {windows.map((win) => (
           <TaskbarButton key={win.id} window={win} onMouseDown={onClickWindowIcon} />
         ))}
       </div>
 
-      <div id="taskbar-tools">
+      <div className={styles.taskbarTools}>
         {moment(date).format('HH:mm')}
       </div>
     </div>

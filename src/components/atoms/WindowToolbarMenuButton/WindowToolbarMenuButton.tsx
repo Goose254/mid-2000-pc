@@ -1,5 +1,5 @@
 import React from 'react';
-import './WindowToolbarMenuButton.css';
+import styles from './WindowToolbarMenuButton.module.scss';
 
 interface WindowToolbarMenuButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   label: string;
@@ -8,16 +8,18 @@ interface WindowToolbarMenuButtonProps extends React.HTMLAttributes<HTMLButtonEl
   className?: string;
 }
 
-export const WindowToolbarMenuButton: React.FC<WindowToolbarMenuButtonProps> = ({ label, variant = 'xp', children, className, ...props }) => {
-  const variantClasses = {
-    xp: "xp-window-toolbar-menu-button",
-  };
+export const WindowToolbarMenuButton: React.FC<WindowToolbarMenuButtonProps> = ({
+  label,
+  variant = 'xp',
+  children,
+  className,
+  ...props
+}) => {
+  const baseClass = styles.xpWindowToolbarMenuButton;
+  const combinedClasses = [baseClass, className].filter(Boolean).join(" ");
 
   return (
-    <button
-      className={`${variantClasses[variant]} ${className ? className : ""}`}
-      {...props}
-    >
+    <button className={combinedClasses} {...props}>
       {label}
       {children}
     </button>

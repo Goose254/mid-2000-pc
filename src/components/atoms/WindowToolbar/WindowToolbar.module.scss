@@ -1,0 +1,23 @@
+// Variables de configuration
+$toolbar-font-family: 'Tahoma';
+$toolbar-font-size: 11px;
+$toolbar-bg: linear-gradient(90deg, rgba(243,244,237,1) 0%, rgba(234,229,213,1) 70%);
+$toolbar-border-bottom: 1px solid white;
+
+$inner-container-min-height: 23px;
+$inner-container-padding-left: 2px;
+$inner-container-border-bottom: 1px solid #d8d2bd;
+
+.xpWindowToolbar {
+  font-family: $toolbar-font-family;
+  font-size: $toolbar-font-size;
+  background: $toolbar-bg;
+  border-bottom: $toolbar-border-bottom;
+
+  .innerContainer {
+    display: flex;
+    min-height: $inner-container-min-height;
+    padding-left: $inner-container-padding-left;
+    border-bottom: $inner-container-border-bottom;
+  }
+}

@@ -1,0 +1,57 @@
+// Variables de configuration
+$menu-button-max-height: 22px;
+$menu-button-margin: 1px 0 2px 0;
+$menu-button-padding: 1px 8px 0 8px;
+$child-div-margin-top: 1px;
+$child-div-margin-left: -8px;
+$transition-out: 0s all 0.05s;
+$transition-in: 0.15s;
+$inactive-color: #aca899;
+$hover-background: #316ac5;
+
+.xpWindowToolbarMenuButton {
+  max-height: $menu-button-max-height;
+  margin: $menu-button-margin;
+  padding: $menu-button-padding;
+  
+  > div {
+    visibility: hidden;
+    opacity: 0;
+    margin-top: $child-div-margin-top;
+    margin-left: $child-div-margin-left;
+    transition: $transition-out;
+  }
+  
+  &:hover {
+    color: white;
+    background-color: $hover-background;
+  }
+  
+  &:focus > div {
+    visibility: visible;
+    opacity: 1;
+    transition: $transition-in;
+  }
+}
+
+// Règle pour les boutons inactifs, appliquée lorsque le parent possède la classe "inactive"
+:global(.inactive) {
+  .xpWindowToolbarMenuButton {
+    color: $inactive-color;
+  }
+}
+
+// Règles spécifiques pour le conteneur : quand un bouton est en focus dans un .inner-container
+div:has(> .xpWindowToolbarMenuButton:focus) {
+  > .xpWindowToolbarMenuButton:focus > div {
+    visibility: hidden;
+    opacity: 0;
+    transition: $transition-out;
+  }
+  > .xpWindowToolbarMenuButton:hover > div {
+    visibility: visible;
+    opacity: 1;
+    z-index: 1;
+    transition: $transition-in;
+  }
+}

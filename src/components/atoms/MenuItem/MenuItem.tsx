@@ -1,5 +1,5 @@
 import React from 'react';
-import './MenuItem.css';
+import styles from './MenuItem.module.scss';
 
 interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
@@ -9,20 +9,28 @@ interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const MenuItem: React.FC<MenuItemProps> = ({ label, shortcut, variant = 'xp', children, className, ...props }) => {
-  const variantClasses = {
-    xp: "xp-menu-item",
-  };
+export const MenuItem: React.FC<MenuItemProps> = ({
+  label,
+  shortcut,
+  variant = 'xp',
+  children,
+  className,
+  ...props
+}) => {
+  // Pour la variante "xp", on utilise la classe "xp-menu-item" du module SCSS.
+  // Si un sous-menu est présent, on ajoute également la classe "has-submenu".
+  const rootClasses = [
+    styles.xpMenuItem,
+    children ? styles.hasSubmenu : "",
+    className || ""
+  ].join(" ").trim();
 
   return (
-    <div
-      className={`${variantClasses[variant]} ${children ? "has-submenu" : ""} ${className ? className : ""}`}
-      {...props}
-    >
-      <span className="left-element"></span>
-      <span className="label">{label}</span>
-      <span className="shortcut">{shortcut ? shortcut : ''}</span>
-      <span className="right-element"></span>
+    <div className={rootClasses} {...props}>
+      <span className={styles.leftElement}></span>
+      <span className={styles.label}>{label}</span>
+      <span className={styles.shortcut}>{shortcut || ''}</span>
+      <span className={styles.rightElement}></span>
       {children}
     </div>
   );

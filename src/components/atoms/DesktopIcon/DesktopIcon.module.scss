@@ -1,0 +1,84 @@
+// Variables de configuration
+$icon-dim: 32px;
+$desktop-icon-active-bg: #316ac5;
+$desktop-icon-label-width: 84px;
+$desktop-icon-label-line-height: 12px;
+$desktop-icon-label-margin-top: 4px;
+$desktop-icon-font-family: 'Tahoma';
+$desktop-icon-font-size: 11px;
+$desktop-icon-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+
+// Mixin pour factoriser la taille et le centrage des icônes
+@mixin icon-size {
+  width: $icon-dim;
+  height: $icon-dim;
+  margin: auto;
+}
+
+.desktopIcon {
+  width: 94px;
+  height: 80px;
+  padding: 5px;
+  
+  // Style commun à l'icône (normal et dans l'état actif)
+  .desktopIconIcon {
+    @include icon-size;
+  }
+  
+  // États "active"
+  &.active {
+    .desktopIconIconWrapper {
+      position: relative;
+      @include icon-size;
+    }
+    
+    .desktopIconIconOverlay {
+      position: relative;
+      bottom: $icon-dim;
+      @include icon-size;
+      mask-image: var(--icon-image);
+      -webkit-mask-image: var(--icon-image);
+      background-color: $desktop-icon-active-bg;
+      opacity: 0.5;
+    }
+    
+    .desktopIconLabel {
+      background-color: $desktop-icon-active-bg;
+    }
+    
+    .desktopIconLabelWrapper {
+      position: relative;
+      text-shadow: none;
+      line-clamp: unset;
+      -webkit-line-clamp: unset;
+      z-index: 1;
+      filter: none;
+    }
+  }
+  
+  // Style de la zone d'étiquette (label) en mode normal
+  .desktopIconLabelWrapper {
+    display: -webkit-box;
+    width: $desktop-icon-label-width;
+    line-height: $desktop-icon-label-line-height;
+    margin-top: $desktop-icon-label-margin-top;
+    color: white;
+    font-family: $desktop-icon-font-family;
+    font-size: $desktop-icon-font-size;
+    text-shadow: $desktop-icon-text-shadow;
+    text-align: center;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.7));
+  }
+  
+  // Style de l'étiquette
+  .desktopIconLabel {
+    display: block;
+    width: fit-content;
+    margin: auto;
+    padding: 0px 2px 2px 2px;
+  }
+}

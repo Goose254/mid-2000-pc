@@ -1,4 +1,5 @@
-import './TaskbarButton.css';
+import React from 'react';
+import styles from './TaskbarButton.module.scss';
 
 interface TaskbarButtonProps {
   window: {
@@ -7,28 +8,25 @@ interface TaskbarButtonProps {
     icon?: React.ReactElement;
     isMinimized: boolean;
     isActive: boolean;
-  },
+  };
   onMouseDown: (id: string) => void;
 }
 
 export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ window, onMouseDown }) => {
-  const handleMouseDown = (e: React.MouseEvent, id: string) => {
-    //e.stopPropagation();
+  const handleMouseDown = (id: string) => {
     onMouseDown(id);
-  }
+  };
 
   return (
     <div
-      onMouseDown={(e) => handleMouseDown(e, window.id)}
-      className={`taskbar-button ${window.isActive ? 'active' : ''}`}
+      onMouseDown={() => handleMouseDown(window.id)}
+      className={`${styles.taskbarButton} ${window.isActive ? styles.active : ""}`}
       data-window-id={window.id}
     >
-      <div className="taskbar-button-content">
-        {window.icon && (
-        <div style={{ marginRight: 4 }}>{window.icon}</div>
-        )}
-        <div className="taskbar-button-content-label">{window.title}</div>
+      <div className={styles.taskbarButtonContent}>
+        {window.icon && <div style={{ marginRight: 4 }}>{window.icon}</div>}
+        <div className={styles.taskbarButtonContentLabel}>{window.title}</div>
       </div>
     </div>
-  )
+  );
 };

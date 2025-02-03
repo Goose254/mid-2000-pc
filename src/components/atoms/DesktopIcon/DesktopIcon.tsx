@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import './DesktopIcon.css';
+import styles from './DesktopIcon.module.scss';
 
 interface DesktopIconProps {
   icon: React.ReactElement;
@@ -9,23 +9,21 @@ interface DesktopIconProps {
 
 export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, onDoubleClick }) => {
   const [active, setActive] = useState<boolean>(false);
-  const iconRef = useRef<HTMLDivElement | null>(null)
+  const iconRef = useRef<HTMLDivElement | null>(null);
   const iconSrc = icon?.props?.src;
 
   useEffect(() => {
     const handleClickOutsideIcon = (e: MouseEvent) => {
-      if (
-        iconRef.current && !iconRef.current.contains(e.target as Node)
-      ) {
-        setActive(false)
+      if (iconRef.current && !iconRef.current.contains(e.target as Node)) {
+        setActive(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutsideIcon)
+    };
 
+    document.addEventListener('mousedown', handleClickOutsideIcon);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutsideIcon)
-    }
-  }, [iconRef])
+      document.removeEventListener('mousedown', handleClickOutsideIcon);
+    };
+  }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     switch (e.detail) {
@@ -39,14 +37,23 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, onDoubleC
   };
 
   return (
-    <div ref={iconRef} className={`desktop-icon ${active ? 'active' : ''}`} onClick={handleClick}>
-      <div className="desktop-icon-icon-wrapper">
-        <div className="desktop-icon-icon">{icon}</div>
-        {active ? <div className="desktop-icon-icon-overlay" style={{ "--icon-image": `url(${iconSrc})` } as React.CSSProperties}></div> : ''}
+    <div
+      ref={iconRef}
+      className={`${styles.desktopIcon} ${active ? styles.active : ''}`}
+      onClick={handleClick}
+    >
+      <div className={styles.desktopIconIconWrapper}>
+        <div className={styles.desktopIconIcon}>{icon}</div>
+        {active && (
+          <div
+            className={styles.desktopIconIconOverlay}
+            style={{ "--icon-image": `url(${iconSrc})` } as React.CSSProperties}
+          ></div>
+        )}
       </div>
-      <div className="desktop-icon-label-wrapper">
-        <span className="desktop-icon-label">{label}</span>
+      <div className={styles.desktopIconLabelWrapper}>
+        <span className={styles.desktopIconLabel}>{label}</span>
       </div>
     </div>
-  )
+  );
 };

@@ -1,0 +1,107 @@
+// Variables pour le bouton Start
+$start-button-height: 30px;
+$start-button-padding: 0 26px 0 6px;
+$start-button-color: white;
+$start-button-font-family: 'Franklin Gothic';
+$start-button-font-size: 16px;
+$start-button-font-style: italic;
+$start-button-letter-spacing: 0.8px;
+$start-button-line-height: 26px;
+$start-button-vertical-align: bottom;
+$start-button-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+
+$start-btn-default-left: url(../../../assets/start-button-default-background-left.png);
+$start-btn-default-right: url(../../../assets/start-button-default-background-right.png);
+$start-btn-default-center: url(../../../assets/start-button-default-background-center.png);
+
+$start-btn-hover-left: url(../../../assets/start-button-hover-background-left.png);
+$start-btn-hover-right: url(../../../assets/start-button-hover-background-right.png);
+$start-btn-hover-center: url(../../../assets/start-button-hover-background-center.png);
+
+$start-btn-active-left: url(../../../assets/start-button-active-background-left.png);
+$start-btn-active-right: url(../../../assets/start-button-active-background-right.png);
+$start-btn-active-center: url(../../../assets/start-button-active-background-center.png);
+
+$start-button-bg-position: left top, right top, left top;
+$start-button-bg-repeat: no-repeat, no-repeat;
+$start-button-bg-size: contain, contain, calc(100% - 8px) 100%;
+
+.startButton {
+  height: $start-button-height;
+  padding: $start-button-padding;
+  color: $start-button-color;
+  font-family: $start-button-font-family;
+  font-size: $start-button-font-size;
+  font-style: $start-button-font-style;
+  letter-spacing: $start-button-letter-spacing;
+  line-height: $start-button-line-height;
+  vertical-align: $start-button-vertical-align;
+  text-shadow: $start-button-text-shadow;
+  background-image: $start-btn-default-left, $start-btn-default-right, $start-btn-default-center;
+  background-position: $start-button-bg-position;
+  background-repeat: $start-button-bg-repeat;
+  background-size: $start-button-bg-size;
+
+  img {
+    display: inline-block;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6));
+    margin-bottom: 2px;
+  }
+
+  &:hover {
+    background-image: $start-btn-hover-left, $start-btn-hover-right, $start-btn-hover-center;
+  }
+
+  &.active {
+    background-image: $start-btn-active-left, $start-btn-active-right, $start-btn-active-center;
+  }
+}
+
+// Styles pour la Taskbar
+$taskbar-bg: url(../../../assets/taskbar-gradient.png);
+
+.taskbar {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 30px;
+  background: $taskbar-bg repeat-x;
+  z-index: 10000;
+}
+
+// Styles pour la zone des outils de la Taskbar
+$taskbar-tools-height: 30px;
+$taskbar-tools-padding: 6px 14px;
+$taskbar-tools-color: white;
+$taskbar-tools-font-family: 'Tahoma';
+$taskbar-tools-font-size: 11px;
+$taskbar-tools-text-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+
+$taskbar-tools-bg-left: url(../../../assets/taskbar-tools-background-left.png);
+$taskbar-tools-bg-center: url(../../../assets/taskbar-tools-background-center.png);
+
+$taskbar-window-buttons-margin-left: 8px;
+
+.taskbarTools {
+  height: $taskbar-tools-height;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: $taskbar-tools-padding;
+  color: $taskbar-tools-color;
+  font-family: $taskbar-tools-font-family;
+  font-size: $taskbar-tools-font-size;
+  text-shadow: $taskbar-tools-text-shadow;
+  background-image: $taskbar-tools-bg-left, $taskbar-tools-bg-center;
+  background-position: left top, left top;
+  background-repeat: no-repeat, no-repeat;
+  background-size: contain, 100% 100%;
+}
+
+// Boutons des fenêtres de la Taskbar
+.taskbarWindowButtons {
+  display: flex;
+  margin-left: $taskbar-window-buttons-margin-left;
+}

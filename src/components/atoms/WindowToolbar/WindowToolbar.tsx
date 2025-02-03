@@ -1,5 +1,5 @@
 import React from 'react';
-import './WindowToolbar.css';
+import styles from './WindowToolbar.module.scss';
 
 interface WindowToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'xp';
@@ -7,17 +7,18 @@ interface WindowToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const WindowToolbar: React.FC<WindowToolbarProps> = ({ variant = 'xp', children, className, ...props }) => {
-  const variantClasses = {
-    xp: "xp-window-toolbar",
-  };
+export const WindowToolbar: React.FC<WindowToolbarProps> = ({
+  variant = 'xp',
+  children,
+  className,
+  ...props
+}) => {
+  // Pour l'instant, seule la variante 'xp' est gérée
+  const rootClasses = [styles.xpWindowToolbar, className].filter(Boolean).join(" ");
 
   return (
-    <div
-      className={`${variantClasses[variant]} ${className ? className : ""}`}
-      {...props}
-    >
-      <div className="inner-container">
+    <div className={rootClasses} {...props}>
+      <div className={styles.innerContainer}>
         {children}
       </div>
     </div>

@@ -1,21 +1,25 @@
 import React from 'react';
-import './MenuSeparator.css';
+import styles from './MenuSeparator.module.scss';
 
 interface MenuSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'xp';
-  direction?: 'vertical' | 'horizontal'
+  direction?: 'vertical' | 'horizontal';
   className?: string;
 }
 
-export const MenuSeparator: React.FC<MenuSeparatorProps> = ({ variant = 'xp', direction = 'horizontal', className, ...props }) => {
-  const variantClasses = {
-    xp: "xp-menu-separator",
-  };
+export const MenuSeparator: React.FC<MenuSeparatorProps> = ({
+  variant = 'xp',
+  direction = 'horizontal',
+  className,
+  ...props
+}) => {
+  // Pour la variante "xp", on utilise la classe "xp-menu-separator" du module SCSS
+  // et on ajoute la classe correspondant à la direction ("horizontal" ou "vertical").
+  const rootClasses = [
+    styles.xpMenuSeparator,
+    styles[direction],
+    className || ""
+  ].join(" ").trim();
 
-  return (
-    <div
-      className={`${variantClasses[variant]} ${direction} ${className ? className : ""}`}
-      {...props}
-    />
-  );
+  return <div className={rootClasses} {...props} />;
 };

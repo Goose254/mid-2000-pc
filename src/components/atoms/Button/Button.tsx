@@ -1,5 +1,5 @@
 import React from 'react';
-import './Button.css';
+import styles from './Button.module.scss';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'xp';
@@ -8,21 +8,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({ variant = 'xp', size = 'medium', children, className, ...props }) => {
-  const variantClasses = {
-    xp: "xp-button",
-  };
-  const sizeClasses = {
-    small: "small",
-    medium: "medium",
-    large: "large",
-  }
+export const Button: React.FC<ButtonProps> = ({
+  variant = 'xp',
+  size = 'medium',
+  children,
+  className,
+  ...props
+}) => {
+  // Pour la variante "xp", on utilise la classe "xp-button" du module SCSS.
+  // On ajoute également la classe "small" si la taille est "small".
+  const buttonClasses = `${styles.xpButton} ${size === 'small' ? styles.small : ''} ${className || ''}`.trim();
 
   return (
-    <button 
-      className={`${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-      {...props}
-    >
+    <button className={buttonClasses} {...props}>
       {children}
     </button>
   );
