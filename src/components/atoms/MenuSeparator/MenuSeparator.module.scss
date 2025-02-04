@@ -20,7 +20,7 @@ $sep-vert-border: 1px solid #d8d2bd;
 .startPrimary {
   &.horizontal {
     width: calc(100% - 4px);
-    margin: 4px 2px;
+    margin: 4px 2px 0 2px;
     border-image: linear-gradient(to right, rgba(211, 211, 200, 0) 0%, rgba(211, 211, 200, 1) 30%, rgba(211, 211, 200, 1) 70%, rgba(211, 211, 200, 0) 100%) 1;
     border-width: 1px;
     border-style: solid;

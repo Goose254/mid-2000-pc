@@ -28,6 +28,11 @@ import ForwardIcon from '@/assets/explorer-icons/forward.png';
 import SearchIcon from '@/assets/explorer-icons/search.png';
 import UpIcon from '@/assets/explorer-icons/up.png';
 import ViewsIcon from '@/assets/explorer-icons/views.png';
+import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react';
+import 'overlayscrollbars/overlayscrollbars.css'
+import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars';
+import { WindowsXpArrowsPlugin } from '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin';
+import '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin.css';
 
 type DesktopWindow = {
   id: string;
@@ -48,6 +53,8 @@ export const Desktop: React.FC = () => {
     y: 0,
   });
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
+  
+  const osRef = useRef<OverlayScrollbarsComponentRef>(null);
 
   const isShutdownOverlayVisible = useDesktopStore(
     (state) => state.isShutdownOverlayVisible
@@ -176,6 +183,9 @@ export const Desktop: React.FC = () => {
       <div>Contenu Poste de travail</div>
     );
   };
+
+  OverlayScrollbars.plugin(ClickScrollPlugin);
+  OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
 
   const openMyDocuments = () => {
     openWindow(
@@ -332,6 +342,42 @@ export const Desktop: React.FC = () => {
           </WindowToolbarButton>
         </WindowToolbar>
         <WindowToolbar><></></WindowToolbar>
+        <OverlayScrollbarsComponent
+          className="overlayscrollbars-react"
+          ref={osRef}
+          options={{ scrollbars: { theme: "os-theme-dark", autoHide: "never", clickScroll: true } }}
+          defer
+        >
+          Du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+          Encore du contenu<br/>
+        </OverlayScrollbarsComponent>
       </>
     );
   };

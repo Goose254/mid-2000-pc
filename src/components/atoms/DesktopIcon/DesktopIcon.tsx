@@ -32,6 +32,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, onDoubleC
         break;
       case 2:
         onDoubleClick();
+        setActive(false);
         break;
     }
   };
