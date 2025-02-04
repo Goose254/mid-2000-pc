@@ -28,7 +28,20 @@ import HelpAndSupportIcon from '@/assets/windows-icons/shell32.dll_14_263-10.png
 import SearchIcon from '@/assets/windows-icons/shell32.dll_14_23-10.png';
 import RunIcon from '@/assets/windows-icons/shell32.dll_14_160-9.png';
 
+import WindowsActivationSmallIcon from '@/assets/windows-icons/migpwd.exe_14_103-6.png';
+import WindowsCatalogSmallIcon from '@/assets/windows-icons/moricons.dll_14_108-8.png';
+import DefaultProgramsSmallIcon from '@/assets/windows-icons/moricons.dll_14_114-11.png';
+import WindowsUpdateSmallIcon from '@/assets/windows-icons/shell32.dll_14_47-8.png';
+
+import ProgramFolderSmallIcon from '@/assets/windows-icons/shell32.dll_14_20-8.png';
+import IESmallIcon from '@/assets/windows-icons/iexplore.exe_14_32528-8.png';
+import WMPSmallIcon from '@/assets/windows-icons/wmplayer.exe_14_IDR_MAINFRAME-8.png';
+import OESmallIcon from '@/assets/windows-icons/msoeres.dll_14_52-8.png';
+import MSNSmallIcon from '@/assets/windows-icons/shell32.dll_14_239-8.png';
+import WMMSmallIcon from '@/assets/windows-icons/wmm2res.dll_14_128-8.png';
+
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
+import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
 
 interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   isVisible: boolean;
@@ -64,6 +77,23 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 <MenuItem variant="startPrimary" label="Calculatrice" icon={CalcIcon} />
                 <MenuItem variant="startPrimary" label="Carnet d'adresses" icon={WABIcon} />
                 <MenuSeparator variant="startPrimary" />
+                <MenuItem variant="startPrimary" label="Tous les programmes">
+                  <FloatingMenu variant="startMenu">
+                    <MenuItem label="Activation de Windows" icon={WindowsActivationSmallIcon}></MenuItem>
+                    <MenuItem label="Catalogue Windows" icon={WindowsCatalogSmallIcon}></MenuItem>
+                    <MenuItem label="Configurer les programmes par défaut" icon={DefaultProgramsSmallIcon}></MenuItem>
+                    <MenuItem label="Windows Update" icon={WindowsUpdateSmallIcon}></MenuItem>
+                    <MenuSeparator variant="startPrimaryContextual"/>
+                    <MenuItem label="Accessoires" icon={ProgramFolderSmallIcon}></MenuItem>
+                    <MenuItem label="Démarrage" icon={ProgramFolderSmallIcon}></MenuItem>
+                    <MenuItem label="Jeux" icon={ProgramFolderSmallIcon}></MenuItem>
+                    <MenuItem label="Internet Explorer" icon={IESmallIcon}></MenuItem>
+                    <MenuItem label="Lecteur Windows Media" icon={WMPSmallIcon}></MenuItem>
+                    <MenuItem label="Outlook Express" icon={OESmallIcon}></MenuItem>
+                    <MenuItem label="MSN" icon={MSNSmallIcon}></MenuItem>
+                    <MenuItem label="Windows Movie Maker" icon={WMMSmallIcon}></MenuItem>
+                  </FloatingMenu>
+                </MenuItem>
               </div>
               <div className={styles.startMenuRightList}>
                 <MenuItem variant="startSecondary" label="Mes documents" icon={MyDocumentsIcon} primary={true} />

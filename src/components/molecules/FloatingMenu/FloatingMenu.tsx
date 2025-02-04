@@ -2,19 +2,19 @@ import React from 'react';
 import styles from './FloatingMenu.module.scss';
 
 interface FloatingMenuProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'xp';
+  variant?: 'contextual' | 'startMenu';
   children: React.ReactNode;
   className?: string;
 }
 
 export const FloatingMenu: React.FC<FloatingMenuProps> = ({
-  variant = 'xp',
+  variant = 'contextual',
   children,
   className,
   ...props
 }) => {
   // Pour l'instant, seule la variante 'xp' est gérée
-  const baseClass = styles.xpFloatingMenu;
+  const baseClass = styles[variant];
   const combinedClasses = [baseClass, className].filter(Boolean).join(" ");
 
   return (

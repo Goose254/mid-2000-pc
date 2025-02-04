@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './MenuSeparator.module.scss';
 
 interface MenuSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'contextual' | 'startPrimary' | 'startSecondary';
+  variant?: 'contextual' | 'startPrimary' | 'startSecondary' | 'startPrimaryContextual';
   direction?: 'vertical' | 'horizontal';
   className?: string;
 }

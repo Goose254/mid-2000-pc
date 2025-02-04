@@ -27,6 +27,17 @@
     }
   }
 
+  & > .leftElement {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+
+    & > img {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   // Pour les div enfants (souvent le sous-menu)
   > div {
     visibility: hidden;
@@ -70,9 +81,52 @@
   &:hover {
     background-color: #316ac5;
 
-    .label, .info {
+    & > .label, & > .info {
       color: white;
     }
+
+    > div {
+      visibility: visible;
+      opacity: 1;
+      transition: 0.15s all;
+    }
+  }
+
+  // Pour les items ayant un sous-menu
+  &.hasSubmenu {
+    margin-top: 10px;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+  
+    // Définition des zones nommées
+    grid-template-areas:
+      "left label right"
+      "left info right";
+  
+    & > .label {
+      grid-area: label;
+      font-weight: bold;
+      padding-left: 24px;
+    }  
+
+    > .rightElement {
+      &::before {
+        content: "►";
+        position: absolute;
+        left: 166px;
+        transform: scale(0.56, 1);
+      }
+    }
+  }
+
+  // Pour les div enfants (souvent le sous-menu)
+  > div {
+    visibility: hidden;
+    opacity: 0;
+    left: 186px;
+    bottom: 45px;
+    margin-top: -3px;
+    transition: 0s all 0.1s;
   }
 
   // 2 lignes, 3 colonnes (par exemple)
@@ -85,18 +139,18 @@
     "left label right"
     "left info right";
 
-  .leftElement {
+  & > .leftElement {
     display: flex;
     align-items: center;
     grid-area: left;
 
-    img {
+    & > img {
       min-width: 32px;
       min-height: 32px;
     }
   }
 
-  .label {
+  & > .label {
     grid-area: label / label / info;
     padding-top: 7px;
     padding-left: 3px;
