@@ -88,7 +88,7 @@
     > div {
       visibility: visible;
       opacity: 1;
-      transition: 0.15s all;
+      transition: 0.15s all 0.3s;
     }
   }
 
@@ -123,10 +123,10 @@
   > div {
     visibility: hidden;
     opacity: 0;
-    left: 186px;
-    bottom: 45px;
+    left: 184px;
+    bottom: 51px;
     margin-top: -3px;
-    transition: 0s all 0.1s;
+    transition: 0s all 0.2s;
   }
 
   // 2 lignes, 3 colonnes (par exemple)
