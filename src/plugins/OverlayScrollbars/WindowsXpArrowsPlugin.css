@@ -36,7 +36,7 @@
   max-width: 16px;
   margin-right: 1px;
   background-position: 0px 0px;
-  background-image: radial-gradient(100% 100% at 0% 0%, #e1eafeff 0%, #aec8f7ff 50%);
+  background-image: radial-gradient(100% 100% at 0% 0%, rgb(235, 242, 255) 0%, rgb(200, 218, 255) 50%);
   box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030;
   border-radius: 3px;
   border: 1px solid #fff;
@@ -87,6 +87,10 @@
   justify-content: center;
   cursor: pointer;
   box-sizing: border-box;
+}
+
+.os-scrollbar-button:hover {
+  background-image: radial-gradient(100% 100% at 0% 0%, rgb(235, 242, 255) 0%, rgb(200, 218, 255) 50%);
 }
 
 .os-scrollbar-button:active {

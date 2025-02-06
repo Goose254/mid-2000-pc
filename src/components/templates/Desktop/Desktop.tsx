@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-
 import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
 
+import { WindowsShutdownOverlay } from '@/components/templates/WindowsShutdownOverlay/WindowsShutdownOverlay';
 import { DesktopIcon } from '@/components/atoms/DesktopIcon/DesktopIcon';
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
@@ -11,7 +11,6 @@ import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuBut
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
 import { Window } from '@/components/organisms/Window/Window';
 import { Taskbar } from '@/components/organisms/Taskbar/Taskbar';
-import { WindowsShutdownOverlay } from '@/components/templates/WindowsShutdownOverlay/WindowsShutdownOverlay';
 
 import XPWallpaper from '@/assets/xp-wallpaper.jpg';
 import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-9.png';
@@ -34,40 +33,35 @@ import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars';
 import { WindowsXpArrowsPlugin } from '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin';
 import '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin.css';
 
-type DesktopWindow = {
-  id: string;
-  title: string;
-  icon: React.ReactElement;    // Icone version "petite"
-  content: React.ReactNode;    // Contenu à afficher
-  isMinimized: boolean;        // Permet de masquer/restaurer
-  isActive: boolean;           // Permet de gérer le statut
-  zIndex: number;              // Gère l'ordre d'empilement
-};
+OverlayScrollbars.plugin(ClickScrollPlugin);
+OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
 
 export const Desktop: React.FC = () => {
-  const [windows, setWindows] = useState<DesktopWindow[]>([]);
-  const [maxZIndex, setMaxZIndex] = useState<number>(1);
+  // --- On récupère "chaque propriété" séparément pour éviter la recréation d'objets ---
+  const windows = useDesktopStore((state) => state.windows);
+  const openWindow = useDesktopStore((state) => state.openWindow);
+  const closeWindow = useDesktopStore((state) => state.closeWindow);
+  const bringToFront = useDesktopStore((state) => state.bringToFront);
+  const setWindowInactive = useDesktopStore((state) => state.setWindowInactive);
+  const toggleMinimizeWindow = useDesktopStore((state) => state.toggleMinimizeWindow);
+
+  const isShutdownOverlayVisible = useDesktopStore(
+    (state) => state.isShutdownOverlayVisible
+  );
+
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
     y: 0,
   });
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
-  
   const osRef = useRef<OverlayScrollbarsComponentRef>(null);
 
-  const isShutdownOverlayVisible = useDesktopStore(
-    (state) => state.isShutdownOverlayVisible
-  );
-
   const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault(); // Empêche le menu contextuel natif du navigateur
-
+    event.preventDefault();
     if (event.target !== event.currentTarget) {
-      // Ça veut dire qu'on a cliqué dans un enfant
-      return; 
+      return;
     }
-
     setContextMenu({
       visible: true,
       x: event.clientX,
@@ -75,133 +69,32 @@ export const Desktop: React.FC = () => {
     });
   };
 
-  /**
-   * Ouvre ou restaure la fenêtre si elle est déjà ouverte.
-   * - Si la fenêtre n'existe pas, on la crée.
-   * - Si elle est minimisée, on la restaure.
-   */
-  const openWindow = (id: string, title: string, icon: React.ReactElement, content: React.ReactNode) => {
-    setWindows((prev) => {
-      const existing = prev.find((w) => w.id === id);
-      if (existing) {
-        // Si elle est déjà ouverte mais minimisée, on la restaure
-        if (existing.isMinimized) {
-          return prev.map((w) =>
-            w.id === id
-              ? { ...w, isMinimized: false, isActive: true, zIndex: maxZIndex + 1 }
-              : w
-          );
-        }
-        // Sinon, on la met juste au premier plan
-        return prev.map((w) =>
-          w.id === id ? { ...w, isActive: true, zIndex: maxZIndex + 1 } : w
-        );
-      }
-
-      // Création d'une nouvelle fenêtre
-      return [
-        ...prev,
-        {
-          id,
-          title,
-          icon,
-          content,
-          isMinimized: false,
-          isActive: true,
-          zIndex: maxZIndex + 1,
-        },
-      ];
-    });
-
-    // Incrémente le maxZIndex
-    setMaxZIndex((prev) => prev + 1);
-  };
-
-  /**
-   * Ferme la fenêtre (on la retire simplement de la liste).
-   */
-  const closeWindow = (id: string) => {
-    setWindows((prev) => prev.filter((w) => w.id !== id));
-  };
-
-  /**
-   * Amène une fenêtre au premier plan
-   * (Par exemple en cliquant sur la barre de titre).
-   */
-  const bringToFront = (id: string) => {
-    setWindows((prev) =>
-      prev.map((w) =>
-        w.id === id
-          ? { ...w, zIndex: maxZIndex + 1, isActive: true }
-          : w
-      )
-    );
-    setMaxZIndex((prev) => prev + 1);
-  };
-
-  const setWindowInactive = (id: string) => {
-    setWindows((prev) =>
-      prev.map((w) =>
-        w.id === id
-          ? { ...w, isActive: false }
-          : w
-      )
-    );
-  }
-
-  /**
-   * Minimise ou restaure la fenêtre via la Taskbar.
-   * - Si la fenêtre est minimisée => on la restaure
-   * - Sinon => on la minimise
-   */
-  const toggleMinimizeWindow = (id: string) => {
-    setWindows((prev) =>
-      prev.map((w) => {
-        if (w.id === id) {
-          if (w.isActive) {
-            return { ...w, isMinimized: true, isActive: false };
-          } else {
-            return { ...w, isMinimized: false, isActive: true, zIndex: maxZIndex + 1 };
-          }
-        }
-        else {
-          return { ...w, isActive: false };
-        }
-      })
-    );
-    setMaxZIndex((prev) => prev + 1);
-  };
-
-  // Pour simplifier le code, on va définir le contenu
-  // de chaque fenêtre "connu" (Poste de travail, Mes documents, etc.).
-  // Dans un vrai projet, on peut organiser ça différemment.
+  // Méthodes d'ouverture de fenêtre
   const openMyComputer = () => {
     openWindow(
       'my-computer',
       'Poste de travail',
-      <img src={MyComputerSmallIcon} />,
+      <img src={MyComputerSmallIcon} alt="MyComputer" />,
       <div>Contenu Poste de travail</div>
     );
   };
-
-  OverlayScrollbars.plugin(ClickScrollPlugin);
-  OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
 
   const openMyDocuments = () => {
     openWindow(
       'my-documents',
       'Mes Documents',
-      <img src={FolderSmallIcon} />,
+      <img src={FolderSmallIcon} alt="MyDocuments" />,
       <>
+        {/* Barre d'outils / menus */}
         <WindowToolbar>
           <WindowToolbarMenuButton label="Fichier">
             <FloatingMenu>
               <MenuItem label="Créer un raccourci" aria-disabled />
-              <MenuItem label="Supprimer" aria-disabled/>
-              <MenuItem label="Renommer" aria-disabled/>
-              <MenuItem label="Propriétés" aria-disabled/>
+              <MenuItem label="Supprimer" aria-disabled />
+              <MenuItem label="Renommer" aria-disabled />
+              <MenuItem label="Propriétés" aria-disabled />
               <MenuSeparator />
-              <MenuItem label="Fermer"/>
+              <MenuItem label="Fermer" />
             </FloatingMenu>
           </WindowToolbarMenuButton>
           <WindowToolbarMenuButton label="Edition">
@@ -313,8 +206,13 @@ export const Desktop: React.FC = () => {
               <MenuItem label="À propos de Windows"/>
             </FloatingMenu>
           </WindowToolbarMenuButton>
-          <img src={WindowToolbarWindowsIcon} style={{ marginLeft: 'auto', borderLeft: '1px solid #aca899' }} />
+          <img
+            src={WindowToolbarWindowsIcon}
+            style={{ marginLeft: 'auto', borderLeft: '1px solid #aca899' }}
+            alt="Windows icon"
+          />
         </WindowToolbar>
+
         <WindowToolbar>
           <WindowToolbarButton icon={BackwardIcon} label="Précédente">
             <FloatingMenu>
@@ -342,12 +240,14 @@ export const Desktop: React.FC = () => {
           </WindowToolbarButton>
         </WindowToolbar>
         <WindowToolbar><></></WindowToolbar>
+
         <OverlayScrollbarsComponent
           className="overlayscrollbars-react"
           ref={osRef}
           options={{ scrollbars: { theme: "os-theme-dark", autoHide: "never", clickScroll: true } }}
           defer
         >
+          {/* Du contenu répétitif pour la démo */}
           Du contenu<br/>
           Encore du contenu<br/>
           Encore du contenu<br/>
@@ -377,6 +277,7 @@ export const Desktop: React.FC = () => {
           Encore du contenu<br/>
           Encore du contenu<br/>
           Encore du contenu<br/>
+          ...
         </OverlayScrollbarsComponent>
       </>
     );
@@ -386,22 +287,19 @@ export const Desktop: React.FC = () => {
     openWindow(
       'about',
       'À propos de cette expérience',
-      <img src={AboutSmallIcon} />,
+      <img src={AboutSmallIcon} alt="About" />,
       <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>
     );
   };
 
-  // Listener global pour masquer le menu si on clique n’importe où
+  // Ferme le menu contextuel si on clique n’importe où
   useEffect(() => {
     const handleClickOutsideContextMenu = (event: MouseEvent) => {
-      // Si on clique en dehors du menu
       if (contextMenuRef.current && !contextMenuRef.current.contains(event.target as Node)) {
         setContextMenu((prev) => ({ ...prev, visible: false }));
       }
     };
-
     document.addEventListener("mousedown", handleClickOutsideContextMenu);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutsideContextMenu);
     };
@@ -414,52 +312,51 @@ export const Desktop: React.FC = () => {
         backgroundImage: `url(${XPWallpaper})`,
       }}
     >
-      {/*  Bureau : icônes */}
+      {/* Bureau : icônes */}
       <div onContextMenu={handleContextMenu} style={{ height: 'calc(100vh - 30px)' }}>
         <DesktopIcon
-          icon={<img src={MyComputerIcon} />}
+          icon={<img src={MyComputerIcon} alt="MyComputer Icon" />}
           label="Poste de travail"
           onDoubleClick={openMyComputer}
         />
         <DesktopIcon
-          icon={<img src={MyDocumentsIcon} />}
+          icon={<img src={MyDocumentsIcon} alt="MyDocuments Icon" />}
           label="Mes Documents"
           onDoubleClick={openMyDocuments}
         />
         <DesktopIcon
-          icon={<img src={TashbinIcon} />}
+          icon={<img src={TashbinIcon} alt="Trash bin Icon" />}
           label="Corbeille"
           onDoubleClick={() => {
-            // Exemple : ouvre "Mes Documents" pour la démonstration
             openMyDocuments();
           }}
         />
         <DesktopIcon
-          icon={<img src={AboutIcon} />}
+          icon={<img src={AboutIcon} alt="About Icon" />}
           label="À propos"
           onDoubleClick={openAbout}
         />
       </div>
 
-      {/* Fenêtres à l'écran (non minimisées) */}
+      {/* Fenêtres (non minimisées) */}
       {windows
         .filter((w) => !w.isMinimized)
         .map((window) => (
           <Window
             key={window.id}
             id={window.id}
-            title={window.title}
-            icon={window.icon}
+            zPosition={window.zIndex}
+            isActive={window.isActive}
             onClose={() => closeWindow(window.id)}
             onActive={() => bringToFront(window.id)}
             onInactive={() => setWindowInactive(window.id)}
             onMinimize={() => toggleMinimizeWindow(window.id)}
-            isActive={window.isActive}
-            initialPosition={{
-              x: 100 + Math.random() * 100,
-              y: 100 + Math.random() * 100,
+            options={{
+              title: window.title,
+              icon: window.icon,
+              initialPosition: window.position,
+              initialSize: window.size,
             }}
-            zPosition={window.zIndex}
           >
             {window.content}
           </Window>
@@ -473,7 +370,9 @@ export const Desktop: React.FC = () => {
 
       {contextMenu.visible && (
         <div ref={contextMenuRef}>
-          <FloatingMenu style={{ top: contextMenu.y, left: contextMenu.x, zIndex: '10000' }}>
+          <FloatingMenu
+            style={{ top: contextMenu.y, left: contextMenu.x, zIndex: 10000 }}
+          >
             <MenuItem label="Réorganiser les icônes par">
               <FloatingMenu>
                 <MenuItem label="Nom"/>
@@ -488,7 +387,7 @@ export const Desktop: React.FC = () => {
                 <MenuItem label="Afficher les icônes du Bureau"/>
                 <MenuItem label="Verrouiller les éléments Web sur le Bureau"/>
                 <MenuItem label="Exécuter l'Assistant Nettoyage du Bureau"/>
-                </FloatingMenu>
+              </FloatingMenu>
             </MenuItem>
             <MenuItem label="Actualiser"/>
             <MenuSeparator />
@@ -515,7 +414,7 @@ export const Desktop: React.FC = () => {
           </FloatingMenu>
         </div>
       )}
-      
+
       {isShutdownOverlayVisible && <WindowsShutdownOverlay />}
     </div>
   );
