@@ -74,8 +74,8 @@ export const Desktop: React.FC = () => {
     openWindow(
       'my-computer',
       'Poste de travail',
+      <div>Contenu Poste de travail</div>,
       <img src={MyComputerSmallIcon} alt="MyComputer" />,
-      <div>Contenu Poste de travail</div>
     );
   };
 
@@ -83,7 +83,6 @@ export const Desktop: React.FC = () => {
     openWindow(
       'my-documents',
       'Mes Documents',
-      <img src={FolderSmallIcon} alt="MyDocuments" />,
       <>
         {/* Barre d'outils / menus */}
         <WindowToolbar>
@@ -245,6 +244,7 @@ export const Desktop: React.FC = () => {
           className="overlayscrollbars-react"
           ref={osRef}
           options={{ scrollbars: { theme: "os-theme-dark", autoHide: "never", clickScroll: true } }}
+          style={{ backgroundColor: 'white' }}
           defer
         >
           {/* Du contenu répétitif pour la démo */}
@@ -279,7 +279,8 @@ export const Desktop: React.FC = () => {
           Encore du contenu<br/>
           ...
         </OverlayScrollbarsComponent>
-      </>
+      </>,
+      <img src={FolderSmallIcon} alt="MyDocuments" />,
     );
   };
 
@@ -287,8 +288,14 @@ export const Desktop: React.FC = () => {
     openWindow(
       'about',
       'À propos de cette expérience',
+      <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>,
       <img src={AboutSmallIcon} alt="About" />,
-      <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>
+      {
+        fixedSize: true,
+        showHelpButton: true,
+        showMinimizeButton: false,
+        showMaximizeButton: false,
+      }
     );
   };
 
@@ -356,6 +363,12 @@ export const Desktop: React.FC = () => {
               icon: window.icon,
               initialPosition: window.position,
               initialSize: window.size,
+              fixedSize: window.fixedSize,
+              showHelpButton: window.showHelpButton,
+              showMinimizeButton: window.showMinimizeButton,
+              showMaximizeButton: window.showMaximizeButton,
+              showCloseButton: window.showCloseButton,
+              onHelp: () => console.log('help')
             }}
           >
             {window.content}

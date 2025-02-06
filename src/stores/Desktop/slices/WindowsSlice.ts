@@ -6,24 +6,76 @@ export interface WindowInfo {
   position: { x: number; y: number };
   size: { width: number; height: number };
   isMinimized: boolean;
+  isMaximized: boolean;
   isActive: boolean;
   zIndex: number;
-  icon: ReactElement;
+  icon?: ReactElement;
   content: ReactNode;
+  fixedSize?: boolean;
+  showHelpButton?: boolean;
+  showMinimizeButton?: boolean;
+  showMaximizeButton?: boolean;
+  showCloseButton?: boolean;
 }
 
 export interface WindowsState {
   windows: WindowInfo[];
-  maxZIndex: number;
 
-  openWindow: (id: string, title: string, icon: ReactElement, content: ReactNode) => void;
+  openWindow: (
+    id: string,
+    title: string,
+    content: React.ReactNode,
+    icon?: React.ReactElement,
+    options?: Partial<Pick<
+      WindowInfo,
+      | 'position'
+      | 'size'
+      | 'fixedSize'
+      | 'showHelpButton'
+      | 'showMinimizeButton'
+      | 'showMaximizeButton'
+      | 'showCloseButton'
+    >>
+  ) => void;
   closeWindow: (id: string) => void;
   bringToFront: (id: string) => void;
   setWindowInactive: (id: string) => void;
+  setWindowPosition: (id: string, position: WindowInfo["position"]) => void;
+  setWindowSize: (id: string, size: WindowInfo["size"]) => void;
   toggleMinimizeWindow: (id: string) => void;
 
-  // Méthode générique de mise à jour
   updateWindow: (id: string, newConfig: Partial<WindowInfo>) => void;
+}
+
+// ---- Le helper (placé dans le même fichier ou un util séparé) ----
+function bringToFrontPreservingZOrder(
+  windows: WindowInfo[],
+  topId: string
+): WindowInfo[] {
+  const targetWindow = windows.find((w) => w.id === topId);
+  if (!targetWindow) return windows;
+
+  const oldZ = targetWindow.zIndex;
+  const maxZ = windows.reduce((acc, w) => Math.max(acc, w.zIndex), 0);
+
+  if (oldZ === maxZ) {
+    // Rien à décaler, juste activer la fenêtre
+    return windows.map((w) =>
+      w.id === topId
+        ? { ...w, isActive: true }
+        : { ...w, isActive: false }
+    );
+  }
+
+  return windows.map((w) => {
+    if (w.id === topId) {
+      return { ...w, zIndex: maxZ, isActive: true };
+    } else if (w.zIndex > oldZ) {
+      return { ...w, zIndex: w.zIndex - 1, isActive: false };
+    } else {
+      return { ...w, isActive: false };
+    }
+  });
 }
 
 export const createWindowsSlice = (
@@ -31,77 +83,69 @@ export const createWindowsSlice = (
   get: () => WindowsState
 ): WindowsState => ({
   windows: [],
-  maxZIndex: 1,
 
-  /**
-   * Ouvre ou restaure une fenêtre, en reprenant la logique
-   * que tu utilisais localement dans Desktop.
-   */
-  openWindow: (id, title, icon, content) => {
-    const state = get();
-    const existingWindow = state.windows.find((w) => w.id === id);
-
-    if (existingWindow) {
-      // Si la fenêtre existe déjà
-      if (existingWindow.isMinimized) {
-        // On la restaure
-        set((prev) => ({
+  // --------------------------------------
+  // Ouvrir ou restaurer une fenêtre
+  // --------------------------------------
+  openWindow: (
+    id,
+    title,
+    content,
+    icon,
+    options = {}
+  ) => {
+    set((prev) => {
+      const existing = prev.windows.find((w) => w.id === id);
+      if (existing) {
+        // Si elle existe déjà : si elle est minimisée, on la restaure.
+        // Puis on la "bringToFront".
+        const updated = prev.windows.map((w) =>
+          w.id === id
+            ? { ...w, isMinimized: false }
+            : w
+        );
+        return {
           ...prev,
-          maxZIndex: prev.maxZIndex + 1,
-          windows: prev.windows.map((w) =>
-            w.id === id
-              ? {
-                  ...w,
-                  isMinimized: false,
-                  isActive: true,
-                  zIndex: prev.maxZIndex + 1,
-                }
-              : w
-          ),
-        }));
+          windows: bringToFrontPreservingZOrder(updated, id),
+        };
       } else {
-        // Sinon, on la met simplement au premier plan
-        set((prev) => ({
+        // Nouvelle fenêtre
+        const currentMaxZ = prev.windows.reduce(
+          (acc, w) => Math.max(acc, w.zIndex),
+          0
+        );
+  
+        const newWindow: WindowInfo = {
+          id,
+          title,
+          icon,
+          content,
+          position: options.position ?? { x: 100, y: 100 },
+          size: options.size ?? { width: 600, height: 400 },
+          isMinimized: false,
+          isMaximized: false,
+          isActive: true,
+          zIndex: currentMaxZ + 1,
+  
+          // Les nouvelles options, avec une valeur par défaut si non fourni
+          fixedSize: options.fixedSize ?? false,
+          showHelpButton: options.showHelpButton ?? false,
+          showMinimizeButton: options.showMinimizeButton ?? true,
+          showMaximizeButton: options.showMaximizeButton ?? true,
+          showCloseButton: options.showCloseButton ?? true,
+        };
+  
+        return {
           ...prev,
-          maxZIndex: prev.maxZIndex + 1,
-          windows: prev.windows.map((w) =>
-            w.id === id
-              ? {
-                  ...w,
-                  isActive: true,
-                  zIndex: prev.maxZIndex + 1,
-                }
-              : w
-          ),
-        }));
+          windows: [...prev.windows, newWindow],
+        };
       }
-    } else {
-      // Création d'une nouvelle fenêtre
-      set((prev) => ({
-        ...prev,
-        maxZIndex: prev.maxZIndex + 1,
-        windows: [
-          ...prev.windows,
-          {
-            id,
-            title,
-            icon,
-            content,
-            isMinimized: false,
-            isActive: true,
-            zIndex: prev.maxZIndex + 1,
-            // Position et taille par défaut (ou aléatoire)
-            position: { x: 100, y: 100 },
-            size: { width: 600, height: 400 },
-          },
-        ],
-      }));
-    }
+    });
   },
 
-  /**
-   * Ferme la fenêtre (on la retire de la liste).
-   */
+  // --------------------------------------
+  // Fermer une fenêtre
+  // --------------------------------------
   closeWindow: (id) => {
     set((prev) => ({
       ...prev,
@@ -109,84 +153,98 @@ export const createWindowsSlice = (
     }));
   },
 
-  /**
-   * Met la fenêtre `id` au premier plan (active, zIndex max).
-   */
+  // --------------------------------------
+  // Mettre la fenêtre en avant
+  // --------------------------------------
   bringToFront: (id) => {
     set((prev) => ({
       ...prev,
-      maxZIndex: prev.maxZIndex + 1,
-      windows: prev.windows.map((w) =>
-        w.id === id
-          ? { ...w, zIndex: prev.maxZIndex + 1, isActive: true }
-          : w
-      ),
+      windows: bringToFrontPreservingZOrder(prev.windows, id),
     }));
   },
 
-  /**
-   * Rend la fenêtre `id` inactive.
-   */
+  // --------------------------------------
+  // Rendre une fenêtre inActive
+  // --------------------------------------
   setWindowInactive: (id) => {
     set((prev) => ({
       ...prev,
       windows: prev.windows.map((w) =>
-        w.id === id
-          ? { ...w, isActive: false }
-          : w
+        w.id === id ? { ...w, isActive: false } : w
       ),
     }));
   },
 
-  /**
-   * Minimise ou restaure une fenêtre (via la Taskbar).
-   */
+  // --------------------------------------
+  // Déplacer la fenêtre
+  // --------------------------------------
+  setWindowPosition: (id, position) => {
+    set((prev) => ({
+      ...prev,
+      windows: prev.windows.map((w) =>
+        w.id === id ? { ...w, position } : w
+      ),
+    }));
+  },
+
+  // --------------------------------------
+  // Redimensionner la fenêtre
+  // --------------------------------------
+  setWindowSize: (id, size) => {
+    set((prev) => ({
+      ...prev,
+      windows: prev.windows.map((w) =>
+        w.id === id ? { ...w, size } : w
+      ),
+    }));
+  },
+
+  // --------------------------------------
+  // Minimize / Restore
+  // --------------------------------------
   toggleMinimizeWindow: (id) => {
     set((prev) => {
-      const windowToMinimize = prev.windows.find((w) => w.id === id);
-      if (!windowToMinimize) return prev; // fenêtre non trouvée, on ne fait rien
+      const target = prev.windows.find((w) => w.id === id);
+      if (!target) return prev;
 
-      const isActive = windowToMinimize.isActive;
-      const isMinimized = windowToMinimize.isMinimized;
+      const isMinimisable = target.showMinimizeButton;
+      const isMinimized = target.isMinimized;
+      const isActive = target.isActive;
 
-      // 2 cas :
-      // - si elle est active => on la minimise
-      // - si elle est minimisée => on la restaure
-      // - sinon => on la met au premier plan
-      let updatedWindows = prev.windows.map((w) => {
+      // Règles d'exemple :
+      // 1. si minimisée => restaurer (et bring to front)
+      // 2. si active => minimiser
+      // 3. sinon => ramener devant
+      let updated = prev.windows.map((w) => {
         if (w.id === id) {
-          if (isMinimized || !isActive) {
-            // Restaure
-            return {
-              ...w,
-              isMinimized: false,
-              isActive: true,
-              zIndex: prev.maxZIndex + 1,
-            };
+          if (isMinimized) {
+            return { ...w, isMinimized: false };
+          } else if (isActive && isMinimisable) {
+            return { ...w, isMinimized: true, isActive: false };
           } else {
-            // Minimise
-            return {
-              ...w,
-              isMinimized: true,
-              isActive: false,
-            };
+            return { ...w, isMinimized: false };
           }
         }
-        // On peut rendre les autres inactives
-        return { ...w, isActive: false };
+        // Les autres restent telles qu'elles sont
+        return w;
       });
+
+      // Si on restaure (était minimisée) ou si on la ramène devant (n’était pas active),
+      // on applique bringToFrontPreservingZOrder
+      const needsFront = isMinimized || (!isMinimized && !isActive);
 
       return {
         ...prev,
-        maxZIndex: isMinimized ? prev.maxZIndex + 1 : prev.maxZIndex,
-        windows: updatedWindows,
+        windows: needsFront
+          ? bringToFrontPreservingZOrder(updated, id)
+          : updated,
       };
     });
   },
 
-  /**
-   * Méthode générique pour mettre à jour une fenêtre en particulier.
-   */
+  // --------------------------------------
+  // Update générique d'une fenêtre
+  // --------------------------------------
   updateWindow: (id, newConfig) => {
     set((prev) => ({
       ...prev,

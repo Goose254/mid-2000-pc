@@ -57,6 +57,26 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
       toggleStartMenu();
     };
 
+    
+    const openWindow = useDesktopStore((state) => state.openWindow);
+    const openRun = () => {
+      openWindow(
+        'run',
+        'Exécuter',
+        <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>,
+        undefined,
+        {
+          position: { x: 3, y: window.innerHeight - 220 },
+          size: { width: 363, height: 186 },
+          fixedSize: true,
+          showHelpButton: true,
+          showMinimizeButton: false,
+          showMaximizeButton: false,
+        }
+      );
+      toggleStartMenu();
+    };
+
     return (
       <>
         {isVisible && (
@@ -108,7 +128,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 <MenuSeparator variant="startSecondary" />
                 <MenuItem variant="startSecondary" label="Aide et support" icon={HelpAndSupportIcon} />
                 <MenuItem variant="startSecondary" label="Rechercher" icon={SearchIcon} />
-                <MenuItem variant="startSecondary" label="Exécuter..." icon={RunIcon} />
+                <MenuItem variant="startSecondary" label="Exécuter..." icon={RunIcon} onClick={() => openRun()} />
               </div>
             </div>
             <div className={styles.startMenuActions}>

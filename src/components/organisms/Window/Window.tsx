@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
+import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
 
 /**
  * Options de configuration pour une fenêtre
@@ -156,6 +157,9 @@ export const Window: React.FC<WindowProps> = ({
     size: initialSize,
   });
 
+  const setWindowPosition = useDesktopStore((state) => state.setWindowPosition);
+  const setWindowSize = useDesktopStore((state) => state.setWindowSize);
+
   const dragStart = useRef({ x: 0, y: 0 });
   const resizeStart = useRef({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
@@ -167,7 +171,7 @@ export const Window: React.FC<WindowProps> = ({
   // Gestion du déplacement
   const handleDragging = (e: React.MouseEvent) => {
     // Si la fenêtre est maximisée ou fixe, on ne bouge pas
-    if (isMaximized || fixedSize) return;
+    if (isMaximized) return;
 
     setIsDragging(true);
     dragStart.current = {
@@ -264,6 +268,9 @@ export const Window: React.FC<WindowProps> = ({
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
       };
+    } else {
+      setWindowPosition(id, position);
+      setWindowSize(id, size);
     }
   }, [isDragging, isResizing]);
 
@@ -362,9 +369,9 @@ export const Window: React.FC<WindowProps> = ({
 
       {/* Contenu principal */}
       <div className={styles["window-content-wrapper"]}>
-        {showResizeHandles && (
+        {!isMaximized && (
           <div
-            className={styles["window-left-border"]}
+            className={`${styles["window-left-border"]} ${!showResizeHandles ? styles["no-resize-cursor"] : ""}`}
             onMouseDown={(e) => handleResizing(e, 'w')}
           ></div>
         )}
@@ -373,20 +380,23 @@ export const Window: React.FC<WindowProps> = ({
           {children}
         </div>
 
-        {showResizeHandles && (
+        {!isMaximized && (
           <div
-            className={styles["window-right-border"]}
+            className={`${styles["window-right-border"]} ${!showResizeHandles ? styles["no-resize-cursor"] : ""}`}
             onMouseDown={(e) => handleResizing(e, 'e')}
           ></div>
         )}
       </div>
 
+      {!isMaximized && (
+        <div
+          className={`${styles["window-bottom-border"]} ${!showResizeHandles ? styles["no-resize-cursor"] : ""}`}
+          onMouseDown={(e) => handleResizing(e, 's')}
+        />
+      )}
+
       {showResizeHandles && (
         <>
-          <div
-            className={styles["window-bottom-border"]}
-            onMouseDown={(e) => handleResizing(e, 's')}
-          />
           <div
             className={`${styles["window-corner-resize"]} ${styles.sw}`}
             onMouseDown={(e) => handleResizing(e, 'sw')}

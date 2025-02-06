@@ -83,10 +83,12 @@ export const TitleBar: React.FC<TitleBarProps> = ({ options }) => {
   return (
     <div className={containerClasses} onDoubleClick={handleDoubleClick}>
       <div className={styles.titleBarTitleWrapper}>
-        <div className={styles.titleBarTitleIcon}>
-          {icon ? icon : null}
-        </div>
-        <div className={styles.titleBarTitleLabel}>{title}</div>
+        {icon && (
+          <div className={styles.titleBarTitleIcon}>
+            {icon}
+          </div>
+        )}
+        <div className={`${styles.titleBarTitleLabel} ${!icon ? styles.titleBarTitleLabelWithoutIcon : ""}`}>{title}</div>
       </div>
 
       <div className={styles.titleBarWindowControlsWrapper}>

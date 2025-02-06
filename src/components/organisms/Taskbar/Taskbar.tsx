@@ -6,24 +6,16 @@ import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
 import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
 
-type TaskbarProps = {
-  windows: Array<{
-    id: string;
-    title: string;
-    icon?: React.ReactElement;
-    isMinimized: boolean;
-    isActive: boolean;
-  }>;
-  onClickWindowIcon: (id: string) => void;
-};
-
-export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) => {
+export const Taskbar: React.FC = () => {
   const [date, setDate] = useState<Date>(new Date());
   const startMenuRef = useRef<HTMLDivElement | null>(null);
   const startButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const toggleStartMenu = useDesktopStore((state) => state.toggleStartMenu);
   const isStartMenuVisible = useDesktopStore((state) => state.isStartMenuVisible);
+  
+  const windows = useDesktopStore((state) => state.windows);
+  const toggleMinimizeWindow = useDesktopStore((state) => state.toggleMinimizeWindow);
 
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 1000);
@@ -60,7 +52,7 @@ export const Taskbar: React.FC<TaskbarProps> = ({ windows, onClickWindowIcon }) 
 
       <div className={styles.taskbarWindowButtons}>
         {windows.map((win) => (
-          <TaskbarButton key={win.id} window={win} onMouseDown={onClickWindowIcon} />
+          win.showMinimizeButton ? <TaskbarButton key={win.id} window={win} onMouseDown={toggleMinimizeWindow} /> : ""
         ))}
       </div>
 

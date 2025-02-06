@@ -103,7 +103,7 @@ $active-bottom-border-center: url(../../../assets/window-borders/window-bottom-b
 .window-content-wrapper {
   display: flex;
   height: calc(100% - 29px);
-  background-color: #fff;
+  background-color: #ece9d8;
 }
 
 .window-content {
@@ -148,4 +148,8 @@ $active-bottom-border-center: url(../../../assets/window-borders/window-bottom-b
   left: 0;
   top: 0;
   cursor: url(../../../assets/cursors/ns-resize.cur), ns-resize;
+}
+
+.no-resize-cursor {
+  cursor: url(./assets/cursors/default.cur), default;
 }
