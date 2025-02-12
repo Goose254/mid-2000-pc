@@ -2,19 +2,18 @@ import React from 'react';
 import styles from './WindowToolbar.module.scss';
 
 interface WindowToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'xp';
+  variant?: 'gradient' | 'plain';
   children: React.ReactNode;
   className?: string;
 }
 
 export const WindowToolbar: React.FC<WindowToolbarProps> = ({
-  variant = 'xp',
+  variant = 'plain',
   children,
   className,
   ...props
 }) => {
-  // Pour l'instant, seule la variante 'xp' est gérée
-  const rootClasses = [styles.xpWindowToolbar, className].filter(Boolean).join(" ");
+  const rootClasses = [styles.xpWindowToolbar, className, styles[variant]].filter(Boolean).join(" ");
 
   return (
     <div className={rootClasses} {...props}>

@@ -42,6 +42,7 @@ import WMMSmallIcon from '@/assets/windows-icons/wmm2res.dll_14_128-8.png';
 
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
+import { Button } from '@/components/atoms/Button/Button';
 
 interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   isVisible: boolean;
@@ -63,7 +64,14 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
       openWindow(
         'run',
         'Exécuter',
-        <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>,
+        <>
+          <div>Entrez le nom d'un programme, dossier, document ou d'une ressource Internet, et Windows l'ouvrira pour vous.</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Button disabled>OK</Button>
+            <Button>Annuler</Button>
+            <Button>Parcourir...</Button>
+          </div>
+        </>,
         undefined,
         {
           position: { x: 3, y: window.innerHeight - 220 },

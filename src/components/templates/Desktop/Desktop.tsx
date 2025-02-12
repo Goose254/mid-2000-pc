@@ -27,11 +27,18 @@ import ForwardIcon from '@/assets/explorer-icons/forward.png';
 import SearchIcon from '@/assets/explorer-icons/search.png';
 import UpIcon from '@/assets/explorer-icons/up.png';
 import ViewsIcon from '@/assets/explorer-icons/views.png';
+import TaskmgrSmallIcon from '@/assets/windows-icons/taskmgr-icon-16.png'
+import TaskmgrIcon from '@/assets/windows-icons/taskmgr-icon-32.png'
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react';
 import 'overlayscrollbars/overlayscrollbars.css'
 import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars';
 import { WindowsXpArrowsPlugin } from '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin';
 import '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin.css';
+
+import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
+import { WindowStatusBar } from '@/components/atoms/WindowStatusBar/WindowStatusBar';
+import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
+import ResizeDots from '@/assets/resize-dots.png';
 
 OverlayScrollbars.plugin(ClickScrollPlugin);
 OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
@@ -85,7 +92,7 @@ export const Desktop: React.FC = () => {
       'Mes Documents',
       <>
         {/* Barre d'outils / menus */}
-        <WindowToolbar>
+        <WindowToolbar variant="gradient">
           <WindowToolbarMenuButton label="Fichier">
             <FloatingMenu>
               <MenuItem label="Créer un raccourci" aria-disabled />
@@ -212,7 +219,7 @@ export const Desktop: React.FC = () => {
           />
         </WindowToolbar>
 
-        <WindowToolbar>
+        <WindowToolbar variant="gradient">
           <WindowToolbarButton icon={BackwardIcon} label="Précédente">
             <FloatingMenu>
               <MenuItem label="Poste de travail"/>
@@ -238,7 +245,7 @@ export const Desktop: React.FC = () => {
             </FloatingMenu>
           </WindowToolbarButton>
         </WindowToolbar>
-        <WindowToolbar><></></WindowToolbar>
+        <WindowToolbar variant="gradient"><></></WindowToolbar>
 
         <OverlayScrollbarsComponent
           className="overlayscrollbars-react"
@@ -299,6 +306,102 @@ export const Desktop: React.FC = () => {
     );
   };
 
+  const openTaskManager = () => {
+    openWindow(
+      'task-manager',
+      'Gestionnaire des tâches de Windows',
+      <>
+        <WindowToolbar>
+          <WindowToolbarMenuButton label="Fichier">
+            <FloatingMenu>
+              <MenuItem label="Nouvelle tâche (Exécuter...)" />
+              <MenuSeparator />
+              <MenuItem label="Quitter le gestionnaire des tâches" />
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Options">
+            <FloatingMenu>
+              <MenuItem label="Toujours visible" />
+              <MenuItem label="Réduire à l'exécution" />
+              <MenuItem label="Masquer l'icône réduite" />
+              <MenuItem label="Afficher les tâches 16 bits" />
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Affichage">
+            <FloatingMenu>
+              <MenuItem label="Actualiser maintenant"/>
+              <MenuItem label="Fréquence d'actualisation">
+                <FloatingMenu>
+                  <MenuItem label="Haute"/>
+                  <MenuItem label="Normale"/>
+                  <MenuItem label="Basse"/>
+                  <MenuItem label="En pause"/>
+                </FloatingMenu>
+              </MenuItem>
+              <MenuSeparator />
+              <MenuItem label="Sélectionner les colonnes..."/>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="Arrêter">
+            <FloatingMenu>
+              <MenuItem label="Mettre en veille" aria-disabled />
+              <MenuItem label="Mettre en veille prolongée" aria-disabled />
+              <MenuItem label="Désactiver" />
+              <MenuItem label="Redémarrer" />
+              <MenuItem label="Fermer la session Utilisateur" />
+              <MenuItem label="Changer d'utilisateur" info="Touche Windows+L" />
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+          <WindowToolbarMenuButton label="?">
+            <FloatingMenu>
+              <MenuItem label="Rubriques d'aide du Gestionnaire des tâches"/>
+              <MenuSeparator />
+              <MenuItem label="À propos du Gestionnaire des tâches"/>
+            </FloatingMenu>
+          </WindowToolbarMenuButton>
+        </WindowToolbar>
+        <Tabs style={{ padding: '8px' }}>
+          <TabList>
+            <Tab>Applications</Tab>
+            <Tab>Processus</Tab>
+            <Tab>Performances</Tab>
+            <Tab>Mise en réseau</Tab>
+            <Tab>Utilisateurs</Tab>
+          </TabList>
+
+          <TabPanel>
+            <h2>Any content 1</h2>
+          </TabPanel>
+          <TabPanel>
+            <h2>Any content 2</h2>
+          </TabPanel>
+          <TabPanel>
+            <h2>Any content 3</h2>
+          </TabPanel>
+          <TabPanel>
+            <h2>Any content 4</h2>
+          </TabPanel>
+          <TabPanel>
+            <h2>Any content 5</h2>
+          </TabPanel>
+        </Tabs>
+        <WindowStatusBar>
+          <StatusBarItem>Processus : 22</StatusBarItem>
+          <StatusBarItem>UC utilisée : 0%</StatusBarItem>
+          <StatusBarItem>Charge dédiée : 95 Mo / 2048 Mo</StatusBarItem>
+          <img src={ResizeDots} style={{ marginLeft: '20px' }} />
+        </WindowStatusBar>
+      </>,
+      <img src={TaskmgrSmallIcon} />,
+      {
+        size: {
+          width: 503,
+          height: 493,
+        },
+      },
+    );
+  };
+
   // Ferme le menu contextuel si on clique n’importe où
   useEffect(() => {
     const handleClickOutsideContextMenu = (event: MouseEvent) => {
@@ -343,6 +446,11 @@ export const Desktop: React.FC = () => {
           label="À propos"
           onDoubleClick={openAbout}
         />
+        <DesktopIcon
+          icon={<img src={TaskmgrIcon} alt="Taskmgr Icon" />}
+          label="Gestionnaire des tâches"
+          onDoubleClick={openTaskManager}
+        />
       </div>
 
       {/* Fenêtres (non minimisées) */}
@@ -376,10 +484,7 @@ export const Desktop: React.FC = () => {
         ))}
 
       {/* Barre des tâches */}
-      <Taskbar
-        windows={windows}
-        onClickWindowIcon={toggleMinimizeWindow}
-      />
+      <Taskbar />
 
       {contextMenu.visible && (
         <div ref={contextMenuRef}>

@@ -55,3 +55,64 @@
     src: url(./assets/fonts/trebuchet-ms-italic.ttf) format('truetype');
     font-style: italic;
 }
+
+.react-tabs {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .react-tabs__tab-list {
+    border-bottom: 1px solid #aaa;
+    margin: 0 0 10px;
+    padding: 0;
+  }
+  
+  .react-tabs__tab {
+    display: inline-block;
+    border-radius: 5px 5px 0 0;
+    border: 1px solid #91a7b4;
+    border-bottom: none;
+    bottom: -1px;
+    position: relative;
+    list-style: none;
+    padding: 1px 5px;
+    margin-left: 1px;
+    cursor: pointer;
+    background: linear-gradient(180deg, #fff, #ecebe5 100%);
+  }
+  
+  .react-tabs__tab--selected {
+    background: #fff;
+    border-color: #aaa;
+    color: black;
+    border-radius: 5px 5px 0 0;
+    margin-left: -1px;
+    margin-right: -2px;
+    padding: 2px 6px 4px 6px;
+  }
+  
+  .react-tabs__tab--disabled {
+    color: GrayText;
+    cursor: default;
+  }
+  
+  .react-tabs__tab:focus {
+    outline: none;
+  }
+  
+  .react-tabs__tab:focus:after {
+    content: '';
+    position: absolute;
+    height: 5px;
+    left: -4px;
+    right: -4px;
+    bottom: -5px;
+    background: #fff;
+  }
+  
+  .react-tabs__tab-panel {
+    display: none;
+  }
+  
+  .react-tabs__tab-panel--selected {
+    display: block;
+  }

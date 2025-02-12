@@ -1,0 +1,21 @@
+.statusBarItem {
+  display: flex;
+  flex-grow: 1;
+  min-height: 22px;
+  font-family: 'Tahoma';
+  font-size: 11px;
+  padding-top: 4px;
+  padding-left: 1px;
+  justify-content: space-between;
+
+  &::after {
+    content: "";
+    display: flex;
+    width: 2px;
+    height: calc(100% - 1px);
+    background-color: white;
+    border-left: 1px solid #bcbaa6;
+    margin-top: -1px;
+    margin-right: 2px;
+  }
+}

@@ -46,7 +46,8 @@
 .os-scrollbar-handle::after {
   content: "_\a_\a_\a_";
   line-height: 2px;
-  font-size: 18px;
+  font-family: 'Tahoma';
+  font-size: 14px;
   text-decoration: solid;
   position: absolute;
   display: block;

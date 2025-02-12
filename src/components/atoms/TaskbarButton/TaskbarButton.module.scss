@@ -67,6 +67,12 @@ $active-hover: (
   padding: 0 10px;
   align-items: center;
   pointer-events: none;
+  width: 100%;
+
+  .taskbarButtonIcon {
+    min-width: 16px;
+    margin-right: 4px;
+  }
   
   .taskbarButtonContentLabel {
     overflow: hidden;

@@ -24,7 +24,7 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ window, onMouseDow
       data-window-id={window.id}
     >
       <div className={styles.taskbarButtonContent}>
-        {window.icon && <div style={{ marginRight: 4 }}>{window.icon}</div>}
+        {window.icon && <div className={styles.taskbarButtonIcon}>{window.icon}</div>}
         <div className={styles.taskbarButtonContentLabel}>{window.title}</div>
       </div>
     </div>
