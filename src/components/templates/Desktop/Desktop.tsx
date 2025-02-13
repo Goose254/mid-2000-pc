@@ -39,6 +39,7 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import { WindowStatusBar } from '@/components/atoms/WindowStatusBar/WindowStatusBar';
 import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
 import ResizeDots from '@/assets/resize-dots.png';
+import { Button } from '@/components/atoms/Button/Button';
 
 OverlayScrollbars.plugin(ClickScrollPlugin);
 OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
@@ -360,7 +361,7 @@ export const Desktop: React.FC = () => {
             </FloatingMenu>
           </WindowToolbarMenuButton>
         </WindowToolbar>
-        <Tabs style={{ padding: '8px' }}>
+        <Tabs style={{ padding: '3px 6px' }}>
           <TabList>
             <Tab>Applications</Tab>
             <Tab>Processus</Tab>
@@ -370,19 +371,26 @@ export const Desktop: React.FC = () => {
           </TabList>
 
           <TabPanel>
-            <h2>Any content 1</h2>
+            <div style={{ display: 'flex', flex: '1 1', backgroundColor: '#ece9d8', margin: '1px 1px 1px 3px', padding: '15px' }}>
+              test
+              <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: '1' }}>
+                <Button disabled>Fin de tâche</Button>
+                <Button disabled>Basculer vers</Button>
+                <Button>Nouvelle tâche...</Button>
+              </div>
+            </div>
           </TabPanel>
           <TabPanel>
-            <h2>Any content 2</h2>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
           </TabPanel>
           <TabPanel>
-            <h2>Any content 3</h2>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
           </TabPanel>
           <TabPanel>
-            <h2>Any content 4</h2>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
           </TabPanel>
           <TabPanel>
-            <h2>Any content 5</h2>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
           </TabPanel>
         </Tabs>
         <WindowStatusBar>
