@@ -7,6 +7,13 @@ import WindowsXPBootScreenCanvas from './components/templates/WindowsXPBootScree
 import BiosScreenCanvas from './components/templates/BiosScreen/BiosScreenCanvas';
 import BiosSetupCanvas from './components/templates/BiosSetup/BiosSetupCanvas';
 import { WindowsXPSplashScreen } from './components/templates/WindowsXPSplashScreen/WindowsXPSplashScreen';
+import 'overlayscrollbars/overlayscrollbars.css'
+import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars';
+import { WindowsXpArrowsPlugin } from '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin';
+import '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin.css';
+
+OverlayScrollbars.plugin(ClickScrollPlugin);
+OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
 
 export type BootStage = 'bios' | 'bios-setup' | 'windows-splash-screen' | 'windows-boot' | 'desktop';
 

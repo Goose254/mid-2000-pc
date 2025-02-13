@@ -1,7 +1,9 @@
 import React from 'react';
 import styles from './StartMenu.module.scss';
 
-import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
+import { useWindowsStore } from '@/common/stores/windowsStore';
+import { useOverlaysStore } from '@/common/stores/overlaysStore';
+import { useStartMenuStore } from '@/common/stores/startMenuStore';
 
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 
@@ -50,8 +52,8 @@ interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
   ({ isVisible, ...divProps }, ref) => {
-    const toggleStartMenu = useDesktopStore((state) => state.toggleStartMenu);
-    const toggleShutdownOverlay = useDesktopStore((state) => state.toggleShutdownOverlay);
+    const toggleStartMenu = useStartMenuStore((state) => state.toggleStartMenu);
+    const toggleShutdownOverlay = useOverlaysStore((state) => state.toggleShutdownOverlay);
 
     const handleShutdownOverlayShow = () => {
       toggleShutdownOverlay();
@@ -59,7 +61,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
     };
 
     
-    const openWindow = useDesktopStore((state) => state.openWindow);
+    const openWindow = useWindowsStore((state) => state.openWindow);
     const openRun = () => {
       openWindow(
         'run',

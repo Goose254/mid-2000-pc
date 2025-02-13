@@ -4,18 +4,19 @@ import styles from './Taskbar.module.scss';
 import moment from 'moment';
 import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
-import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
+import { useWindowsStore } from '@/common/stores/windowsStore';
+import { useStartMenuStore } from '@/common/stores/startMenuStore';
 
 export const Taskbar: React.FC = () => {
   const [date, setDate] = useState<Date>(new Date());
   const startMenuRef = useRef<HTMLDivElement | null>(null);
   const startButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const toggleStartMenu = useDesktopStore((state) => state.toggleStartMenu);
-  const isStartMenuVisible = useDesktopStore((state) => state.isStartMenuVisible);
+  const toggleStartMenu = useStartMenuStore((state) => state.toggleStartMenu);
+  const isStartMenuVisible = useStartMenuStore((state) => state.isStartMenuVisible);
   
-  const windows = useDesktopStore((state) => state.windows);
-  const toggleMinimizeWindow = useDesktopStore((state) => state.toggleMinimizeWindow);
+  const windows = useWindowsStore((state) => state.windows);
+  const toggleMinimizeWindow = useWindowsStore((state) => state.toggleMinimizeWindow);
 
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 1000);

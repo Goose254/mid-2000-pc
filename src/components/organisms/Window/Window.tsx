@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
-import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
+import { useWindowsStore } from '@/common/stores/windowsStore';
 
 /**
  * Options de configuration pour une fenêtre
@@ -157,8 +157,8 @@ export const Window: React.FC<WindowProps> = ({
     size: initialSize,
   });
 
-  const setWindowPosition = useDesktopStore((state) => state.setWindowPosition);
-  const setWindowSize = useDesktopStore((state) => state.setWindowSize);
+  const setWindowPosition = useWindowsStore((state) => state.setWindowPosition);
+  const setWindowSize = useWindowsStore((state) => state.setWindowSize);
 
   const dragStart = useRef({ x: 0, y: 0 });
   const resizeStart = useRef({ x: 0, y: 0 });

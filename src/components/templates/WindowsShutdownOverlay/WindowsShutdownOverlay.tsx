@@ -4,10 +4,10 @@ import StandbyComputerIcon from '../../../assets/windows-icons/shell32.dll_14_26
 import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_28-9.png';
 import RestartComputerIcon from '../../../assets/windows-icons/shell32.dll_14_27-9.png';
 import { Button } from '../../atoms/Button/Button';
-import { useDesktopStore } from '../../../stores/Desktop/useDesktopStore';
+import { useOverlaysStore } from '@/common/stores/overlaysStore';
 
 export const WindowsShutdownOverlay: React.FC = () => {
-  const toggleShutdownOverlay = useDesktopStore(
+  const toggleShutdownOverlay = useOverlaysStore(
     (state) => state.toggleShutdownOverlay
   );
 

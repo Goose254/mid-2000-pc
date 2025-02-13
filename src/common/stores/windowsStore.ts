@@ -1,28 +1,14 @@
-import { ReactNode, ReactElement } from 'react';
-
-export interface WindowInfo {
-  id: string;
-  title: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  isMinimized: boolean;
-  isMaximized: boolean;
-  isActive: boolean;
-  zIndex: number;
-  icon?: ReactElement;
-  content: ReactNode;
-  fixedSize?: boolean;
-  showHelpButton?: boolean;
-  showMinimizeButton?: boolean;
-  showMaximizeButton?: boolean;
-  showCloseButton?: boolean;
-}
+import { create } from 'zustand';
+import { WindowInfo } from '../types/window';
+import { bringToFrontPreservingZOrder } from '../utils/bringWindowToFront';
+import { useAppsStore } from './appsStore';
 
 export interface WindowsState {
   windows: WindowInfo[];
 
   openWindow: (
     id: string,
+    appPid: string,
     title: string,
     content: React.ReactNode,
     icon?: React.ReactElement,
@@ -47,41 +33,7 @@ export interface WindowsState {
   updateWindow: (id: string, newConfig: Partial<WindowInfo>) => void;
 }
 
-// ---- Le helper (placé dans le même fichier ou un util séparé) ----
-function bringToFrontPreservingZOrder(
-  windows: WindowInfo[],
-  topId: string
-): WindowInfo[] {
-  const targetWindow = windows.find((w) => w.id === topId);
-  if (!targetWindow) return windows;
-
-  const oldZ = targetWindow.zIndex;
-  const maxZ = windows.reduce((acc, w) => Math.max(acc, w.zIndex), 0);
-
-  if (oldZ === maxZ) {
-    // Rien à décaler, juste activer la fenêtre
-    return windows.map((w) =>
-      w.id === topId
-        ? { ...w, isActive: true }
-        : { ...w, isActive: false }
-    );
-  }
-
-  return windows.map((w) => {
-    if (w.id === topId) {
-      return { ...w, zIndex: maxZ, isActive: true };
-    } else if (w.zIndex > oldZ) {
-      return { ...w, zIndex: w.zIndex - 1, isActive: false };
-    } else {
-      return { ...w, isActive: false };
-    }
-  });
-}
-
-export const createWindowsSlice = (
-  set: (fn: (prev: WindowsState) => WindowsState) => void,
-  get: () => WindowsState
-): WindowsState => ({
+export const useWindowsStore = create<WindowsState>((set, get) => ({
   windows: [],
 
   // --------------------------------------
@@ -89,13 +41,14 @@ export const createWindowsSlice = (
   // --------------------------------------
   openWindow: (
     id,
+    appPid,
     title,
     content,
     icon,
     options = {}
   ) => {
     set((prev) => {
-      const existing = prev.windows.find((w) => w.id === id);
+      const existing = prev.windows.find((w) => w.id === id && w.appPid === appPid);
       if (existing) {
         // Si elle existe déjà : si elle est minimisée, on la restaure.
         // Puis on la "bringToFront".
@@ -117,6 +70,7 @@ export const createWindowsSlice = (
   
         const newWindow: WindowInfo = {
           id,
+          appPid,
           title,
           icon,
           content,
@@ -147,10 +101,28 @@ export const createWindowsSlice = (
   // Fermer une fenêtre
   // --------------------------------------
   closeWindow: (id) => {
-    set((prev) => ({
-      ...prev,
-      windows: prev.windows.filter((w) => w.id !== id),
-    }));
+    set((prev) => {
+      // Récupérer la fenêtre à fermer
+      const windowToClose = prev.windows.find((w) => w.id === id);
+      // Filtrer la liste pour exclure la fenêtre fermée
+      const updatedWindows = prev.windows.filter((w) => w.id !== id);
+
+      // Si la fenêtre fermée est liée à un appPid, vérifier si d'autres fenêtres existent pour cette instance
+      if (windowToClose && windowToClose.appPid) {
+        const remainingWindows = updatedWindows.filter(
+          (w) => w.appPid === windowToClose.appPid
+        );
+        if (remainingWindows.length === 0) {
+          // Aucune fenêtre restante pour cette instance : on appelle killInstance du store appsStore
+          useAppsStore.getState().killInstance(windowToClose.appPid);
+        }
+      }
+
+      return {
+        ...prev,
+        windows: updatedWindows,
+      };
+    });
   },
 
   // --------------------------------------
@@ -253,4 +225,4 @@ export const createWindowsSlice = (
       ),
     }));
   },
-});
+}));

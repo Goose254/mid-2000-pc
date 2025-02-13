@@ -1,61 +1,40 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDesktopStore } from '@/stores/Desktop/useDesktopStore';
+import { useWindowsStore } from '@/common/stores/windowsStore';
+import { useOverlaysStore } from '@/common/stores/overlaysStore';
 
 import { WindowsShutdownOverlay } from '@/components/templates/WindowsShutdownOverlay/WindowsShutdownOverlay';
 import { DesktopIcon } from '@/components/atoms/DesktopIcon/DesktopIcon';
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
-import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar';
-import { WindowToolbarButton } from '@/components/atoms/WindowToolbarButton/WindowToolbarButton';
-import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
 import { Window } from '@/components/organisms/Window/Window';
 import { Taskbar } from '@/components/organisms/Taskbar/Taskbar';
 
 import XPWallpaper from '@/assets/xp-wallpaper.jpg';
 import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-9.png';
-import MyComputerSmallIcon from '@/assets/windows-icons/explorer.exe_14_100-11.png';
 import MyDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_235-9.png';
-import FolderSmallIcon from '@/assets/windows-icons/shell32.dll_14_5-8.png';
 import TashbinIcon from '@/assets/windows-icons/shell32.dll_14_254-7.png';
 import AboutIcon from '@/assets/windows-icons/hnetwiz.dll_14_10001-9.png';
 import AboutSmallIcon from '@/assets/windows-icons/hnetwiz.dll_14_10001-11.png';
-import WindowToolbarWindowsIcon from '@/assets/explorer-toolbar-windows-icon.png';
-import BackwardIcon from '@/assets/explorer-icons/back.png';
-import FoldersIcon from '@/assets/explorer-icons/folders.png';
-import ForwardIcon from '@/assets/explorer-icons/forward.png';
-import SearchIcon from '@/assets/explorer-icons/search.png';
-import UpIcon from '@/assets/explorer-icons/up.png';
-import ViewsIcon from '@/assets/explorer-icons/views.png';
-import TaskmgrSmallIcon from '@/assets/windows-icons/taskmgr-icon-16.png'
-import TaskmgrIcon from '@/assets/windows-icons/taskmgr-icon-32.png'
-import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react';
-import 'overlayscrollbars/overlayscrollbars.css'
-import { ClickScrollPlugin, OverlayScrollbars } from 'overlayscrollbars';
-import { WindowsXpArrowsPlugin } from '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin';
-import '@/plugins/OverlayScrollbars/WindowsXpArrowsPlugin.css';
 
-import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
-import { WindowStatusBar } from '@/components/atoms/WindowStatusBar/WindowStatusBar';
-import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
-import ResizeDots from '@/assets/resize-dots.png';
-import { Button } from '@/components/atoms/Button/Button';
-
-OverlayScrollbars.plugin(ClickScrollPlugin);
-OverlayScrollbars.plugin(WindowsXpArrowsPlugin);
+import { useAppsStore } from '@/common/stores/appsStore';
+import { TaskManagerApp } from '@/apps/TaskManager/main';
+import { ExplorerApp } from '@/apps/Explorer/main';
 
 export const Desktop: React.FC = () => {
   // --- On récupère "chaque propriété" séparément pour éviter la recréation d'objets ---
-  const windows = useDesktopStore((state) => state.windows);
-  const openWindow = useDesktopStore((state) => state.openWindow);
-  const closeWindow = useDesktopStore((state) => state.closeWindow);
-  const bringToFront = useDesktopStore((state) => state.bringToFront);
-  const setWindowInactive = useDesktopStore((state) => state.setWindowInactive);
-  const toggleMinimizeWindow = useDesktopStore((state) => state.toggleMinimizeWindow);
+  const windows = useWindowsStore((state) => state.windows);
+  const openWindow = useWindowsStore((state) => state.openWindow);
+  const closeWindow = useWindowsStore((state) => state.closeWindow);
+  const bringToFront = useWindowsStore((state) => state.bringToFront);
+  const setWindowInactive = useWindowsStore((state) => state.setWindowInactive);
+  const toggleMinimizeWindow = useWindowsStore((state) => state.toggleMinimizeWindow);
 
-  const isShutdownOverlayVisible = useDesktopStore(
+  const isShutdownOverlayVisible = useOverlaysStore(
     (state) => state.isShutdownOverlayVisible
   );
+
+  const startApp = useAppsStore((state) => state.startApp);
 
   const [contextMenu, setContextMenu] = useState({
     visible: false,
@@ -63,7 +42,6 @@ export const Desktop: React.FC = () => {
     y: 0,
   });
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
-  const osRef = useRef<OverlayScrollbarsComponentRef>(null);
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -77,224 +55,10 @@ export const Desktop: React.FC = () => {
     });
   };
 
-  // Méthodes d'ouverture de fenêtre
-  const openMyComputer = () => {
-    openWindow(
-      'my-computer',
-      'Poste de travail',
-      <div>Contenu Poste de travail</div>,
-      <img src={MyComputerSmallIcon} alt="MyComputer" />,
-    );
-  };
-
-  const openMyDocuments = () => {
-    openWindow(
-      'my-documents',
-      'Mes Documents',
-      <>
-        {/* Barre d'outils / menus */}
-        <WindowToolbar variant="gradient">
-          <WindowToolbarMenuButton label="Fichier">
-            <FloatingMenu>
-              <MenuItem label="Créer un raccourci" aria-disabled />
-              <MenuItem label="Supprimer" aria-disabled />
-              <MenuItem label="Renommer" aria-disabled />
-              <MenuItem label="Propriétés" aria-disabled />
-              <MenuSeparator />
-              <MenuItem label="Fermer" />
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Edition">
-            <FloatingMenu>
-              <MenuItem label="Annuler Déplacer" info="Ctrl+Z"/>
-              <MenuSeparator />
-              <MenuItem label="Couper" info="Ctrl+X" aria-disabled/>
-              <MenuItem label="Copier" info="Ctrl+C" aria-disabled/>
-              <MenuItem label="Coller" info="Ctrl+V" aria-disabled/>
-              <MenuItem label="Coller le raccourci" aria-disabled/>
-              <MenuSeparator />
-              <MenuItem label="Copier dans un dossier..." aria-disabled/>
-              <MenuItem label="Déplacer vers un dossier..." aria-disabled/>
-              <MenuSeparator />
-              <MenuItem label="Sélectionner tout" info="Ctrl+A"/>
-              <MenuItem label="Inverser la sélection"/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Affichage">
-            <FloatingMenu>
-              <MenuItem label="Barre d'outils">
-                <FloatingMenu>
-                  <MenuItem label="Boutons standard"/>
-                  <MenuItem label="Barre d'adresses"/>
-                  <MenuItem label="Liens"/>
-                  <MenuSeparator />
-                  <MenuItem label="Verouiller les barres d'outils"/>
-                  <MenuItem label="Personnaliser..."/>
-                </FloatingMenu>
-              </MenuItem>
-              <MenuItem label="Barre d'état"/>
-              <MenuItem label="Volet d'exploration">
-                <FloatingMenu>
-                  <MenuItem label="Rechercher" info="Ctrl+E"/>
-                  <MenuItem label="Favoris" info="Ctrl+I"/>
-                  <MenuItem label="Historique" info="Ctrl+H"/>
-                  <MenuItem label="Dossiers"/>
-                  <MenuSeparator />
-                  <MenuItem label="Astuce du jour"/>
-                </FloatingMenu>
-              </MenuItem>
-              <MenuSeparator />
-              <MenuItem label="Miniatures"/>
-              <MenuItem label="Mosaïques"/>
-              <MenuItem label="Icônes"/>
-              <MenuItem label="Liste"/>
-              <MenuItem label="Détails"/>
-              <MenuSeparator />
-              <MenuItem label="Réorganiser les icônes par">
-                <FloatingMenu>
-                  <MenuItem label="Nom"/>
-                  <MenuItem label="Type"/>
-                  <MenuItem label="Taille totale"/>
-                  <MenuItem label="Espace libre"/>
-                  <MenuItem label="Commentaires"/>
-                  <MenuSeparator />
-                  <MenuItem label="Afficher par groupe"/>
-                  <MenuItem label="Réorganisation automatique"/>
-                  <MenuItem label="Aligner sur la grille"/>
-                </FloatingMenu>
-              </MenuItem>
-              <MenuSeparator />
-              <MenuItem label="Choisir les détails..."/>
-              <MenuItem label="Atteindre">
-                <FloatingMenu>
-                  <MenuItem label="Précédente" info="Alt+Flèche gauche" aria-disabled/>
-                  <MenuItem label="Suivante" info="Alt+Flèche droite" aria-disabled/>
-                  <MenuItem label="Dossier parent"/>
-                  <MenuSeparator />
-                  <MenuItem label="Page de démarrage" info="Alt+Origine"/>
-                  <MenuSeparator />
-                  <MenuItem label="Poste de travail"/>
-                </FloatingMenu>
-              </MenuItem>
-              <MenuItem label="Actualiser"/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Favoris">
-            <FloatingMenu>
-              <MenuItem label="Ajouter aux Favoris..."/>
-              <MenuItem label="Organiser les Favoris..."/>
-              <MenuSeparator />
-              <MenuItem label="Liens">
-                <FloatingMenu>
-                  <MenuItem label="Hotmail"/>
-                  <MenuItem label="Personnaliser les liens"/>
-                  <MenuItem label="Windows"/>
-                  <MenuItem label="Windows Media"/>
-                </FloatingMenu>
-              </MenuItem>
-              <MenuItem label="Guide des stations de radio"/>
-              <MenuItem label="MSN.com"/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Outils">
-            <FloatingMenu>
-              <MenuItem label="Connecter un lecteur réseau..."/>
-              <MenuItem label="Déconnecter un lecteur réseau..."/>
-              <MenuItem label="Synchroniser..."/>
-              <MenuSeparator />
-              <MenuItem label="Options des dossiers..."/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="?">
-            <FloatingMenu>
-              <MenuItem label="Centre d'aide et de support"/>
-              <MenuSeparator />
-              <MenuItem label="Cette copie de Windows est-elle légale ?"/>
-              <MenuItem label="À propos de Windows"/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <img
-            src={WindowToolbarWindowsIcon}
-            style={{ marginLeft: 'auto', borderLeft: '1px solid #aca899' }}
-            alt="Windows icon"
-          />
-        </WindowToolbar>
-
-        <WindowToolbar variant="gradient">
-          <WindowToolbarButton icon={BackwardIcon} label="Précédente">
-            <FloatingMenu>
-              <MenuItem label="Poste de travail"/>
-            </FloatingMenu>
-          </WindowToolbarButton>
-          <WindowToolbarButton icon={ForwardIcon}>
-            <FloatingMenu>
-              <MenuItem label="Mes documents"/>
-            </FloatingMenu>
-          </WindowToolbarButton>
-          <WindowToolbarButton icon={UpIcon}></WindowToolbarButton>
-          <MenuSeparator direction="vertical"/>
-          <WindowToolbarButton icon={SearchIcon} label="Rechercher"></WindowToolbarButton>
-          <WindowToolbarButton icon={FoldersIcon} label="Dossiers"></WindowToolbarButton>
-          <MenuSeparator direction="vertical"/>
-          <WindowToolbarButton icon={ViewsIcon}>
-            <FloatingMenu>
-              <MenuItem label="Miniatures"/>
-              <MenuItem label="Mosaïques"/>
-              <MenuItem label="Icônes"/>
-              <MenuItem label="Liste"/>
-              <MenuItem label="Détails"/>
-            </FloatingMenu>
-          </WindowToolbarButton>
-        </WindowToolbar>
-        <WindowToolbar variant="gradient"><></></WindowToolbar>
-
-        <OverlayScrollbarsComponent
-          className="overlayscrollbars-react"
-          ref={osRef}
-          options={{ scrollbars: { theme: "os-theme-dark", autoHide: "never", clickScroll: true } }}
-          style={{ backgroundColor: 'white' }}
-          defer
-        >
-          {/* Du contenu répétitif pour la démo */}
-          Du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          Encore du contenu<br/>
-          ...
-        </OverlayScrollbarsComponent>
-      </>,
-      <img src={FolderSmallIcon} alt="MyDocuments" />,
-    );
-  };
-
   const openAbout = () => {
     openWindow(
       'about',
+      'about.exe',
       'À propos de cette expérience',
       <div>Cette expérience de simulation d'un ordinateur du milieu des années 2000 est basée sur ReactJS.</div>,
       <img src={AboutSmallIcon} alt="About" />,
@@ -304,109 +68,6 @@ export const Desktop: React.FC = () => {
         showMinimizeButton: false,
         showMaximizeButton: false,
       }
-    );
-  };
-
-  const openTaskManager = () => {
-    openWindow(
-      'task-manager',
-      'Gestionnaire des tâches de Windows',
-      <>
-        <WindowToolbar>
-          <WindowToolbarMenuButton label="Fichier">
-            <FloatingMenu>
-              <MenuItem label="Nouvelle tâche (Exécuter...)" />
-              <MenuSeparator />
-              <MenuItem label="Quitter le gestionnaire des tâches" />
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Options">
-            <FloatingMenu>
-              <MenuItem label="Toujours visible" />
-              <MenuItem label="Réduire à l'exécution" />
-              <MenuItem label="Masquer l'icône réduite" />
-              <MenuItem label="Afficher les tâches 16 bits" />
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Affichage">
-            <FloatingMenu>
-              <MenuItem label="Actualiser maintenant"/>
-              <MenuItem label="Fréquence d'actualisation">
-                <FloatingMenu>
-                  <MenuItem label="Haute"/>
-                  <MenuItem label="Normale"/>
-                  <MenuItem label="Basse"/>
-                  <MenuItem label="En pause"/>
-                </FloatingMenu>
-              </MenuItem>
-              <MenuSeparator />
-              <MenuItem label="Sélectionner les colonnes..."/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="Arrêter">
-            <FloatingMenu>
-              <MenuItem label="Mettre en veille" aria-disabled />
-              <MenuItem label="Mettre en veille prolongée" aria-disabled />
-              <MenuItem label="Désactiver" />
-              <MenuItem label="Redémarrer" />
-              <MenuItem label="Fermer la session Utilisateur" />
-              <MenuItem label="Changer d'utilisateur" info="Touche Windows+L" />
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-          <WindowToolbarMenuButton label="?">
-            <FloatingMenu>
-              <MenuItem label="Rubriques d'aide du Gestionnaire des tâches"/>
-              <MenuSeparator />
-              <MenuItem label="À propos du Gestionnaire des tâches"/>
-            </FloatingMenu>
-          </WindowToolbarMenuButton>
-        </WindowToolbar>
-        <Tabs style={{ padding: '3px 6px' }}>
-          <TabList>
-            <Tab>Applications</Tab>
-            <Tab>Processus</Tab>
-            <Tab>Performances</Tab>
-            <Tab>Mise en réseau</Tab>
-            <Tab>Utilisateurs</Tab>
-          </TabList>
-
-          <TabPanel>
-            <div style={{ display: 'flex', flex: '1 1', backgroundColor: '#ece9d8', margin: '1px 1px 1px 3px', padding: '15px' }}>
-              test
-              <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: '1' }}>
-                <Button disabled>Fin de tâche</Button>
-                <Button disabled>Basculer vers</Button>
-                <Button>Nouvelle tâche...</Button>
-              </div>
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-          </TabPanel>
-          <TabPanel>
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-          </TabPanel>
-          <TabPanel>
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-          </TabPanel>
-          <TabPanel>
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-          </TabPanel>
-        </Tabs>
-        <WindowStatusBar>
-          <StatusBarItem>Processus : 22</StatusBarItem>
-          <StatusBarItem>UC utilisée : 0%</StatusBarItem>
-          <StatusBarItem>Charge dédiée : 95 Mo / 2048 Mo</StatusBarItem>
-          <img src={ResizeDots} style={{ marginLeft: '20px' }} />
-        </WindowStatusBar>
-      </>,
-      <img src={TaskmgrSmallIcon} />,
-      {
-        size: {
-          width: 503,
-          height: 493,
-        },
-      },
     );
   };
 
@@ -435,19 +96,17 @@ export const Desktop: React.FC = () => {
         <DesktopIcon
           icon={<img src={MyComputerIcon} alt="MyComputer Icon" />}
           label="Poste de travail"
-          onDoubleClick={openMyComputer}
+          onDoubleClick={() => startApp(ExplorerApp)}
         />
         <DesktopIcon
           icon={<img src={MyDocumentsIcon} alt="MyDocuments Icon" />}
           label="Mes Documents"
-          onDoubleClick={openMyDocuments}
+          onDoubleClick={() => startApp(ExplorerApp)}
         />
         <DesktopIcon
           icon={<img src={TashbinIcon} alt="Trash bin Icon" />}
           label="Corbeille"
-          onDoubleClick={() => {
-            openMyDocuments();
-          }}
+          onDoubleClick={() => {}}
         />
         <DesktopIcon
           icon={<img src={AboutIcon} alt="About Icon" />}
@@ -455,9 +114,9 @@ export const Desktop: React.FC = () => {
           onDoubleClick={openAbout}
         />
         <DesktopIcon
-          icon={<img src={TaskmgrIcon} alt="Taskmgr Icon" />}
+          icon={<img src={TaskManagerApp.icons.medium} alt="Taskmgr Icon" />}
           label="Gestionnaire des tâches"
-          onDoubleClick={openTaskManager}
+          onDoubleClick={() => startApp(TaskManagerApp)}
         />
       </div>
 
