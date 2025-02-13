@@ -33,7 +33,7 @@ export interface WindowsState {
   updateWindow: (id: string, newConfig: Partial<WindowInfo>) => void;
 }
 
-export const useWindowsStore = create<WindowsState>((set, get) => ({
+export const useWindowsStore = create<WindowsState>((set) => ({
   windows: [],
 
   // --------------------------------------

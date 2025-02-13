@@ -85,6 +85,7 @@ $taskbar-tools-bg-center: url(../../../assets/taskbar-tools-background-center.pn
 $taskbar-window-buttons-margin-left: 8px;
 
 .taskbarTools {
+  display: flex;
   height: $taskbar-tools-height;
   position: fixed;
   bottom: 0;
@@ -98,6 +99,15 @@ $taskbar-window-buttons-margin-left: 8px;
   background-position: left top, left top;
   background-repeat: no-repeat, no-repeat;
   background-size: contain, 100% 100%;
+
+  &:has(> img) {
+    padding-left: 8px;
+  }
+
+  & > img {
+    margin-top: 1px;
+    margin-right: 6px;
+  }
 }
 
 // Boutons des fenêtres de la Taskbar

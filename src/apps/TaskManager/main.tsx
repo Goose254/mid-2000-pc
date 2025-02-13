@@ -47,7 +47,7 @@ export const TaskManagerApp: AppTemplate = {
 
     // Si une TaskbarIcon est définie, on l'ajoute dans le store dédié
     if (TaskbarIcon) {
-      useTaskbarStore.getState().addToolIcon(pid, <TaskbarIcon />);
+      useTaskbarStore.getState().addToolIcon(pid, <TaskbarIcon key={pid} windowId={windowId} />);
     }
 
     // On retourne l'objet de contrôle pour cette instance

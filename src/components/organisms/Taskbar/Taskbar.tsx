@@ -6,6 +6,7 @@ import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useStartMenuStore } from '@/common/stores/startMenuStore';
+import { useTaskbarStore } from '@/common/stores/taskbarStore';
 
 export const Taskbar: React.FC = () => {
   const [date, setDate] = useState<Date>(new Date());
@@ -17,6 +18,8 @@ export const Taskbar: React.FC = () => {
   
   const windows = useWindowsStore((state) => state.windows);
   const toggleMinimizeWindow = useWindowsStore((state) => state.toggleMinimizeWindow);
+
+  const toolIcons = useTaskbarStore((state) => state.toolIcons)
 
   useEffect(() => {
     const dateTimer = setInterval(() => setDate(new Date()), 1000);
@@ -58,6 +61,7 @@ export const Taskbar: React.FC = () => {
       </div>
 
       <div className={styles.taskbarTools}>
+        {toolIcons.map((Icon) => (Icon.icon))}
         {moment(date).format('HH:mm')}
       </div>
     </div>

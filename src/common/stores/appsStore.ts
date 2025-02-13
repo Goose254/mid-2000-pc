@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { AppTemplate, AppInstance, AppInstanceControl } from '../types/appTemplate';
 import { generatePid } from '../utils/pidGenerator';
+import { useWindowsStore } from './windowsStore';
+import { getWindowIdForInstance } from '../utils/windowId';
 
 interface AppsState {
   instances: AppInstance[];
@@ -18,7 +20,9 @@ export const useAppsStore = create<AppsState>((set, get) => ({
     // Si l’app est en instance unique et qu’une instance existe déjà, on peut la ramener au premier plan
     const existing = get().instances.find((inst) => inst.appId === app.id);
     if (existing && !app.multiInstance) {
-      // Ici, tu peux déclencher une action pour bringToFront via ton store windows, par exemple.
+      const windowId = getWindowIdForInstance(existing.pid, 'main');
+
+      useWindowsStore.getState().bringToFront(windowId);
       return;
     }
     const pid = generatePid(app.id);
