@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from './styles.module.scss';
 
+import { useAppsStore } from '@/common/stores/appsStore';
+
 import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar';
 import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
@@ -12,8 +14,10 @@ import { WindowStatusBar } from '@/components/atoms/WindowStatusBar/WindowStatus
 import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
 
 import ResizeDots from '@/assets/resize-dots.png';
+import { useWindowsStore } from '@/common/stores/windowsStore';
 
 export const TaskManagerMainWindow: React.FC = () => {
+  const apps = useWindowsStore((state) => state.windows)
 
   return (
     <>
@@ -66,7 +70,7 @@ export const TaskManagerMainWindow: React.FC = () => {
           </FloatingMenu>
         </WindowToolbarMenuButton>
       </WindowToolbar>
-      <Tabs style={{ padding: '3px 6px' }}>
+      <Tabs style={{ padding: '3px 6px', height: 'calc(100% - 80px)' }}>
         <TabList>
           <Tab>Applications</Tab>
           <Tab>Processus</Tab>
@@ -76,11 +80,17 @@ export const TaskManagerMainWindow: React.FC = () => {
         </TabList>
 
         <TabPanel>
-          <div style={{ display: 'flex', flex: '1 1', backgroundColor: '#ece9d8', margin: '1px 1px 1px 3px', padding: '15px' }}>
-            test
-            <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: '1' }}>
-              <Button disabled>Fin de tâche</Button>
-              <Button disabled>Basculer vers</Button>
+          <div style={{ display: 'flex', flex: '1 1', backgroundColor: '#ece9d8', margin: '1px 1px 1px 3px', padding: '15px', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ background: 'white', padding: '1px 5px', border: '1px solid #919b9c', flexGrow: '1', marginBottom: '15px' }}>
+              {apps.map((app) => (
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr' }}>
+                  {app.icon}<div style={{ padding: '1px 3px' }}>{app.title}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: '0' }}>
+              <Button disabled style={{ marginRight: '10px', width: '150px !important' }}>Fin de tâche</Button>
+              <Button disabled style={{ marginRight: '10px' }}>Basculer vers</Button>
               <Button>Nouvelle tâche...</Button>
             </div>
           </div>
