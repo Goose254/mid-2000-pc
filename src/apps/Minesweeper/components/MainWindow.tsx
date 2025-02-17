@@ -48,9 +48,25 @@ const cellIcons = {
 }
 
 export const MinesweeperMainWindow: React.FC = () => {
-      const { grid, gameOver, handleCellClick, handleRightClick, resetGame } = useMinesweeper('beginner');
+      const {     grid,
+                  gameOver,
+                  isMouseDown,
+                  hoveredCell,
+                  handleRightClick,
+                  handleMouseDown,
+                  handleMouseUp,
+                  handleMouseEnter,
+                  resetGame,
+      } = useMinesweeper('beginner');
 
-      const getCellIcon = (cell: Cell, gameOver: boolean) => {
+      const getCellIcon = (
+            cell: Cell,
+            gameOver: boolean,
+            isMouseDown: boolean,
+            hoveredCell: { row: number; col: number } | null,
+            row: number,
+            col: number
+      ) => {
             if (gameOver) {
                   if (cell.isMine) {
                         if (cell.isRevealed) return cellIcons.blown
@@ -64,7 +80,12 @@ export const MinesweeperMainWindow: React.FC = () => {
       
             if (cell.isFlagged) return cellIcons.flagged
             if (cell.isMarked) return cellIcons.marked
-            if (!cell.isRevealed) return cellIcons.unclicked
+            if (!cell.isRevealed) {
+                  if (isMouseDown && hoveredCell?.row === row && hoveredCell?.col === col) {
+                        return cellIcons["numbered"][0]
+                  }
+                  return cellIcons.unclicked
+            }
       
             if (cell.isMine) return cellIcons.blown
             return cellIcons["numbered"][cell.neighborMines]
@@ -109,14 +130,17 @@ export const MinesweeperMainWindow: React.FC = () => {
                                           <div
                                                 key={colIndex}
                                                 className={styles.cell}
-                                                onClick={() => handleCellClick(rowIndex, colIndex)}
+                                                onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                                                onMouseUp={() => handleMouseUp(rowIndex, colIndex)}
+                                                onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
                                                 onContextMenu={(e) => {
-                                                      e.preventDefault()
-                                                      handleRightClick(rowIndex, colIndex)
+                                                e.preventDefault(); // Prevent the default context menu
+                                                handleRightClick(rowIndex, colIndex);
                                                 }}
                                           >
+                                                <div className={styles.cellCover}></div>
                                                 <img
-                                                      src={getCellIcon(cell, gameOver)}
+                                                      src={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
                                                       alt="cell"
                                                       style={{ width: '100%', height: '100%' }}
                                                 />

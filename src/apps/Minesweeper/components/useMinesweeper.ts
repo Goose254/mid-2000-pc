@@ -14,6 +14,8 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       const [grid, setGrid] = useState<Cell[][]>([])
       const [gameOver, setGameOver] = useState(false)
       const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty)
+      const [isMouseDown, setIsMouseDown] = useState(false)
+      const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
 
       /* I declare the possible directions from one cell in a [dx, dy] format to simplify later functions */
       const directions = [
@@ -143,6 +145,27 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             })
       }
 
+      const handleMouseDown = (row: number, col: number) => {
+            if (gameOver || grid[row][col].isRevealed || grid[row][col].isFlagged) return
+
+            setIsMouseDown(true)
+            setHoveredCell({ row, col })
+      }
+      
+      const handleMouseUp = (row: number, col: number) => {
+            if (!isMouseDown) return
+
+            setIsMouseDown(false)
+            setHoveredCell(null)
+            handleCellClick(row, col)
+      }
+      
+      const handleMouseEnter = (row: number, col: number) => {
+            if (isMouseDown && !gameOver && !grid[row][col].isRevealed && !grid[row][col].isFlagged) {
+                  setHoveredCell({ row, col })
+            }
+      }
+
       const resetGame = (newDifficulty?: Difficulty) => {
             const rows = newDifficulty === 'beginner' ? 9 : 16
             const cols = newDifficulty === 'beginner' ? 9 : newDifficulty === 'intermediate' ? 16 : 30
@@ -158,8 +181,13 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             grid,
             gameOver,
             difficulty,
+            isMouseDown,
+            hoveredCell,
             handleCellClick,
             handleRightClick,
+            handleMouseDown,
+            handleMouseUp,
+            handleMouseEnter,
             resetGame,
       }
 }
