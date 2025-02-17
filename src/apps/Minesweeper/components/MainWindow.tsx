@@ -134,8 +134,8 @@ export const MinesweeperMainWindow: React.FC = () => {
                                                 onMouseUp={() => handleMouseUp(rowIndex, colIndex)}
                                                 onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
                                                 onContextMenu={(e) => {
-                                                e.preventDefault(); // Prevent the default context menu
-                                                handleRightClick(rowIndex, colIndex);
+                                                      e.preventDefault()
+                                                      handleRightClick(rowIndex, colIndex)
                                                 }}
                                           >
                                                 <div className={styles.cellCover}></div>
