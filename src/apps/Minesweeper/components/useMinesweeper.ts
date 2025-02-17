@@ -84,6 +84,9 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
 
             /* I reveal the first clicked cell */
             grid[clickedRow][clickedCol].isRevealed = true
+            if (grid[clickedRow][clickedCol].neighborMines === 0) {
+                  revealEmptyCells(grid, clickedRow, clickedCol)
+            }
 
             setGameInitialized(true)
 
