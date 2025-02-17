@@ -20,6 +20,7 @@ import AboutSmallIcon from '@/assets/windows-icons/hnetwiz.dll_14_10001-11.png';
 import { useAppsStore } from '@/common/stores/appsStore';
 import { TaskManagerApp } from '@/apps/TaskManager/main';
 import { ExplorerApp } from '@/apps/Explorer/main';
+import { MinesweeperApp } from '@/apps/Minesweeper/main';
 
 export const Desktop: React.FC = () => {
   // --- On récupère "chaque propriété" séparément pour éviter la recréation d'objets ---
@@ -117,6 +118,11 @@ export const Desktop: React.FC = () => {
           icon={<img src={TaskManagerApp.icons.medium} alt="Taskmgr Icon" />}
           label="Gestionnaire des tâches"
           onDoubleClick={() => startApp(TaskManagerApp)}
+        />
+        <DesktopIcon
+          icon={<img src={MinesweeperApp.icons.medium} alt="Minesweeper Icon" />}
+          label="Démineur"
+          onDoubleClick={() => startApp(MinesweeperApp)}
         />
       </div>
 
