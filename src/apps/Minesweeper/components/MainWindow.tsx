@@ -130,9 +130,9 @@ export const MinesweeperMainWindow: React.FC = () => {
                                           <div
                                                 key={colIndex}
                                                 className={styles.cell}
-                                                onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                                                onMouseUp={() => handleMouseUp(rowIndex, colIndex)}
-                                                onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                                                onMouseDown={(e) => {if (e.button === 0) {handleMouseDown(rowIndex, colIndex)}}}
+                                                onMouseUp={(e) => {if (e.button === 0) {handleMouseUp(rowIndex, colIndex)}}}
+                                                onMouseEnter={() => {if (isMouseDown) {handleMouseEnter(rowIndex, colIndex)}}}
                                                 onContextMenu={(e) => {
                                                       e.preventDefault()
                                                       handleRightClick(rowIndex, colIndex)
