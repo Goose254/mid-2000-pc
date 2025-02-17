@@ -35,7 +35,7 @@ export const TaskManagerApp: AppTemplate = {
       windowId,
       pid,
       name,
-      <MainWindow />,
+      <MainWindow taskManagerWindowId={windowId} />,
       <img src={icons.xsmall} />,
       {
         size: {

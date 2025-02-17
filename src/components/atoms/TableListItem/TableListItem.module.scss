@@ -1,0 +1,50 @@
+// Variables de configuration
+$icon-dim: 16px;
+$desktop-icon-active-bg: #316ac5;
+$desktop-icon-label-width: 84px;
+$desktop-icon-label-line-height: 12px;
+$desktop-icon-label-margin-top: 4px;
+$desktop-icon-font-family: 'Tahoma';
+$desktop-icon-font-size: 11px;
+$desktop-icon-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+
+.tableListItem {
+  
+  // Style de la zone d'étiquette (label) en mode normal
+  .tableListItemLabelWrapper {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 1px;
+  }
+
+  .tableListItemLabel {
+    padding: 4px 8px 2px 0;
+  }
+
+  // États "active"
+  &.active {
+    .tableListItemIconWrapper {
+      position: relative;
+    }
+    
+    .tableListItemIconOverlay {
+      height: $icon-dim;
+      position: relative;
+      bottom: $icon-dim;
+      mask-image: var(--icon-image);
+      -webkit-mask-image: var(--icon-image);
+      background-color: $desktop-icon-active-bg;
+      opacity: 0.5;
+    }
+    
+    .tableListItemLabel {
+      background-color: $desktop-icon-active-bg;
+      color: white;
+    }
+
+    .tableListItemLabelWrapper {
+      color: white;
+    }
+  }
+  
+}

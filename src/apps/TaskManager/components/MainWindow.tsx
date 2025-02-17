@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './styles.module.scss';
 
 import { useAppsStore } from '@/common/stores/appsStore';
+import { useWindowsStore } from '@/common/stores/windowsStore';
 
 import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar';
 import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
@@ -9,14 +10,17 @@ import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
-import { Button } from '@/components/atoms/Button/Button';
 import { WindowStatusBar } from '@/components/atoms/WindowStatusBar/WindowStatusBar';
 import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
 
 import ResizeDots from '@/assets/resize-dots.png';
-import { useWindowsStore } from '@/common/stores/windowsStore';
+import { TaskManagerApplicationsTab } from './Tabs/ApplicationsTab';
 
-export const TaskManagerMainWindow: React.FC = () => {
+interface TaskManagerMainWindowProps {
+  taskManagerWindowId: string
+}
+
+export const TaskManagerMainWindow: React.FC<TaskManagerMainWindowProps> = ({ taskManagerWindowId }) => {
   const apps = useWindowsStore((state) => state.windows)
 
   return (
@@ -80,20 +84,7 @@ export const TaskManagerMainWindow: React.FC = () => {
         </TabList>
 
         <TabPanel>
-          <div style={{ display: 'flex', flex: '1 1', backgroundColor: '#ece9d8', margin: '1px 1px 1px 3px', padding: '15px', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div style={{ background: 'white', padding: '1px 5px', border: '1px solid #919b9c', flexGrow: '1', marginBottom: '15px' }}>
-              {apps.map((app) => (
-                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr' }}>
-                  {app.icon}<div style={{ padding: '1px 3px' }}>{app.title}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: '0' }}>
-              <Button disabled style={{ marginRight: '10px', width: '150px !important' }}>Fin de tâche</Button>
-              <Button disabled style={{ marginRight: '10px' }}>Basculer vers</Button>
-              <Button>Nouvelle tâche...</Button>
-            </div>
-          </div>
+          <TaskManagerApplicationsTab taskManagerWindowId={taskManagerWindowId} />
         </TabPanel>
         <TabPanel>
           <br/><br/><br/><br/><br/><br/><br/><br/><br/>

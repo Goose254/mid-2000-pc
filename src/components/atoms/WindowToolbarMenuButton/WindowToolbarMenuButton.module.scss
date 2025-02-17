@@ -1,7 +1,7 @@
 // Variables de configuration
 $menu-button-max-height: 22px;
-$menu-button-margin: 1px 0 2px 0;
-$menu-button-padding: 1px 8px 0 8px;
+$menu-button-padding: 1px 6px 2px 6px;
+$menu-button-margin: 1px;
 $child-div-margin-top: 1px;
 $child-div-margin-left: -8px;
 $transition-out: 0s all 0.05s;
@@ -11,8 +11,8 @@ $hover-background: #316ac5;
 
 .xpWindowToolbarMenuButton {
   max-height: $menu-button-max-height;
-  margin: $menu-button-margin;
   padding: $menu-button-padding;
+  margin-bottom: $menu-button-margin;
   
   > div {
     visibility: hidden;

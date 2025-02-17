@@ -112,6 +112,7 @@ $active-bottom-border-center: url(../../../assets/window-borders/window-bottom-b
   display: flex;
   flex-grow: 1;
   flex-direction: column;
+  min-width: 0;
 }
 
 // Éléments de redimensionnement aux coins

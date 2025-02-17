@@ -6,7 +6,6 @@ $toolbar-bg-plain: rgba(234,229,213,1);
 $toolbar-border-bottom: 1px solid white;
 
 $inner-container-min-height: 23px;
-$inner-container-padding-left: 2px;
 $inner-container-border-bottom: 1px solid #d8d2bd;
 
 .xpWindowToolbar {
@@ -16,8 +15,6 @@ $inner-container-border-bottom: 1px solid #d8d2bd;
 
   .innerContainer {
     display: flex;
-    min-height: $inner-container-min-height;
-    padding-left: $inner-container-padding-left;
     border-bottom: $inner-container-border-bottom;
   }
 }

@@ -7,7 +7,7 @@
   transition: none !important;
 }
 
-.os-scrollbar-track {
+.os-scrollbar-vertical .os-scrollbar-track {
   width: 17px;
   background: linear-gradient(to right, #f3f1ec 0%, #fefefb 100%);
   position: relative;
@@ -16,12 +16,12 @@
   border: 1px solid #eeede5;
 }
 
-.os-scrollbar-track:hover {
+.os-scrollbar-vertical .os-scrollbar-track:hover {
   background: linear-gradient(to right, #f3f1ec 0%, #fefefb 100%);
   border: 1px solid #eeede5;
 }
 
-.os-scrollbar-handle {
+.os-scrollbar-vertical .os-scrollbar-handle {
   max-width: 16px;
   margin-right: 1px;
   background-position: 0px 0px;
@@ -32,7 +32,7 @@
   cursor: url(../../../assets/cursors/default.cur), default !important;
 }
 
-.os-scrollbar-handle:hover {
+.os-scrollbar-vertical .os-scrollbar-handle:hover {
   max-width: 16px;
   margin-right: 1px;
   background-position: 0px 0px;
@@ -43,7 +43,7 @@
   cursor: pointer;
 }
 
-.os-scrollbar-handle::after {
+.os-scrollbar-vertical .os-scrollbar-handle::after {
   content: "_\a_\a_\a_";
   line-height: 2px;
   font-family: 'Tahoma';
@@ -58,12 +58,12 @@
   text-shadow: 1px 1px 0 #8cb0f8;
 }
 
-.os-scrollbar-handle:active::after {
+.os-scrollbar-vertical .os-scrollbar-handle:active::after {
   color: #eef4fe80;
   text-shadow: 1px 1px 0 #8cb0f880;
 }
 
-.os-scrollbar-handle:active {
+.os-scrollbar-vertical .os-scrollbar-handle:active {
   max-width: 16px;
   margin-right: 1px;
   background-position: 0px 0px;
@@ -74,7 +74,7 @@
   cursor: pointer;
 }
 
-.os-scrollbar-button {
+.os-scrollbar-vertical .os-scrollbar-button {
   width: 16px;
   height: 17px;
   background-position: 0px 0px;
@@ -90,15 +90,15 @@
   box-sizing: border-box;
 }
 
-.os-scrollbar-button:hover {
+.os-scrollbar-vertical .os-scrollbar-button:hover {
   background-image: radial-gradient(100% 100% at 0% 0%, rgb(235, 242, 255) 0%, rgb(200, 218, 255) 50%);
 }
 
-.os-scrollbar-button:active {
+.os-scrollbar-vertical .os-scrollbar-button:active {
   box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030, inset 2px 2px 8px 0px #0c3b8f80;
 }
 
-.os-scrollbar-button::before {
+.os-scrollbar-vertical .os-scrollbar-button::before {
   width: 16px;
   height: 17px;
   font-family: 'MS Sans Serif';
@@ -133,6 +133,124 @@
   transform: none;
 }
 
+.os-scrollbar-horizontal .os-scrollbar-track {
+  height: 17px;
+  background: linear-gradient(to bottom, #f3f1ec 0%, #fefefb 100%);
+  position: relative;
+  bottom: 3px;
+  border-radius: 0;
+  border: 1px solid #eeede5;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-track:hover {
+  background: linear-gradient(to bottom, #f3f1ec 0%, #fefefb 100%);
+  border: 1px solid #eeede5;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-handle {
+  max-height: 16px;
+  max-width: calc(100% - 40px);
+  margin-bottom: 1px;
+  background-position: 0px 0px;
+  background-image: radial-gradient(100% 100% at 50% 0%, #e1eafeff 0%, #aec8f7ff 80%);
+  box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030;
+  border-radius: 3px;
+  border: 1px solid #fff;
+  cursor: url(../../../assets/cursors/default.cur), default !important;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-handle:hover {
+  max-height: 16px;
+  margin-bottom: 1px;
+  background-position: 0px 0px;
+  background-image: radial-gradient(100% 100% at 0% 0%, rgb(235, 242, 255) 0%, rgb(200, 218, 255) 50%);
+  box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030;
+  border-radius: 3px;
+  border: 1px solid #fff;
+  cursor: pointer;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-handle::after {
+  content: "||||";
+  line-height: 2px;
+  font-family: 'Tahoma';
+  font-size: 7px;
+  text-decoration: solid;
+  position: absolute;
+  display: block;
+  left: calc(50% - 5px);
+  bottom: 7px;
+  align-content: center;
+  color: #eef4fe;
+  text-shadow: 1px 1px 0 #8cb0f8;
+  transform: scale(0.8, 1.05);
+}
+
+.os-scrollbar-horizontal .os-scrollbar-handle:active::after {
+  color: #eef4fe80;
+  text-shadow: 1px 1px 0 #8cb0f880;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-handle:active {
+  max-height: 16px;
+  margin-bottom: 1px;
+  background-position: 0px 0px;
+  background-image: radial-gradient(100% 100% at 0% 0%, #e1eafeff 0%, #aec8f7ff 50%);
+  box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030, inset 2px 2px 8px 0px #0c3b8f80;
+  border-radius: 3px;
+  border: 1px solid #fff;
+  cursor: pointer;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-button {
+  height: 16px;
+  width: 17px;
+  background-position: 0px 0px;
+  background-image: radial-gradient(100% 100% at 0% 0%, #e1eafeff 0%, #aec8f7ff 100%);
+  box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000050;
+  border-radius: 3px;
+  border: 1px solid #fff;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-button:hover {
+  background-image: radial-gradient(100% 100% at 0% 0%, rgb(235, 242, 255) 0%, rgb(200, 218, 255) 50%);
+}
+
+.os-scrollbar-horizontal .os-scrollbar-button:active {
+  box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030, inset 2px 2px 8px 0px #0c3b8f80;
+}
+
+.os-scrollbar-horizontal .os-scrollbar-button::before {
+  width: 16px;
+  height: 17px;
+  font-family: 'MS Sans Serif';
+  font-weight: bold;
+  content: '';
+  color: #4d6185;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%234d6185' d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/%3E%3C/svg%3E");
+}
+
+.os-scrollbar-button-left {
+  position: absolute;
+  bottom: 1px;
+  left: 1px;
+}
+
+.os-scrollbar-button-right {
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+}
+
 .os-scrollbar-button-left::before {
   background-position: 3px 5px;
   transform: rotate(90deg);
@@ -140,7 +258,7 @@
 
 .os-scrollbar-button-right::before {
   background-size: 8px;
-  background-position: 3px 5px;
+  background-position: 4px 5px;
   transform: rotate(270deg);
 }
 
@@ -165,5 +283,5 @@
   --os-padding-axis: 0px;
   --os-padding-perpendicular: 0px;
   padding-left: 18px !important;
-  padding-right: 18px !important;
+  padding-right: 19px !important;
 }

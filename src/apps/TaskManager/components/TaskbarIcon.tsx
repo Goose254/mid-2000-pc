@@ -19,10 +19,10 @@ import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 
 interface TaskManagerTaskbarIconProps {
-  windowId: string
+  taskManagerWindowId: string
 }
 
-export const TaskManagerTaskbarIcon: React.FC<TaskManagerTaskbarIconProps> = ({ windowId }) => {
+export const TaskManagerTaskbarIcon: React.FC<TaskManagerTaskbarIconProps> = ({ taskManagerWindowId }) => {
   const [icon, setIcon] = useState<string>(TaskManager0Icon);
   const [contextMenu, setContextMenu] = useState({
     visible: false,
@@ -83,13 +83,13 @@ export const TaskManagerTaskbarIcon: React.FC<TaskManagerTaskbarIconProps> = ({ 
 
   return (
     <>
-      <img src={icon} onContextMenu={handleContextMenu} onDoubleClick={() => useWindowsStore.getState().bringToFront(windowId)} />
+      <img src={icon} onContextMenu={handleContextMenu} onDoubleClick={() => useWindowsStore.getState().bringToFront(taskManagerWindowId)} />
       {contextMenu.visible && (
         <div ref={contextMenuRef}>
           <FloatingMenu
             style={{ position: 'absolute', bottom: contextMenu.y, right: contextMenu.x, zIndex: 10000 }}
           >
-            <MenuItem label="Fermer" onClick={() => useWindowsStore.getState().closeWindow(windowId)} />
+            <MenuItem label="Fermer" onClick={() => useWindowsStore.getState().closeWindow(taskManagerWindowId)} />
             <MenuSeparator />
             <MenuItem label="Toujours visible"/>
           </FloatingMenu>
