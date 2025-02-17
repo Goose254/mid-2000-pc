@@ -14,11 +14,10 @@ $desktop-icon-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
   .tableListItemLabelWrapper {
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-left: 1px;
   }
 
   .tableListItemLabel {
-    padding: 4px 8px 2px 0;
+    padding: 4px 8px 2px 1px;
   }
 
   // États "active"
