@@ -74,7 +74,7 @@ export const TaskManagerMainWindow: React.FC<TaskManagerMainWindowProps> = ({ ta
           </FloatingMenu>
         </WindowToolbarMenuButton>
       </WindowToolbar>
-      <Tabs style={{ padding: '3px 6px', height: 'calc(100% - 80px)' }}>
+      <Tabs style={{ padding: '3px 6px', height: 'calc(100% - 72px)' }}>
         <TabList>
           <Tab>Applications</Tab>
           <Tab>Processus</Tab>

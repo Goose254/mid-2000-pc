@@ -23,6 +23,7 @@
 
 .os-scrollbar-vertical .os-scrollbar-handle {
   max-width: 16px;
+  max-height: calc(100% - 40px);
   margin-right: 1px;
   background-position: 0px 0px;
   background-image: radial-gradient(100% 100% at 0% 0%, #e1eafeff 0%, #aec8f7ff 50%);
