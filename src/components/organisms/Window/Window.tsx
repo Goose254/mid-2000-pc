@@ -3,6 +3,12 @@ import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 
+export interface TitleBarButtonOptions {
+  visible: boolean;
+  enabled: boolean;
+  action?: (e?: MouseEvent) => void;
+}
+
 /**
  * Options de configuration pour une fenêtre
  */
@@ -30,26 +36,14 @@ export interface WindowOptions {
   fixedSize?: boolean;
 
   /**
-   * Afficher le bouton Help ?
+   * Option des boutons
    */
-  showHelpButton?: boolean;
-  /**
-   * Afficher le bouton Minimize ?
-   */
-  showMinimizeButton?: boolean;
-  /**
-   * Afficher le bouton Maximize/Restore ?
-   */
-  showMaximizeButton?: boolean;
-  /**
-   * Afficher le bouton Close ?
-   */
-  showCloseButton?: boolean;
-
-  /**
-   * Callback au clic sur le bouton Help
-   */
-  onHelp?: () => void;
+  buttons?: {
+    help?: TitleBarButtonOptions;
+    minimize?: TitleBarButtonOptions;
+    maximize?: TitleBarButtonOptions;
+    close?: TitleBarButtonOptions;
+  };
 }
 
 interface WindowProps {
@@ -64,10 +58,8 @@ interface WindowProps {
   /**
    * Callbacks de cycle de vie
    */
-  onClose: () => void;
   onActive: () => void;
   onInactive: () => void;
-  onMinimize: () => void;
 
   /**
    * Objet contenant les options de la fenêtre
@@ -77,47 +69,104 @@ interface WindowProps {
 
 type ResizePole = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'none';
 
-// Valeurs par défaut pour éviter de multiplier les attributs dans l'appel du composant
-const defaultOptions: Required<Pick<
-  WindowOptions,
-  | 'title'
-  | 'fixedSize'
-  | 'showHelpButton'
-  | 'showMinimizeButton'
-  | 'showMaximizeButton'
-  | 'showCloseButton'
->> & {
-  initialPosition: { x: number; y: number };
-  initialSize: { width: number; height: number };
-} = {
-  // Quelques valeurs par défaut de base
-  title: 'Untitled',
-  fixedSize: false,
-  showHelpButton: false,
-  showMinimizeButton: true,
-  showMaximizeButton: true,
-  showCloseButton: true,
-
-  // Positions et tailles par défaut
-  initialPosition: { x: 100, y: 100 },
-  initialSize: { width: 600, height: 400 },
-};
-
 export const Window: React.FC<WindowProps> = ({
   id,
   zPosition,
   children,
   isActive,
-  onClose,
   onActive,
   onInactive,
-  onMinimize,
   options = {}, // options fournies par l'appelant
 }) => {
+// Valeurs par défaut pour éviter de multiplier les attributs dans l'appel du composant
+  const defaultOptions: Required<Pick<
+    WindowOptions,
+    | 'title'
+    | 'fixedSize'
+    | 'initialPosition'
+    | 'initialSize'
+  >> & {
+    buttons: {
+      help: TitleBarButtonOptions;
+      minimize: TitleBarButtonOptions;
+      maximize: TitleBarButtonOptions;
+      close: TitleBarButtonOptions;
+    }
+  } = {
+    title: 'Untitled',
+    fixedSize: false,
+    buttons: {
+      help: {
+        visible: false,
+        enabled: false,
+      },
+      minimize: {
+        visible: true,
+        enabled: true,
+        action: () => {
+          useWindowsStore.getState().toggleMinimizeWindow(id);
+        },
+      },
+      maximize: {
+        visible: true,
+        enabled: true,
+        action: () => {
+          // Empêche la maximisation si la fenêtre est de taille fixe
+          if (fixedSize) return;
+      
+          if (!isMaximized) {
+            setBeforeMaximized({ position, size });
+            setPosition({ x: 0, y: 0 });
+            setSize({
+              width: window.innerWidth,
+              height: window.innerHeight - 30, // 30px pour la taskbar (exemple)
+            });
+            setIsMaximized(true);
+          } else {
+            setPosition(beforeMaximized.position);
+            setSize(beforeMaximized.size);
+            setIsMaximized(false);
+          }
+        },
+      },
+      close: {
+        visible: true,
+        enabled: true,
+        action: () => {
+          useWindowsStore.getState().closeWindow(id);
+        },
+      },
+    },
+    initialPosition: { x: 100, y: 100 },
+    initialSize: { width: 600, height: 400 },
+  };
+
   // On fusionne les valeurs fournies avec les valeurs par défaut
   const mergedOptions = {
     ...defaultOptions,
     ...options,
+    buttons: {
+      help: {
+        visible: options.buttons?.help?.visible ?? defaultOptions.buttons.help.visible,
+        enabled: options.buttons?.help?.enabled ?? defaultOptions.buttons.help.enabled,
+        action: options.buttons?.help?.action ?? defaultOptions.buttons.help.action,
+      },
+      minimize: {
+        visible: options.buttons?.minimize?.visible ?? defaultOptions.buttons.minimize.visible,
+        enabled: options.buttons?.minimize?.enabled ?? defaultOptions.buttons.minimize.enabled,
+        action: options.buttons?.minimize?.action ?? defaultOptions.buttons.minimize.action,
+      },
+      maximize: {
+        visible: options.buttons?.maximize?.visible ?? defaultOptions.buttons.maximize.visible,
+        enabled: options.buttons?.maximize?.enabled ?? defaultOptions.buttons.maximize.enabled,
+        action: options.buttons?.maximize?.action ?? defaultOptions.buttons.maximize.action,
+      },
+      close: {
+        visible: options.buttons?.close?.visible ?? defaultOptions.buttons.close.visible,
+        enabled: options.buttons?.close?.enabled ?? defaultOptions.buttons.close.enabled,
+        action: options.buttons?.close?.action ?? defaultOptions.buttons.close.action,
+      },
+    },
     // Pour être sûr que l'utilisateur ne casse pas la structure
     initialPosition: {
       ...defaultOptions.initialPosition,
@@ -135,11 +184,7 @@ export const Window: React.FC<WindowProps> = ({
     initialPosition,
     initialSize,
     fixedSize,
-    showHelpButton,
-    showMinimizeButton,
-    showMaximizeButton,
-    showCloseButton,
-    onHelp,
+    buttons,
   } = mergedOptions;
 
   // État local pour la position et la taille
@@ -293,31 +338,6 @@ export const Window: React.FC<WindowProps> = ({
     };
   }, [windowRef]);
 
-  // Gestion de la maximisation
-  const handleMaximize = () => {
-    // Empêche la maximisation si la fenêtre est de taille fixe
-    if (fixedSize) return;
-
-    if (!isMaximized) {
-      setBeforeMaximized({ position, size });
-      setPosition({ x: 0, y: 0 });
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight - 30, // 30px pour la taskbar (exemple)
-      });
-      setIsMaximized(true);
-    } else {
-      setPosition(beforeMaximized.position);
-      setSize(beforeMaximized.size);
-      setIsMaximized(false);
-    }
-  };
-
-  // Gestion de la minimisation
-  const handleMinimize = () => {
-    onMinimize();
-  };
-
   // Style inline pour positionner la fenêtre
   const style = {
     top: `${position.y}px`,
@@ -359,10 +379,7 @@ export const Window: React.FC<WindowProps> = ({
             icon,
             isMaximized,
             isActive,
-            onMinimize: showMinimizeButton ? handleMinimize : undefined,
-            onMaximize: showMaximizeButton ? handleMaximize : undefined,
-            onClose: showCloseButton ? onClose : undefined,
-            onHelp: showHelpButton ? onHelp : undefined,
+            buttons,
           }}
         />
       </div>

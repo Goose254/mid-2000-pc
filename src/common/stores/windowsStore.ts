@@ -17,10 +17,7 @@ export interface WindowsState {
       | 'position'
       | 'size'
       | 'fixedSize'
-      | 'showHelpButton'
-      | 'showMinimizeButton'
-      | 'showMaximizeButton'
-      | 'showCloseButton'
+      | 'buttons'
     >>
   ) => void;
   closeWindow: (id: string) => void;
@@ -83,10 +80,28 @@ export const useWindowsStore = create<WindowsState>((set) => ({
   
           // Les nouvelles options, avec une valeur par défaut si non fourni
           fixedSize: options.fixedSize ?? false,
-          showHelpButton: options.showHelpButton ?? false,
-          showMinimizeButton: options.showMinimizeButton ?? true,
-          showMaximizeButton: options.showMaximizeButton ?? true,
-          showCloseButton: options.showCloseButton ?? true,
+          buttons: {
+            help: {
+              visible: options.buttons?.help?.visible ?? false,
+              enabled: options.buttons?.help?.enabled ?? false,
+              action: options.buttons?.help?.action,
+            },
+            minimize: {
+              visible: options.buttons?.minimize?.visible ?? true,
+              enabled: options.buttons?.minimize?.enabled ?? true,
+              action: options.buttons?.minimize?.action,
+            },
+            maximize: {
+              visible: options.buttons?.maximize?.visible ?? true,
+              enabled: options.buttons?.maximize?.enabled ?? true,
+              action: options.buttons?.maximize?.action,
+            },
+            close: {
+              visible: options.buttons?.close?.visible ?? true,
+              enabled: options.buttons?.close?.enabled ?? true,
+              action: options.buttons?.close?.action,
+            },
+          },
         };
   
         return {
@@ -179,7 +194,7 @@ export const useWindowsStore = create<WindowsState>((set) => ({
       const target = prev.windows.find((w) => w.id === id);
       if (!target) return prev;
 
-      const isMinimisable = target.showMinimizeButton;
+      const isMinimisable = target.buttons?.minimize?.visible && target.buttons?.minimize?.enabled;
       const isMinimized = target.isMinimized;
       const isActive = target.isActive;
 

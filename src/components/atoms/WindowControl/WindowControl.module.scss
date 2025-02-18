@@ -23,13 +23,17 @@ $window-buttons-path: '../../../assets/window-buttons';
   box-shadow: none;
   transition: background 0.1s;
   border: none;
+  
+  &:disabled {
+    opacity: 0.45;
+  }
 
   &.close {
     @include set-bg('close', 'default');
     &.inactive {
       @include set-bg('close', 'inactive');
     }
-    &:hover {
+    &:not(:disabled):hover {
       @include set-bg('close', 'hover');
     }
     &:not(:disabled):active {
@@ -42,7 +46,7 @@ $window-buttons-path: '../../../assets/window-buttons';
     &.inactive {
       @include set-bg('minimize', 'inactive');
     }
-    &:hover {
+    &:not(:disabled):hover {
       @include set-bg('minimize', 'hover');
     }
     &:not(:disabled):active {
@@ -55,7 +59,7 @@ $window-buttons-path: '../../../assets/window-buttons';
     &.inactive {
       @include set-bg('maximize', 'inactive');
     }
-    &:hover {
+    &:not(:disabled):hover {
       @include set-bg('maximize', 'hover');
     }
     &:not(:disabled):active {
@@ -68,7 +72,7 @@ $window-buttons-path: '../../../assets/window-buttons';
     &.inactive {
       @include set-bg('restore', 'inactive');
     }
-    &:hover {
+    &:not(:disabled):hover {
       @include set-bg('restore', 'hover');
     }
     &:not(:disabled):active {
@@ -81,7 +85,7 @@ $window-buttons-path: '../../../assets/window-buttons';
     &.inactive {
       @include set-bg('help', 'inactive');
     }
-    &:hover {
+    &:not(:disabled):hover {
       @include set-bg('help', 'hover');
     }
     &:not(:disabled):active {

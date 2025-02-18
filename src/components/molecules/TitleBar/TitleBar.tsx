@@ -1,6 +1,7 @@
 import React from 'react';
 import { WindowControl } from '../../atoms/WindowControl/WindowControl';
 import styles from './TitleBar.module.scss';
+import { TitleBarButtonOptions } from '@/components/organisms/Window/Window';
 
 /**
  * Options de configuration pour la TitleBar
@@ -25,25 +26,14 @@ export interface TitleBarOptions {
   isMaximized?: boolean;
 
   /**
-   * Callback pour le bouton d'aide (Help).
-   * S'il n'est pas défini, on n'affiche pas le bouton.
+   * Options des boutons
    */
-  onHelp?: () => void;
-  /**
-   * Callback pour le bouton Minimize.
-   * S'il n'est pas défini, on n'affiche pas le bouton.
-   */
-  onMinimize?: () => void;
-  /**
-   * Callback pour le bouton Maximize/Restore.
-   * S'il n'est pas défini, on n'affiche pas le bouton.
-   */
-  onMaximize?: () => void;
-  /**
-   * Callback pour le bouton Close.
-   * S'il n'est pas défini, on n'affiche pas le bouton.
-   */
-  onClose?: () => void;
+  buttons?: {
+    help?: TitleBarButtonOptions;
+    minimize?: TitleBarButtonOptions;
+    maximize?: TitleBarButtonOptions;
+    close?: TitleBarButtonOptions;
+  };
 }
 
 interface TitleBarProps {
@@ -60,10 +50,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ options }) => {
     icon,
     isActive = true,
     isMaximized = false,
-    onHelp,
-    onMinimize,
-    onMaximize,
-    onClose,
+    buttons,
   } = options;
 
   // Application des classes pour le conteneur
@@ -75,8 +62,8 @@ export const TitleBar: React.FC<TitleBarProps> = ({ options }) => {
 
   // Double-clic pour maximiser/restaurer (si la prop onMaximize existe)
   const handleDoubleClick = () => {
-    if (onMaximize) {
-      onMaximize();
+    if (buttons?.maximize?.action) {
+      buttons.maximize.action();
     }
   };
 
@@ -93,46 +80,51 @@ export const TitleBar: React.FC<TitleBarProps> = ({ options }) => {
 
       <div className={styles.titleBarWindowControlsWrapper}>
         {/* Bouton Help (facultatif) */}
-        {onHelp && (
+        {buttons?.help?.visible && (
           <WindowControl
             type="help"
-            onClick={onHelp}
+            onClick={() => buttons?.help?.action && buttons.help.action()}
             isActive={isActive}
+            enabled={buttons.help.enabled}
           />
         )}
 
         {/* Bouton Minimize (facultatif) */}
-        {onMinimize && (
+        {buttons?.minimize?.visible && (
           <WindowControl
             type="minimize"
-            onClick={onMinimize}
+            onClick={() => buttons?.minimize?.action && buttons.minimize.action()}
             isActive={isActive}
+            enabled={buttons.minimize.enabled}
           />
         )}
 
         {/* Bouton Maximize/Restore (facultatif) */}
-        {onMaximize && (
+        {buttons?.maximize?.visible && (
           isMaximized ? (
             <WindowControl
               type="restore"
-              onClick={onMaximize}
+              onClick={() => buttons?.maximize?.action && buttons.maximize.action()}
               isActive={isActive}
+              enabled={buttons.maximize.enabled}
             />
           ) : (
             <WindowControl
               type="maximize"
-              onClick={onMaximize}
+              onClick={() => buttons?.maximize?.action && buttons.maximize.action()}
               isActive={isActive}
+              enabled={buttons.maximize.enabled}
             />
           )
         )}
 
         {/* Bouton Close (facultatif) */}
-        {onClose && (
+        {buttons?.close?.visible && (
           <WindowControl
             type="close"
-            onClick={onClose}
+            onClick={() => buttons?.close?.action && buttons.close.action()}
             isActive={isActive}
+            enabled={buttons.close.enabled}
           />
         )}
       </div>

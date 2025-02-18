@@ -56,7 +56,9 @@ export const Taskbar: React.FC = () => {
 
       <div className={styles.taskbarWindowButtons}>
         {windows.map((win) => (
-          win.showMinimizeButton ? <TaskbarButton key={win.id} window={win} onMouseDown={toggleMinimizeWindow} /> : ""
+          win.buttons?.minimize?.visible && win.buttons?.minimize?.enabled ?
+            <TaskbarButton key={win.id} window={win} onMouseDown={toggleMinimizeWindow} /> :
+            ""
         ))}
       </div>
 

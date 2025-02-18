@@ -35,12 +35,17 @@ export const MinesweeperApp: AppTemplate = {
       <MainWindow />,
       <img src={icons.xsmall} />,
       {
-            showMaximizeButton: false,
-            fixedSize: true,
-            size: {
-            width: 503,
-            height: 493,
-            },
+        buttons: {
+          maximize: {
+            visible: true,
+            enabled: false,
+          }
+        },
+        fixedSize: true,
+        size: {
+          width: 503,
+          height: 493,
+        },
       },
     );
 

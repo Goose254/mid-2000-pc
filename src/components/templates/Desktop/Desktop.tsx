@@ -26,10 +26,8 @@ export const Desktop: React.FC = () => {
   // --- On récupère "chaque propriété" séparément pour éviter la recréation d'objets ---
   const windows = useWindowsStore((state) => state.windows);
   const openWindow = useWindowsStore((state) => state.openWindow);
-  const closeWindow = useWindowsStore((state) => state.closeWindow);
   const bringToFront = useWindowsStore((state) => state.bringToFront);
   const setWindowInactive = useWindowsStore((state) => state.setWindowInactive);
-  const toggleMinimizeWindow = useWindowsStore((state) => state.toggleMinimizeWindow);
 
   const isShutdownOverlayVisible = useOverlaysStore(
     (state) => state.isShutdownOverlayVisible
@@ -65,9 +63,20 @@ export const Desktop: React.FC = () => {
       <img src={AboutSmallIcon} alt="About" />,
       {
         fixedSize: true,
-        showHelpButton: true,
-        showMinimizeButton: false,
-        showMaximizeButton: false,
+        buttons: {
+          help: {
+            visible: true,
+            enabled: true,
+          },
+          minimize: {
+            visible: false,
+            enabled: false,
+          },
+          maximize: {
+            visible: false,
+            enabled: false,
+          },
+        },
       }
     );
   };
@@ -135,21 +144,15 @@ export const Desktop: React.FC = () => {
             id={window.id}
             zPosition={window.zIndex}
             isActive={window.isActive}
-            onClose={() => closeWindow(window.id)}
             onActive={() => bringToFront(window.id)}
             onInactive={() => setWindowInactive(window.id)}
-            onMinimize={() => toggleMinimizeWindow(window.id)}
             options={{
               title: window.title,
               icon: window.icon,
               initialPosition: window.position,
               initialSize: window.size,
               fixedSize: window.fixedSize,
-              showHelpButton: window.showHelpButton,
-              showMinimizeButton: window.showMinimizeButton,
-              showMaximizeButton: window.showMaximizeButton,
-              showCloseButton: window.showCloseButton,
-              onHelp: () => console.log('help')
+              buttons: window.buttons,
             }}
           >
             {window.content}

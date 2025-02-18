@@ -1,3 +1,4 @@
+import { TitleBarButtonOptions } from "@/components/organisms/Window/Window";
 import { ReactElement, ReactNode } from "react";
 
 export interface WindowInfo {
@@ -13,8 +14,10 @@ export interface WindowInfo {
   icon?: ReactElement;
   content: ReactNode;
   fixedSize?: boolean;
-  showHelpButton?: boolean;
-  showMinimizeButton?: boolean;
-  showMaximizeButton?: boolean;
-  showCloseButton?: boolean;
+  buttons?: {
+    help?: TitleBarButtonOptions;
+    minimize?: TitleBarButtonOptions;
+    maximize?: TitleBarButtonOptions;
+    close?: TitleBarButtonOptions;
+  }
 }

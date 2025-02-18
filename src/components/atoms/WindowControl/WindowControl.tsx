@@ -5,9 +5,10 @@ interface WindowControlProps {
   type: 'minimize' | 'maximize' | 'restore' | 'help' | 'close';
   onClick: () => void;
   isActive: boolean;
+  enabled: boolean;
 }
 
-export const WindowControl: React.FC<WindowControlProps> = ({ type, onClick, isActive }) => {
+export const WindowControl: React.FC<WindowControlProps> = ({ type, onClick, isActive, enabled }) => {
   const baseClass = [
     styles.titleBarButton,
     styles[type],
@@ -17,7 +18,8 @@ export const WindowControl: React.FC<WindowControlProps> = ({ type, onClick, isA
   return (
     <button 
       className={baseClass}
-      onClick={onClick}
+      onClick={() => enabled && onClick()}
+      disabled={!enabled}
     ></button>
   );
 };
