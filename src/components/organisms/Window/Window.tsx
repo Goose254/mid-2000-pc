@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
+import { WindowInfo } from '@/common/types/window';
 
 export interface TitleBarButtonOptions {
   visible: boolean;
@@ -9,198 +10,33 @@ export interface TitleBarButtonOptions {
   action?: (e?: MouseEvent) => void;
 }
 
-/**
- * Options de configuration pour une fenêtre
- */
-export interface WindowOptions {
-  /**
-   * Titre de la fenêtre
-   */
-  title?: string;
-  /**
-   * Icône à afficher dans la barre de titre
-   */
-  icon?: React.ReactElement;
-  /**
-   * Position initiale de la fenêtre (x,y)
-   */
-  initialPosition?: { x: number; y: number };
-  /**
-   * Taille initiale de la fenêtre (width,height)
-   */
-  initialSize?: { width: number; height: number };
-  /**
-   * Fenêtre à taille fixe ?
-   * - Désactive le redimensionnement et la maximisation.
-   */
-  fixedSize?: boolean;
-
-  /**
-   * Option des boutons
-   */
-  buttons?: {
-    help?: TitleBarButtonOptions;
-    minimize?: TitleBarButtonOptions;
-    maximize?: TitleBarButtonOptions;
-    close?: TitleBarButtonOptions;
-  };
-}
-
 interface WindowProps {
   id: string;
-  zPosition: number;
   children: React.ReactNode;
-  /**
-   * Indique si la fenêtre est actuellement active (au premier plan)
-   */
-  isActive: boolean;
-
-  /**
-   * Callbacks de cycle de vie
-   */
-  onActive: () => void;
-  onInactive: () => void;
-
-  /**
-   * Objet contenant les options de la fenêtre
-   */
-  options?: WindowOptions;
 }
 
 type ResizePole = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'none';
 
 export const Window: React.FC<WindowProps> = ({
   id,
-  zPosition,
   children,
-  isActive,
-  onActive,
-  onInactive,
-  options = {}, // options fournies par l'appelant
 }) => {
-// Valeurs par défaut pour éviter de multiplier les attributs dans l'appel du composant
-  const defaultOptions: Required<Pick<
-    WindowOptions,
-    | 'title'
-    | 'fixedSize'
-    | 'initialPosition'
-    | 'initialSize'
-  >> & {
-    buttons: {
-      help: TitleBarButtonOptions;
-      minimize: TitleBarButtonOptions;
-      maximize: TitleBarButtonOptions;
-      close: TitleBarButtonOptions;
-    }
-  } = {
-    title: 'Untitled',
-    fixedSize: false,
-    buttons: {
-      help: {
-        visible: false,
-        enabled: false,
-      },
-      minimize: {
-        visible: true,
-        enabled: true,
-        action: () => {
-          useWindowsStore.getState().toggleMinimizeWindow(id);
-        },
-      },
-      maximize: {
-        visible: true,
-        enabled: true,
-        action: () => {
-          // Empêche la maximisation si la fenêtre est de taille fixe
-          if (fixedSize) return;
-      
-          if (!isMaximized) {
-            setBeforeMaximized({ position, size });
-            setPosition({ x: 0, y: 0 });
-            setSize({
-              width: window.innerWidth,
-              height: window.innerHeight - 30, // 30px pour la taskbar (exemple)
-            });
-            setIsMaximized(true);
-          } else {
-            setPosition(beforeMaximized.position);
-            setSize(beforeMaximized.size);
-            setIsMaximized(false);
-          }
-        },
-      },
-      close: {
-        visible: true,
-        enabled: true,
-        action: () => {
-          useWindowsStore.getState().closeWindow(id);
-        },
-      },
-    },
-    initialPosition: { x: 100, y: 100 },
-    initialSize: { width: 600, height: 400 },
-  };
-
-  // On fusionne les valeurs fournies avec les valeurs par défaut
-  const mergedOptions = {
-    ...defaultOptions,
-    ...options,
-    buttons: {
-      help: {
-        visible: options.buttons?.help?.visible ?? defaultOptions.buttons.help.visible,
-        enabled: options.buttons?.help?.enabled ?? defaultOptions.buttons.help.enabled,
-        action: options.buttons?.help?.action ?? defaultOptions.buttons.help.action,
-      },
-      minimize: {
-        visible: options.buttons?.minimize?.visible ?? defaultOptions.buttons.minimize.visible,
-        enabled: options.buttons?.minimize?.enabled ?? defaultOptions.buttons.minimize.enabled,
-        action: options.buttons?.minimize?.action ?? defaultOptions.buttons.minimize.action,
-      },
-      maximize: {
-        visible: options.buttons?.maximize?.visible ?? defaultOptions.buttons.maximize.visible,
-        enabled: options.buttons?.maximize?.enabled ?? defaultOptions.buttons.maximize.enabled,
-        action: options.buttons?.maximize?.action ?? defaultOptions.buttons.maximize.action,
-      },
-      close: {
-        visible: options.buttons?.close?.visible ?? defaultOptions.buttons.close.visible,
-        enabled: options.buttons?.close?.enabled ?? defaultOptions.buttons.close.enabled,
-        action: options.buttons?.close?.action ?? defaultOptions.buttons.close.action,
-      },
-    },
-    // Pour être sûr que l'utilisateur ne casse pas la structure
-    initialPosition: {
-      ...defaultOptions.initialPosition,
-      ...options.initialPosition,
-    },
-    initialSize: {
-      ...defaultOptions.initialSize,
-      ...options.initialSize,
-    },
-  };
-
+  // État local pour la position et la taille
   const {
     title,
     icon,
-    initialPosition,
-    initialSize,
+    zIndex,
     fixedSize,
+    size,
+    position,
     buttons,
-  } = mergedOptions;
-
-  // État local pour la position et la taille
-  const [position, setPosition] = useState(initialPosition);
-  const [size, setSize] = useState(initialSize);
+    isActive,
+    isMaximized,
+  } = useWindowsStore((state) => state.windows.find((w) => id === w.id) || {} as WindowInfo)
 
   // État pour le déplacement / redimensionnement
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<ResizePole>('none');
-
-  // État pour la maximisation
-  const [isMaximized, setIsMaximized] = useState(false);
-  const [beforeMaximized, setBeforeMaximized] = useState({
-    position: initialPosition,
-    size: initialSize,
-  });
 
   const setWindowPosition = useWindowsStore((state) => state.setWindowPosition);
   const setWindowSize = useWindowsStore((state) => state.setWindowSize);
@@ -210,8 +46,41 @@ export const Window: React.FC<WindowProps> = ({
   const windowRef = useRef<HTMLDivElement>(null);
 
   const setWindowActive = () => {
-    onActive();
+    useWindowsStore.getState().bringToFront(id);
   };
+
+  if (
+    buttons?.maximize?.visible &&
+    buttons?.maximize?.enabled &&
+    !buttons?.maximize?.action
+  ) {
+    buttons.maximize.action = () => {
+      // Empêche la maximisation si la fenêtre est de taille fixe
+      if (fixedSize) return;
+
+      useWindowsStore.getState().toggleMaximizeWindow(id);
+    }
+  }
+
+  if (
+    buttons?.minimize?.visible &&
+    buttons?.minimize?.enabled &&
+    !buttons?.minimize?.action
+  ) {
+    buttons.minimize.action = () => {
+      useWindowsStore.getState().toggleMinimizeWindow(id);
+    }
+  }
+
+  if (
+    buttons?.close?.visible &&
+    buttons?.close?.enabled &&
+    !buttons?.close?.action
+  ) {
+    buttons.close.action = () => {
+      useWindowsStore.getState().closeWindow(id);
+    }
+  }
 
   // Gestion du déplacement
   const handleDragging = (e: React.MouseEvent) => {
@@ -242,7 +111,7 @@ export const Window: React.FC<WindowProps> = ({
   // Suivi des mouvements souris quand on est en train de bouger/redimensionner
   const handleMouseMove = (e: MouseEvent) => {
     if (isDragging) {
-      setPosition({
+      setWindowPosition(id, {
         x: e.clientX - dragStart.current.x,
         y: e.clientY - dragStart.current.y,
       });
@@ -293,8 +162,8 @@ export const Window: React.FC<WindowProps> = ({
           break;
       }
 
-      setSize({ width: newWidth, height: newHeight });
-      setPosition({ x: newXPosition, y: newYPosition });
+      setWindowSize(id, { width: newWidth, height: newHeight });
+      setWindowPosition(id, { x: newXPosition, y: newYPosition });
     }
   };
 
@@ -313,9 +182,6 @@ export const Window: React.FC<WindowProps> = ({
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
       };
-    } else {
-      setWindowPosition(id, position);
-      setWindowSize(id, size);
     }
   }, [isDragging, isResizing]);
 
@@ -328,7 +194,7 @@ export const Window: React.FC<WindowProps> = ({
         !windowRef.current.contains(e.target as Node) &&
         targetWindowId !== id
       ) {
-        onInactive();
+        useWindowsStore.getState().setWindowInactive(id);
       }
     };
     document.addEventListener('mousedown', handleClickOutsideWindow);
@@ -340,11 +206,11 @@ export const Window: React.FC<WindowProps> = ({
 
   // Style inline pour positionner la fenêtre
   const style = {
-    top: `${position.y}px`,
-    left: `${position.x}px`,
-    width: `${size.width}px`,
-    height: `${size.height}px`,
-    zIndex: zPosition,
+    top: `${isMaximized ? 0 : position.y}px`,
+    left: `${isMaximized ? 0 : position.x}px`,
+    width: `${isMaximized ? window.innerWidth : size.width}px`,
+    height: `${isMaximized ? window.innerHeight - 30 : size.height}px`,
+    zIndex: zIndex,
   };
 
   // Affiche-t-on les poignées de redimensionnement ?

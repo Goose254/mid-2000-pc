@@ -32,7 +32,7 @@ export const MinesweeperApp: AppTemplate = {
       windowId,
       pid,
       name,
-      <MainWindow />,
+      <MainWindow windowId={windowId} />,
       <img src={icons.xsmall} />,
       {
         buttons: {
@@ -43,8 +43,8 @@ export const MinesweeperApp: AppTemplate = {
         },
         fixedSize: true,
         size: {
-          width: 503,
-          height: 493,
+          width: 506,
+          height: 371,
         },
       },
     );

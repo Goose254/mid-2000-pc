@@ -26,8 +26,6 @@ export const Desktop: React.FC = () => {
   // --- On récupère "chaque propriété" séparément pour éviter la recréation d'objets ---
   const windows = useWindowsStore((state) => state.windows);
   const openWindow = useWindowsStore((state) => state.openWindow);
-  const bringToFront = useWindowsStore((state) => state.bringToFront);
-  const setWindowInactive = useWindowsStore((state) => state.setWindowInactive);
 
   const isShutdownOverlayVisible = useOverlaysStore(
     (state) => state.isShutdownOverlayVisible
@@ -139,22 +137,7 @@ export const Desktop: React.FC = () => {
       {windows
         .filter((w) => !w.isMinimized)
         .map((window) => (
-          <Window
-            key={window.id}
-            id={window.id}
-            zPosition={window.zIndex}
-            isActive={window.isActive}
-            onActive={() => bringToFront(window.id)}
-            onInactive={() => setWindowInactive(window.id)}
-            options={{
-              title: window.title,
-              icon: window.icon,
-              initialPosition: window.position,
-              initialSize: window.size,
-              fixedSize: window.fixedSize,
-              buttons: window.buttons,
-            }}
-          >
+          <Window key={window.id} id={window.id}>
             {window.content}
           </Window>
         ))}

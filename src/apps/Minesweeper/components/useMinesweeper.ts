@@ -1,3 +1,4 @@
+import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useState } from 'react';
 
 type Cell = {
@@ -20,6 +21,17 @@ type DiffParams = {
       expert: Parameters;
 }
 
+type Sizes = {
+      width: number;
+      height: number;
+}
+
+type WindowSizes = {
+      beginner: Sizes;
+      intermediate: Sizes;
+      expert: Sizes;
+}
+
 type Difficulty = 'beginner' | 'intermediate' | 'expert'
 
 const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
@@ -34,6 +46,12 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             beginner: { rows: 9, cols: 9, mines: 10 },
             intermediate: { rows: 16, cols: 16, mines: 40 },
             expert: { rows: 16, cols: 30, mines: 99 },
+      }
+
+      const windowSizes: WindowSizes = {
+            beginner: { width: 170, height: 259 },
+            intermediate: { width: 282, height: 371 },
+            expert: { width: 506, height: 371 },
       }
 
       /* I declare the possible directions from one cell in a [dx, dy] format to simplify later functions */
@@ -207,17 +225,21 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             }
       }
 
-      const resetGame = (newDifficulty?: Difficulty) => {
+      const resetGame = (windowId: string, newDifficulty?: Difficulty) => {
             let rows, cols
 
             if (newDifficulty) {
                   rows = difficultiesParams[newDifficulty].rows
                   cols = difficultiesParams[newDifficulty].cols
 
+                  useWindowsStore.getState().setWindowSize(windowId, windowSizes[newDifficulty])
+
                   setDifficulty(newDifficulty)
             } else {
                   rows = difficultiesParams[difficulty].rows
                   cols = difficultiesParams[difficulty].cols
+
+                  useWindowsStore.getState().setWindowSize(windowId, windowSizes[difficulty])
             }
 
             setGrid(createEmptyGrid(rows, cols))

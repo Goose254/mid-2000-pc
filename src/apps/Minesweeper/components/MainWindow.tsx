@@ -27,6 +27,10 @@ import iconMistake from '../assets/icons/buttons/mistake.png'
 
 import useMinesweeper from './useMinesweeper'
 
+interface MinesweeperMainWindowProps {
+      windowId: string
+}
+
 type Cell = {
       isMine: boolean;
       isRevealed: boolean;
@@ -47,7 +51,7 @@ const cellIcons = {
       mistake: iconMistake,
 }
 
-export const MinesweeperMainWindow: React.FC = () => {
+export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ windowId }) => {
       const {     grid,
                   gameOver,
                   isMouseDown,
@@ -96,11 +100,11 @@ export const MinesweeperMainWindow: React.FC = () => {
                   <WindowToolbar>
                         <WindowToolbarMenuButton label="Partie">
                               <FloatingMenu>
-                                    <MenuItem label="Nouveau" onClick={() => resetGame()} />
+                                    <MenuItem label="Nouveau" onClick={() => resetGame(windowId)} />
                                     <MenuSeparator />
-                                    <MenuItem label="Débutant" onClick={() => resetGame('beginner')} />
-                                    <MenuItem label="Intermédiaire" onClick={() => resetGame('intermediate')} />
-                                    <MenuItem label="Expert" onClick={() => resetGame('expert')} />
+                                    <MenuItem label="Débutant" onClick={() => resetGame(windowId, 'beginner')} />
+                                    <MenuItem label="Intermédiaire" onClick={() => resetGame(windowId, 'intermediate')} />
+                                    <MenuItem label="Expert" onClick={() => resetGame(windowId, 'expert')} />
                                     <MenuItem label="Personnalisé..." />
                                     <MenuSeparator />
                                     <MenuItem label="Marques (?)" />

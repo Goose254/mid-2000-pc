@@ -26,12 +26,18 @@ export interface WindowsState {
   setWindowPosition: (id: string, position: WindowInfo["position"]) => void;
   setWindowSize: (id: string, size: WindowInfo["size"]) => void;
   toggleMinimizeWindow: (id: string) => void;
+  toggleMaximizeWindow: (id: string) => void;
 
   updateWindow: (id: string, newConfig: Partial<WindowInfo>) => void;
 }
 
-export const useWindowsStore = create<WindowsState>((set) => ({
+export const useWindowsStore = create<WindowsState>((set, get) => ({
   windows: [],
+
+  // --------------------------------------
+  // Récupérer les informations d'une fenêtre
+  // --------------------------------------
+  getWindowById: (id: string) => get().windows.filter((w) => id === w.id),
 
   // --------------------------------------
   // Ouvrir ou restaurer une fenêtre
@@ -227,6 +233,18 @@ export const useWindowsStore = create<WindowsState>((set) => ({
           : updated,
       };
     });
+  },
+
+  // --------------------------------------
+  // Maximize / Restore
+  // --------------------------------------
+  toggleMaximizeWindow: (id) => {
+    set((prev) => ({
+      ...prev,
+      windows: prev.windows.map((w) =>
+        w.id === id ? { ...w, isMaximized: !w.isMaximized } : w
+      ),
+    }));
   },
 
   // --------------------------------------
