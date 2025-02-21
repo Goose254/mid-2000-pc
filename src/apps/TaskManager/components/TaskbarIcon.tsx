@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './styles.module.scss';
 
 import TaskManager0Icon from '@/assets/windows-icons/taskmgr.exe_14_127.png'
 import TaskManager9Icon from '@/assets/windows-icons/taskmgr.exe_14_128.png'

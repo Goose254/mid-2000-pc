@@ -4,6 +4,7 @@ import styles from './MenuItem.module.scss';
 interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
   icon?: string;
+  iconElement?: React.ReactNode;
   info?: string;
   variant?: 'contextual' | 'startPrimary' | 'startSecondary';
   primary?: boolean
@@ -14,6 +15,7 @@ interface MenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
 export const MenuItem: React.FC<MenuItemProps> = ({
   label,
   icon,
+  iconElement,
   info,
   variant = 'contextual',
   primary = false,
@@ -21,8 +23,6 @@ export const MenuItem: React.FC<MenuItemProps> = ({
   className,
   ...props
 }) => {
-  // Pour la variante "xp", on utilise la classe "xp-menu-item" du module SCSS.
-  // Si un sous-menu est présent, on ajoute également la classe "has-submenu".
   const rootClasses = [
     styles[variant],
     children ? styles.hasSubmenu : "",
@@ -38,6 +38,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
     <div className={rootClasses} {...props}>
       <span className={styles.leftElement}>
         {icon && <img src={icon} />}
+        {iconElement ? iconElement : ''}
       </span>
       <span className={labelClasses}>{label}</span>
       <span className={styles.info}>{info || ''}</span>

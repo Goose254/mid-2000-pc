@@ -170,7 +170,6 @@ export const Desktop: React.FC = () => {
             <MenuSeparator />
             <MenuItem label="Coller" aria-disabled/>
             <MenuItem label="Coller le raccourci" aria-disabled/>
-            <MenuItem label="Annuler Déplacer" info="Ctrl+Z"/>
             <MenuSeparator />
             <MenuItem label="Nouveau">
               <FloatingMenu>

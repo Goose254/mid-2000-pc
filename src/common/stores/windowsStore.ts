@@ -25,7 +25,7 @@ export interface WindowsState {
   setWindowInactive: (id: string) => void;
   setWindowPosition: (id: string, position: WindowInfo["position"]) => void;
   setWindowSize: (id: string, size: WindowInfo["size"]) => void;
-  toggleMinimizeWindow: (id: string) => void;
+  toggleMinimizeWindow: (id: string, force?: boolean) => void;
   toggleMaximizeWindow: (id: string) => void;
 
   updateWindow: (id: string, newConfig: Partial<WindowInfo>) => void;
@@ -195,7 +195,7 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
   // --------------------------------------
   // Minimize / Restore
   // --------------------------------------
-  toggleMinimizeWindow: (id) => {
+  toggleMinimizeWindow: (id, force = false) => {
     set((prev) => {
       const target = prev.windows.find((w) => w.id === id);
       if (!target) return prev;
@@ -212,7 +212,7 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
         if (w.id === id) {
           if (isMinimized) {
             return { ...w, isMinimized: false };
-          } else if (isActive && isMinimisable) {
+          } else if ((isActive || force) && isMinimisable) {
             return { ...w, isMinimized: true, isActive: false };
           } else {
             return { ...w, isMinimized: false };

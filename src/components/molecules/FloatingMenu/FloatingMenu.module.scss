@@ -1,7 +1,7 @@
 // Variables de configuration
 $menu-display: grid;
 $grid-template: 
-  [left-start] 16px 
+  [left-start] minmax(16px, auto)
   [left-end label-start] auto 
   [label-end shortcut-start] auto 
   [shortcut-end right-start] 16px 

@@ -7,6 +7,7 @@ import { Button } from '@/components/atoms/Button/Button';
 import {
   createColumnHelper,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react';
@@ -29,12 +30,14 @@ const columns = [
     cell: info => info.getValue(),
     header: () => <span>Tâche</span>,
     enableResizing: true,
+    size: 360,
   }),
   columnHelper.accessor(row => row.state, {
     id: 'state',
     cell: info => info.getValue(),
     header: () => <span>État</span>,
     enableResizing: true,
+    size: 90,
   }),
 ];
 
@@ -55,6 +58,8 @@ export const TaskManagerApplicationsTab: React.FC<TaskManagerApplicationsTabProp
     },
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    enableSorting: true,
   });
 
   // Calcul des variables CSS pour définir dynamiquement la largeur des colonnes

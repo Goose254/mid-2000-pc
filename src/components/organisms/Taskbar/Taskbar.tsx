@@ -17,7 +17,6 @@ export const Taskbar: React.FC = () => {
   const isStartMenuVisible = useStartMenuStore((state) => state.isStartMenuVisible);
   
   const windows = useWindowsStore((state) => state.windows);
-  const toggleMinimizeWindow = useWindowsStore((state) => state.toggleMinimizeWindow);
 
   const toolIcons = useTaskbarStore((state) => state.toolIcons)
 
@@ -57,7 +56,7 @@ export const Taskbar: React.FC = () => {
       <div className={styles.taskbarWindowButtons}>
         {windows.map((win) => (
           win.buttons?.minimize?.visible && win.buttons?.minimize?.enabled ?
-            <TaskbarButton key={win.id} window={win} onMouseDown={toggleMinimizeWindow} /> :
+            <TaskbarButton key={win.id} linkedWindow={win} /> :
             ""
         ))}
       </div>

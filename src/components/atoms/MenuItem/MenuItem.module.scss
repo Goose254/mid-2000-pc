@@ -12,6 +12,11 @@
   // La classe shortcut utilisée à l'intérieur du menu item
   .info {
     padding-left: 10px;
+    align-self: center;
+  }
+
+  .label {
+    align-self: center;
   }
 
   // Pour les items ayant un sous-menu
@@ -36,6 +41,10 @@
       width: 16px;
       height: 16px;
     }
+
+    & > svg {
+      margin: 2px 6px 2px 0px;
+    }
   }
 
   // Pour les div enfants (souvent le sous-menu)
@@ -57,11 +66,19 @@
       opacity: 1;
       transition: 0.15s all;
     }
+
+    & svg path {
+      stroke: white;
+    }
   }
 
   // Items désactivés
   &[aria-disabled="true"] {
     color: #aca899;
+    
+    & svg path {
+      stroke: #aca899;
+    }
   }
   
   // Pour que l'état hover sur un item désactivé conserve la couleur

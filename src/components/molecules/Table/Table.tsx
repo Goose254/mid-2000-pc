@@ -33,6 +33,7 @@ export const Table: React.FC<TableProps> = ({
               style={{
                   width: `calc(var(--header-${header.id}-size) * 1px)`,
               }}
+              onClick={header.column.getToggleSortingHandler()}
               >
               {header.isPlaceholder
                 ? null

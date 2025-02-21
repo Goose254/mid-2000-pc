@@ -65,6 +65,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
     const openRun = () => {
       openWindow(
         'run',
+        'run.exe',
         'Exécuter',
         <>
           <div>Entrez le nom d'un programme, dossier, document ou d'une ressource Internet, et Windows l'ouvrira pour vous.</div>
@@ -79,9 +80,20 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
           position: { x: 3, y: window.innerHeight - 220 },
           size: { width: 363, height: 186 },
           fixedSize: true,
-          showHelpButton: true,
-          showMinimizeButton: false,
-          showMaximizeButton: false,
+          buttons: {
+            help: {
+              visible: true,
+              enabled: true,
+            },
+            minimize: {
+              visible: false,
+              enabled: false,
+            },
+            maximize: {
+              visible: false,
+              enabled: false,
+            },
+          },
         }
       );
       toggleStartMenu();

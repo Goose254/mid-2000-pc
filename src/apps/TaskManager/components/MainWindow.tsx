@@ -1,8 +1,4 @@
 import React from 'react';
-import styles from './styles.module.scss';
-
-import { useAppsStore } from '@/common/stores/appsStore';
-import { useWindowsStore } from '@/common/stores/windowsStore';
 
 import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar';
 import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuButton/WindowToolbarMenuButton';
@@ -21,7 +17,6 @@ interface TaskManagerMainWindowProps {
 }
 
 export const TaskManagerMainWindow: React.FC<TaskManagerMainWindowProps> = ({ taskManagerWindowId }) => {
-  const apps = useWindowsStore((state) => state.windows)
 
   return (
     <>
