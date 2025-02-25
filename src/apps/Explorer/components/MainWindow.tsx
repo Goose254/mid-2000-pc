@@ -184,37 +184,18 @@ export const ExplorerMainWindow: React.FC = () => {
         style={{ backgroundColor: 'white' }}
         defer
       >
-        {/* Du contenu répétitif pour la démo */}
-        Du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        Encore du contenu<br/>
-        ...
+        <div>
+          {/* Du contenu répétitif pour la démo */}
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ornare ligula molestie malesuada consequat. In laoreet nisl sit amet libero fermentum vestibulum. Mauris tincidunt posuere augue ac rutrum. Proin lobortis tristique sapien a rutrum. Morbi faucibus tincidunt risus, eu lobortis libero. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam iaculis eu elit eget feugiat. Morbi elit urna, cursus non porttitor quis, facilisis quis tortor. Sed aliquet eros nulla, nec volutpat felis mattis a. Ut mollis neque nibh, vitae ullamcorper arcu malesuada et. Duis a semper justo. Vivamus efficitur neque velit, et mollis arcu consequat in.
+          <br/><br/>
+          Aliquam erat volutpat. Donec at aliquet purus. Aliquam non leo sed felis bibendum consectetur. Cras sagittis id nisi quis commodo. Pellentesque a blandit elit. Praesent scelerisque suscipit tellus, ut dignissim nibh vestibulum vitae. Vestibulum sit amet blandit dui. In hac habitasse platea dictumst. Cras venenatis massa purus, ac eleifend diam pellentesque sit amet. Aliquam egestas turpis ligula, vel congue orci condimentum nec. Vivamus nec volutpat metus. Nulla vehicula nibh finibus dapibus congue. Maecenas augue diam, vulputate non dapibus nec, mattis eu lectus. Sed hendrerit gravida mi. Vestibulum tincidunt ornare mi a ultrices.
+          <br/><br/>
+          Curabitur et enim ac diam auctor consectetur. Suspendisse placerat sed ex non maximus. In hac habitasse platea dictumst. Vivamus molestie ante libero, lacinia porta erat ullamcorper facilisis. Quisque auctor gravida consectetur. Vestibulum vitae turpis condimentum, facilisis leo at, rhoncus lacus. Praesent pellentesque urna ac justo rhoncus placerat. Ut ac dolor at massa pharetra sagittis eget vel tellus. Aliquam sit amet dignissim lacus. Fusce mollis aliquam augue eu sagittis. Morbi condimentum, ante nec ullamcorper porttitor, velit purus finibus diam, quis sollicitudin eros nisl in eros. Donec tellus metus, ullamcorper ac tincidunt aliquam, gravida a libero. Sed quis mi turpis. Praesent nec magna quis dui volutpat laoreet sed sollicitudin enim. Suspendisse sit amet tellus ut mauris pellentesque vestibulum quis dictum urna. Pellentesque nec convallis ligula, quis rutrum massa.
+          <br/><br/>
+          Morbi ac lacus lacus. Praesent vehicula nisl porttitor efficitur pellentesque. Suspendisse finibus, massa faucibus tristique laoreet, ex nulla lobortis dolor, ut blandit quam elit ut nibh. Aliquam sit amet suscipit ligula, at gravida odio. Donec quis tellus auctor, lobortis est eget, feugiat elit. Phasellus tempus molestie luctus. Pellentesque sodales arcu non iaculis faucibus. Proin et lectus urna. Integer egestas arcu arcu, sed varius metus lobortis ac.
+          <br/><br/>
+          Morbi elementum orci quis risus auctor elementum. Nunc sit amet purus et eros volutpat dapibus vitae id lectus. Nulla eu quam eu erat sodales ornare eu in enim. Proin nec odio auctor justo euismod rhoncus. Nulla sed dui ornare, elementum felis vitae, euismod purus. Phasellus ornare vitae felis nec lacinia. Suspendisse sagittis dolor in urna placerat fermentum. Etiam tempus sed neque sed tempor. Duis vitae ullamcorper mauris. Fusce rutrum sed urna sit amet rutrum. 
+        </div>
       </OverlayScrollbarsComponent>
     </>
   );

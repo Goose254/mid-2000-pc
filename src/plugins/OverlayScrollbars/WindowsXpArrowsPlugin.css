@@ -108,8 +108,8 @@
   color: #4d6185;
   display: inline-block;
   background-repeat: no-repeat;
-  background-size: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%234d6185' d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/%3E%3C/svg%3E");
+  background-size: 15px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -0.5 15 17' shape-rendering='crispEdges'%3E%3Cpath stroke='%234d6185' d='M4 6h1m5 0h1M3 7h3m3 0h3M4 8h3m1 0h3M5 9h5m-4 1h3m-2 1h1'/%3E%3C/svg%3E");
 }
 
 .os-scrollbar-button-up {
@@ -125,12 +125,10 @@
 }
 
 .os-scrollbar-button-up::before {
-  background-position: 3px 4px;
   transform: rotate(180deg);
 }
 
 .os-scrollbar-button-down::before {
-  background-position: 3px 5px;
   transform: none;
 }
 
@@ -236,8 +234,8 @@
   color: #4d6185;
   display: inline-block;
   background-repeat: no-repeat;
-  background-size: 8px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%234d6185' d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/%3E%3C/svg%3E");
+  background-size: 15px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -0.5 15 17' shape-rendering='crispEdges'%3E%3Cpath stroke='%234d6185' d='M4 6h1m5 0h1M3 7h3m3 0h3M4 8h3m1 0h3M5 9h5m-4 1h3m-2 1h1'/%3E%3C/svg%3E");
 }
 
 .os-scrollbar-button-left {
@@ -253,19 +251,17 @@
 }
 
 .os-scrollbar-button-left::before {
-  background-position: 3px 5px;
   transform: rotate(90deg);
 }
 
 .os-scrollbar-button-right::before {
-  background-size: 8px;
-  background-position: 4px 5px;
   transform: rotate(270deg);
 }
 
 .os-scrollbar-vertical {
   --os-padding-axis: 0px;
   --os-padding-perpendicular: 2px;
+  padding-bottom: 1px;
 }
 
 .os-scrollbar-vertical.os-scrollbar .os-scrollbar-track {
@@ -278,6 +274,7 @@
 .os-scrollbar-horizontal {
   --os-padding-axis: 0px;
   --os-padding-perpendicular: 2px;
+  margin-bottom: -1px;
 }
 
 .os-scrollbar-horizontal.os-scrollbar .os-scrollbar-track {
@@ -285,4 +282,21 @@
   --os-padding-perpendicular: 0px;
   padding-left: 18px !important;
   padding-right: 19px !important;
+}
+
+.overlayscrollbars-react:has(> .os-scrollbar-vertical.os-scrollbar-visible):first-child {
+  padding-right: 17px;
+}
+
+.overlayscrollbars-react:has(> .os-scrollbar-horizontal.os-scrollbar-visible):first-child {
+  padding-bottom: 17px;
+}
+
+.overlayscrollbars-react:has(> .os-scrollbar-vertical.os-scrollbar-visible):has(> .os-scrollbar-horizontal.os-scrollbar-visible) .os-scrollbar-corner {
+  position: absolute;
+  bottom: 1px;
+  right: -19px;
+  width: 19px;
+  height: 17px;
+  background-color: #ece9d8;
 }

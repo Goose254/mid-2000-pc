@@ -27,9 +27,10 @@ $desktop-icon-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
     }
     
     .tableListItemIconOverlay {
+      width: $icon-dim;
       height: $icon-dim;
-      position: relative;
-      bottom: $icon-dim;
+      position: absolute;
+      bottom: 0;
       mask-image: var(--icon-image);
       -webkit-mask-image: var(--icon-image);
       background-color: $desktop-icon-active-bg;

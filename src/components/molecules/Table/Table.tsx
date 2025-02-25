@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './Table.module.scss';
 import { flexRender, Table as TableType } from '@tanstack/react-table';
 
@@ -7,15 +7,33 @@ interface TableProps extends React.HTMLAttributes<HTMLDivElement> {
   columnSizeVars: {
     [key: string]: number
   }
+  onClickOutside?: () => void
 }
 
 export const Table: React.FC<TableProps> = ({
   table,
   columnSizeVars,
+  onClickOutside,
   ...props
 }) => {
+  const tableRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutsideTable = (event: MouseEvent) => {
+      if (onClickOutside && tableRef.current && !tableRef.current.contains(event.target as Node)) {
+        onClickOutside();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutsideTable);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideTable);
+    }
+  }, []);
+
   return (
     <div
+        ref={tableRef}
         className={styles.divTable}
         style={{
         ...columnSizeVars,
@@ -33,13 +51,14 @@ export const Table: React.FC<TableProps> = ({
               style={{
                   width: `calc(var(--header-${header.id}-size) * 1px)`,
               }}
-              onClick={header.column.getToggleSortingHandler()}
+              onClick={!header.column.getIsResizing() ? header.column.getToggleSortingHandler() : undefined}
               >
               {header.isPlaceholder
                 ? null
                 : flexRender(header.column.columnDef.header, header.getContext())}
               {/* Zone de redimensionnement */}
               <div
+                onClick={(e) => e.stopPropagation()}
                 onDoubleClick={() => header.column.resetSize()}
                 onMouseDown={header.getResizeHandler()}
                 onTouchStart={header.getResizeHandler()}
@@ -52,7 +71,7 @@ export const Table: React.FC<TableProps> = ({
       </div>
       <div className={styles.tbody}>
         {table.getRowModel().rows.map(row => (
-          <div key={row.id} className={styles.tr}>
+          <div key={row.id} className={`${styles.tr} ${row.getIsSelected() ? styles.selected : ''}`} onClick={!row.getIsSelected() ? row.getToggleSelectedHandler() : undefined}>
           {row.getVisibleCells().map(cell => (
             <div
               key={cell.id}

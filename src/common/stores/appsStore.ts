@@ -4,6 +4,104 @@ import { generatePid } from '../utils/pidGenerator';
 import { useWindowsStore } from './windowsStore';
 import { getWindowIdForInstance } from '../utils/windowId';
 
+const defaultInstances: AppInstance[] = [
+  {
+    pid: 'ctfmon.exe-0',
+    appId: 'ctfmon.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'rundll32.exe-0',
+    appId: 'rundll32.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'alg.exe-0',
+    appId: 'alg.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-0',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-1',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-2',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-3',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-4',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-5',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-6',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-7',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-8',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-9',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-10',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-11',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-12',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-13',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-14',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+  {
+    pid: 'svchost.exe-15',
+    appId: 'svchost.exe',
+    control: {killInstance: () => {}},
+  },
+]
+
 interface AppsState {
   instances: AppInstance[];
   /** Démarre l’application en appelant sa fonction init */
@@ -15,7 +113,7 @@ interface AppsState {
 }
 
 export const useAppsStore = create<AppsState>((set, get) => ({
-  instances: [],
+  instances: [...defaultInstances],
   startApp: (app) => {
     // Si l’app est en instance unique et qu’une instance existe déjà, on peut la ramener au premier plan
     const existing = get().instances.find((inst) => inst.appId === app.id);
@@ -34,7 +132,7 @@ export const useAppsStore = create<AppsState>((set, get) => ({
       control,
     };
     set((state) => ({
-      instances: [...state.instances, newInstance]
+      instances: [newInstance, ...state.instances]
     }));
   },
   killInstance: (pid: string) => {

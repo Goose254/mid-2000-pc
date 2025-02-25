@@ -17,7 +17,7 @@ export const WindowsXpArrowsPlugin: InstancePlugin<'windowsXpArrowsPlugin'> = {
       const { scrollbarHorizontal, scrollbarVertical, scrollOffsetElement } = osInstance.elements();
 
       // Tableau pour stocker nos éléments (pour un éventuel nettoyage)
-      const createdArrowButtons: HTMLElement[] = [];
+      const createdElements: HTMLElement[] = [];
 
       /**
        * Injecte deux boutons flèches pour la scrollbar donnée (verticale ou horizontale).
@@ -42,14 +42,28 @@ export const WindowsXpArrowsPlugin: InstancePlugin<'windowsXpArrowsPlugin'> = {
           track.appendChild(downBtn);
 
           // On stocke pour les enlever plus tard si on veut
-          createdArrowButtons.push(upBtn, downBtn);
+          createdElements.push(upBtn, downBtn);
         } else {
           const leftBtn = createArrowButton('left', () => scrollBy(-SCROLL_STEP, 0));
           const rightBtn = createArrowButton('right', () => scrollBy(+SCROLL_STEP, 0));
           track.appendChild(leftBtn);
           track.appendChild(rightBtn);
-          createdArrowButtons.push(leftBtn, rightBtn);
+          createdElements.push(leftBtn, rightBtn);
         }
+      }
+
+      /**
+       * Injecte deux boutons flèches pour la scrollbar donnée (verticale ou horizontale).
+       * @param scrollEls - l’objet { scrollbar, track, handle } de la scrollbar
+       * @param axis - 'vertical' ou 'horizontal'
+       */
+      function injectCornerElement(scrollEls: Elements['scrollbarHorizontal']) {
+        const el = document.createElement('div');
+        el.classList.add('os-scrollbar-corner');
+        scrollEls.scrollbar.appendChild(el);
+
+        // On stocke pour les enlever plus tard si on veut
+        createdElements.push(el);
       }
 
       /**
@@ -85,10 +99,15 @@ export const WindowsXpArrowsPlugin: InstancePlugin<'windowsXpArrowsPlugin'> = {
         injectArrowsForScrollbar(scrollbarHorizontal, 'horizontal');
       }
 
+      // Injecte les flèches si la scrollbar verticale existe
+      if (scrollbarVertical?.scrollbar && scrollbarHorizontal?.scrollbar) {
+        injectCornerElement(scrollbarHorizontal);
+      }
+
       // BONUS : Si on veut nettoyer à la destruction, on peut écouter l’événement "destroyed"
       // et enlever nos boutons du DOM si besoin.
       event('destroyed', () => {
-        createdArrowButtons.forEach((btn) => {
+        createdElements.forEach((btn) => {
           btn.remove();
         });
       });

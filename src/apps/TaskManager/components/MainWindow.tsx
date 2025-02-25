@@ -11,6 +11,7 @@ import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
 
 import ResizeDots from '@/assets/resize-dots.png';
 import { TaskManagerApplicationsTab } from './Tabs/ApplicationsTab';
+import { TaskManagerProcessesTab } from './Tabs/ProcessesTab';
 
 interface TaskManagerMainWindowProps {
   taskManagerWindowId: string
@@ -82,7 +83,7 @@ export const TaskManagerMainWindow: React.FC<TaskManagerMainWindowProps> = ({ ta
           <TaskManagerApplicationsTab taskManagerWindowId={taskManagerWindowId} />
         </TabPanel>
         <TabPanel>
-          <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+          <TaskManagerProcessesTab />
         </TabPanel>
         <TabPanel>
           <br/><br/><br/><br/><br/><br/><br/><br/><br/>

@@ -6,6 +6,11 @@
 .tr {
   display: flex;
   width: fit-content;
+
+  &.selected {
+    color: white;
+    background-color: #316ac5;
+  }
 }
 
 .th,
@@ -58,7 +63,6 @@
 }
 
 .td {
-  height: 18px;
   padding: 0 4px;
 }
 

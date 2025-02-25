@@ -60,6 +60,7 @@ export const TaskManagerApplicationsTab: React.FC<TaskManagerApplicationsTabProp
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     enableSorting: true,
+    enableRowSelection: false,
   });
 
   // Calcul des variables CSS pour définir dynamiquement la largeur des colonnes
