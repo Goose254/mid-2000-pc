@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import StartButtonLogo from '../../../assets/start-button-logo.png';
 import styles from './Taskbar.module.scss';
-import moment from 'moment';
 import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useStartMenuStore } from '@/common/stores/startMenuStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
+import { useTranslation } from 'react-i18next';
 
 export const Taskbar: React.FC = () => {
+  const { t, i18n } = useTranslation('common', { keyPrefix: 'taskbar' })
   const [date, setDate] = useState<Date>(new Date());
   const startMenuRef = useRef<HTMLDivElement | null>(null);
   const startButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -49,8 +50,8 @@ export const Taskbar: React.FC = () => {
         className={`${styles.startButton} ${isStartMenuVisible ? styles.active : ''}`}
         onClick={() => toggleStartMenu()}
       >
-        <img src={StartButtonLogo} alt="Start button logo" />
-        démarrer
+        <img src={StartButtonLogo} />
+        {t('start')}
       </button>
 
       <div className={styles.taskbarWindowButtons}>
@@ -63,7 +64,7 @@ export const Taskbar: React.FC = () => {
 
       <div className={styles.taskbarTools}>
         {toolIcons.map((Icon) => (Icon.icon))}
-        {moment(date).format('HH:mm')}
+        {new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(date)}
       </div>
     </div>
   );

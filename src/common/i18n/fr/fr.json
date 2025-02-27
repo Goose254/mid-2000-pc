@@ -1,0 +1,45 @@
+{
+    "splashScreen": {
+        "welcome": "Bienvenue"
+    },
+    "desktop": {
+        "contextMenu": {
+            "arrangeIconsBy": "Réorganiser les icônes par",
+            "name": "Nom",
+            "size": "Taille",
+            "type": "Type",
+            "modified": "Modifié le",
+            "showInGroups": "Afficher par groupe",
+            "autoArrange": "Réorganisation automatique",
+            "alignToGrid": "Aligner sur la grille",
+            "showDesktopIcons": "Afficher les icônes du Bureau",
+            "lockWebItemsOnDesktop": "Verrouiller les éléments Web sur le Bureau",
+            "runDesktopCleanupWizard": "Exécuter l'Assistant Nettoyage du Bureau",
+            "refresh": "Actualiser",
+            "paste": "Coller",
+            "pasteShortcut": "Coller le raccourci",
+            "new": "Nouveau",
+            "folder": "Dossier",
+            "shortcut": "Raccourci",
+            "briefcase": "Porte-documents",
+            "bitmapImage": "Image bitmap",
+            "wordPadDocument": "Document WordPad",
+            "rtfFormatDocument": "Document au format RTF",
+            "textDocument": "Document texte",
+            "waveSound": "Son Wave",
+            "compressedFolder": "Dossier compressé",
+            "properties": "Propriétés"
+        }
+    },
+    "taskbar": {
+        "start": "démarrer"
+    },
+    "appContextMenu": {
+        "restore": "Restaurer",
+        "move": "Déplacer",
+        "size": "Taille",
+        "minimize": "Réduire",
+        "maximize": "Agrandir",
+        "close": "Fermer"
+    }
+}

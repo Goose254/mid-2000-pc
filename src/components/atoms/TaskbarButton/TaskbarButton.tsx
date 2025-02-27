@@ -6,12 +6,14 @@ import { MenuItem } from '../MenuItem/MenuItem';
 import { MenuSeparator } from '../MenuSeparator/MenuSeparator';
 import { WindowInfo } from '@/common/types/window';
 import { WindowControlIcon } from '../WindowControlIcon/WindowControlIcon';
+import { useTranslation } from 'react-i18next';
 
 interface TaskbarButtonProps {
   linkedWindow: WindowInfo;
 }
 
 export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ linkedWindow }) => {
+  const { t } = useTranslation('common', { keyPrefix: 'appContextMenu' })
   const toggleMinimizeWindow = useWindowsStore((state) => state.toggleMinimizeWindow);
   const [contextMenu, setContextMenu] = useState({
     visible: false,
@@ -68,7 +70,7 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ linkedWindow }) =>
           style={{ position: 'absolute', bottom: contextMenu.y, left: contextMenu.x, zIndex: 10000 }}
         >
           <MenuItem
-            label="Restaurer"
+            label={t('restore')}
             aria-disabled={!linkedWindow.isMinimized && !linkedWindow.isMaximized}
             onClick={() => {
               if (linkedWindow.isMinimized) useWindowsStore.getState().toggleMinimizeWindow(linkedWindow.id)
@@ -78,15 +80,15 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ linkedWindow }) =>
             iconElement={<WindowControlIcon type="restore" />}
           />
           <MenuItem
-            label="Déplacer"
+            label={t('move')}
             aria-disabled={linkedWindow.fixedSize || linkedWindow.isMinimized || linkedWindow.isMaximized}
           />
           <MenuItem
-            label="Taille"
+            label={t('size')}
             aria-disabled={linkedWindow.fixedSize || linkedWindow.isMinimized || linkedWindow.isMaximized}
           />
           <MenuItem
-            label="Réduire"
+            label={t('minimize')}
             aria-disabled={linkedWindow.isMinimized}
             onClick={() => {
               useWindowsStore.getState().toggleMinimizeWindow(linkedWindow.id, true)
@@ -95,7 +97,7 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ linkedWindow }) =>
             iconElement={<WindowControlIcon type="minimize" />}
           />
           <MenuItem
-            label="Agrandir"
+            label={t('maximize')}
             aria-disabled={linkedWindow.fixedSize || linkedWindow.isMaximized}
             onClick={() => {
               useWindowsStore.getState().toggleMaximizeWindow(linkedWindow.id)
@@ -105,7 +107,7 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ linkedWindow }) =>
           />
           <MenuSeparator />
           <MenuItem
-            label="Fermer"
+            label={t('close')}
             info="Alt+F4"
             onClick={() => {
               useWindowsStore.getState().closeWindow(linkedWindow.id)

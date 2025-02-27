@@ -95,20 +95,6 @@
   margin-top: 4px;
   margin-bottom: 1px;
 
-  &:hover {
-    background-color: #316ac5;
-
-    & > .label, & > .info {
-      color: white;
-    }
-
-    > div {
-      visibility: visible;
-      opacity: 1;
-      transition: 0.15s all 0.3s;
-    }
-  }
-
   // Pour les items ayant un sous-menu
   &.hasSubmenu {
     margin-top: 10px;
@@ -123,15 +109,28 @@
     & > .label {
       grid-area: label;
       font-weight: bold;
-      padding-left: 24px;
+      padding: 3px 0 3px 24px;
+      color: #373738;
+      letter-spacing: 0.6px;
     }  
 
     > .rightElement {
       &::before {
-        content: "►";
+        content: "";
+        width: 24px;
+        height: 24px;
         position: absolute;
-        left: 166px;
-        transform: scale(0.56, 1);
+        bottom: 52px;
+        left: 160px;
+        background: url('../../../assets/all-programs-default.png');
+      }
+    }
+
+    &:hover {
+      > .rightElement {
+        &::before {
+          background: url('../../../assets/all-programs-hover.png');
+        }
       }
     }
   }
@@ -179,6 +178,7 @@
       padding-top: 0;
       height: 10px;
       font-weight: bold;
+      color: #373738;
     }
   }
 
@@ -190,6 +190,20 @@
 
   .rightElement {
     grid-area: right;
+  }
+
+  &:hover {
+    background-color: #316ac5;
+
+    & > .label, & > .info {
+      color: white;
+    }
+
+    > div {
+      visibility: visible;
+      opacity: 1;
+      transition: 0.15s all 0.3s;
+    }
   }
 }
 

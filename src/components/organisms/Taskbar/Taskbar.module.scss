@@ -6,8 +6,7 @@ $start-button-font-family: 'Franklin Gothic';
 $start-button-font-size: 16px;
 $start-button-font-style: italic;
 $start-button-letter-spacing: 0.8px;
-$start-button-line-height: 26px;
-$start-button-vertical-align: bottom;
+$start-button-line-height: 27px;
 $start-button-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 
 $start-btn-default-left: url(../../../assets/start-button-default-background-left.png);
@@ -35,7 +34,6 @@ $start-button-bg-size: contain, contain, calc(100% - 8px) 100%;
   font-style: $start-button-font-style;
   letter-spacing: $start-button-letter-spacing;
   line-height: $start-button-line-height;
-  vertical-align: $start-button-vertical-align;
   text-shadow: $start-button-text-shadow;
   background-image: $start-btn-default-left, $start-btn-default-right, $start-btn-default-center;
   background-position: $start-button-bg-position;
@@ -99,6 +97,7 @@ $taskbar-window-buttons-margin-left: 8px;
   background-position: left top, left top;
   background-repeat: no-repeat, no-repeat;
   background-size: contain, 100% 100%;
+  line-height: 17px;
 
   &:has(> img) {
     padding-left: 8px;

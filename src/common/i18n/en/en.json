@@ -1,0 +1,45 @@
+{
+    "splashScreen": {
+        "welcome": "welcome"
+    },
+    "desktop": {
+        "contextMenu": {
+            "arrangeIconsBy": "Arrange Icons By",
+            "name": "Name",
+            "size": "Size",
+            "type": "Type",
+            "modified": "Modified",
+            "showInGroups": "Show in Groups",
+            "autoArrange": "Auto Arrange",
+            "alignToGrid": "Align to Grid",
+            "showDesktopIcons": "Show Desktop Icons",
+            "lockWebItemsOnDesktop": "Lock Web Items on Desktop",
+            "runDesktopCleanupWizard": "Run Desktop Cleanup Wizard",
+            "refresh": "Refresh",
+            "paste": "Paste",
+            "pasteShortcut": "Paste Shortcut",
+            "new": "New",
+            "folder": "Folder",
+            "shortcut": "Shortcut",
+            "briefcase": "Briefcase",
+            "bitmapImage": "Bitmap Image",
+            "wordPadDocument": "WordPad Document",
+            "rtfFormatDocument": "RTF Format Document",
+            "textDocument": "Text Document",
+            "waveSound": "Wave Sound",
+            "compressedFolder": "Compressed Folder",
+            "properties": "Properties"
+        }
+    },
+    "taskbar": {
+        "start": "start"
+    },
+    "appContextMenu": {
+        "restore": "Restore",
+        "move": "Move",
+        "size": "Size",
+        "minimize": "Minimize",
+        "maximize": "Maximize",
+        "close": "Close"
+    }
+}
