@@ -1,9 +1,10 @@
 import React, { useRef, useEffect } from "react";
-import XPBootLogo from "../../../assets/xp-boot-logo.png"
-import XPBootBar from "../../../assets/xp-boot-bar.png"
-import XPBootCopyrightText from "../../../assets/xp-boot-copyright-text.png"
-import XPBootMicrosoftLogo from "../../../assets/xp-boot-microsoft-logo.png"
+import XPBootLogo from "../../../assets/xp-boot-logo.png";
+import XPBootBar from "../../../assets/xp-boot-bar.png";
+import XPBootCopyrightText from "../../../assets/xp-boot-copyright-text.png";
+import XPBootMicrosoftLogo from "../../../assets/xp-boot-microsoft-logo.png";
 import { BootStage } from "../../../App";
+import styles from "./WindowsXPBootScreenCanvas.module.scss";
 
 /**
  * Ce composant dessine un écran de boot Windows XP sur un canvas :
@@ -50,6 +51,8 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
     const microsoftLogo = new Image();
     microsoftLogo.src = XPBootMicrosoftLogo;
 
+    let timeDiff = 0;
+
     // Fonction de dessin principale
     const draw = (timestamp: number) => {
       if (!ctx) return;
@@ -58,7 +61,12 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
         return;
       }
 
-      const elapsed = timestamp - startTime;
+      // Dessiner la barre de progression
+      // On va simuler un déplacement cyclique
+      const cycleDuration = 2000; // en ms (durée d'un cycle du défilement)
+
+      timeDiff += timestamp - startTime > cycleDuration ? Math.random() * 10 : 0;
+      const elapsed = timestamp + timeDiff - startTime;
 
       // Effacer le canvas
       ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -93,10 +101,6 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
       if (microsoftLogo.complete) {
         ctx.drawImage(microsoftLogo, microsoftLogoX, microsoftLogoY, microsoftLogoWidth, microsoftLogoHeight);
       }
-
-      // Dessiner la barre de progression
-      // On va simuler un déplacement cyclique
-      const cycleDuration = 2000; // en ms (durée d'un cycle du défilement)
 
       // Nombre total de pas
       const blockCount = 15;
@@ -149,23 +153,25 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
       thirdGradient.addColorStop(0.87, 'rgba(88, 120, 227, 1)');
       thirdGradient.addColorStop(1, 'rgba(40, 56, 196, 1)');
 
-      // Déplacer le bloc à l'intérieur de la zone de la barre
-      // cycle = la position repart à -blockWidth pour un enchaînement fluide
-      const drawX = PROGRESS_BAR_X + offsetX - blockWidth;
-      ctx.fillStyle = thirdGradient;
-      ctx.fillRect(drawX, PROGRESS_BAR_Y, blockWidth, PROGRESS_BAR_HEIGHT);
+      if (timestamp - startTime > cycleDuration) {
+        // Déplacer le bloc à l'intérieur de la zone de la barre
+        // cycle = la position repart à -blockWidth pour un enchaînement fluide
+        const drawX = PROGRESS_BAR_X + offsetX - blockWidth;
+        ctx.fillStyle = thirdGradient;
+        ctx.fillRect(drawX, PROGRESS_BAR_Y, blockWidth, PROGRESS_BAR_HEIGHT);
 
-      // On peut répéter le bloc pour plus de fluidité
-      // (ici on dessine un 2e bloc "en avance" pour donner l'illusion d'un train de carrés).
-      const secondBlockX = drawX - (blockWidth + blockSpacing);
-      ctx.fillStyle = secondGradient;
-      ctx.fillRect(secondBlockX, PROGRESS_BAR_Y, blockWidth, PROGRESS_BAR_HEIGHT);
+        // On peut répéter le bloc pour plus de fluidité
+        // (ici on dessine un 2e bloc "en avance" pour donner l'illusion d'un train de carrés).
+        const secondBlockX = drawX - (blockWidth + blockSpacing);
+        ctx.fillStyle = secondGradient;
+        ctx.fillRect(secondBlockX, PROGRESS_BAR_Y, blockWidth, PROGRESS_BAR_HEIGHT);
 
-      // On peut répéter le bloc pour plus de fluidité
-      // (ici on dessine un 3e bloc "en avance" pour donner l'illusion d'un train de carrés).
-      const thirdBlockX = drawX - (2 * (blockWidth + blockSpacing));
-      ctx.fillStyle = firstGradient;
-      ctx.fillRect(thirdBlockX, PROGRESS_BAR_Y, blockWidth, PROGRESS_BAR_HEIGHT);
+        // On peut répéter le bloc pour plus de fluidité
+        // (ici on dessine un 3e bloc "en avance" pour donner l'illusion d'un train de carrés).
+        const thirdBlockX = drawX - (2 * (blockWidth + blockSpacing));
+        ctx.fillStyle = firstGradient;
+        ctx.fillRect(thirdBlockX, PROGRESS_BAR_Y, blockWidth, PROGRESS_BAR_HEIGHT); 
+      }
 
       // Masque avant et après la barre
       ctx.fillStyle = "black";
@@ -195,11 +201,22 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
   }, []);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      const windowsBootCanvas = document.getElementById("windows-boot-canvas");
+      if (windowsBootCanvas) {
+        windowsBootCanvas.style.opacity = '1';
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => onComplete('windows-splash-screen'), 8000);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
-  return <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} className="cursor-none" />;
+  return <canvas id="windows-boot-canvas" ref={canvasRef} width={WIDTH} height={HEIGHT} className={`${styles.windowsBootCanvas} cursor-none`} />;
 };
 
 export default WindowsXPBootScreenCanvas;
