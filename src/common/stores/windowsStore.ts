@@ -3,6 +3,36 @@ import { WindowInfo, WindowAnimationState } from '../types/window';
 import { bringToFrontPreservingZOrder } from '../utils/bringWindowToFront';
 import { useAppsStore } from './appsStore';
 
+const DEFAULT_WINDOW_POSITION: WindowInfo['position'] = { x: 100, y: 100 };
+const DEFAULT_WINDOW_SIZE: WindowInfo['size'] = { width: 600, height: 400 };
+const WINDOW_CASCADE_OFFSET = 30;
+
+const windowPlacementMemory: Record<string, { position: WindowInfo['position']; size: WindowInfo['size'] }> = {};
+
+const getAppIdFromPid = (appPid: string): string => appPid.replace(/-\d+$/, '');
+
+const hasPositionCollision = (windows: WindowInfo[], position: WindowInfo['position']): boolean =>
+  windows.some(
+    (window) =>
+      !window.isMinimized &&
+      !window.isMaximized &&
+      window.position.x === position.x &&
+      window.position.y === position.y
+  );
+
+const getCascadedPosition = (windows: WindowInfo[], initialPosition: WindowInfo['position']): WindowInfo['position'] => {
+  let nextPosition = { ...initialPosition };
+
+  while (hasPositionCollision(windows, nextPosition)) {
+    nextPosition = {
+      x: nextPosition.x + WINDOW_CASCADE_OFFSET,
+      y: nextPosition.y + WINDOW_CASCADE_OFFSET,
+    };
+  }
+
+  return nextPosition;
+};
+
 export interface WindowsState {
   windows: WindowInfo[];
 
@@ -77,6 +107,13 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
           (acc, w) => Math.max(acc, w.zIndex),
           0
         );
+
+        const appId = getAppIdFromPid(appPid);
+        const rememberedPlacement = windowPlacementMemory[appId];
+
+        const basePosition = rememberedPlacement?.position ?? options.position ?? DEFAULT_WINDOW_POSITION;
+        const baseSize = rememberedPlacement?.size ?? options.size ?? DEFAULT_WINDOW_SIZE;
+        const cascadedPosition = getCascadedPosition(prev.windows, basePosition);
   
         const newWindow: WindowInfo = {
           id,
@@ -84,8 +121,8 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
           title,
           icon,
           content,
-          position: options.position ?? { x: 100, y: 100 },
-          size: options.size ?? { width: 600, height: 400 },
+          position: cascadedPosition,
+          size: { ...baseSize },
           isMinimized: false,
           isMaximized: false,
           isActive: true,
@@ -135,6 +172,24 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
     set((prev) => {
       // Récupérer la fenêtre à fermer
       const windowToClose = prev.windows.find((w) => w.id === id);
+
+      if (windowToClose) {
+        const appId = getAppIdFromPid(windowToClose.appPid);
+        const rememberedPosition =
+          windowToClose.isMaximized && windowToClose.preMaximizePosition
+            ? windowToClose.preMaximizePosition
+            : windowToClose.position;
+        const rememberedSize =
+          windowToClose.isMaximized && windowToClose.preMaximizeSize
+            ? windowToClose.preMaximizeSize
+            : windowToClose.size;
+
+        windowPlacementMemory[appId] = {
+          position: { ...rememberedPosition },
+          size: { ...rememberedSize },
+        };
+      }
+
       // Filtrer la liste pour exclure la fenêtre fermée
       const updatedWindows = prev.windows.filter((w) => w.id !== id);
 

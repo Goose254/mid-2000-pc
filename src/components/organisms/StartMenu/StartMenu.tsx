@@ -44,7 +44,8 @@ import WMMSmallIcon from '@/assets/windows-icons/wmm2res.dll_14_128-8.png';
 
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
-import { Button } from '@/components/atoms/Button/Button';
+import { RunDialog } from '@/components/organisms/RunDialog/RunDialog';
+import RunDialogTitleIcon from '@/assets/windows-icons/shell32.dll_14_160-10.png';
 
 interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   isVisible: boolean;
@@ -67,15 +68,8 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
         'run',
         'run.exe',
         'Exécuter',
-        <>
-          <div>Entrez le nom d'un programme, dossier, document ou d'une ressource Internet, et Windows l'ouvrira pour vous.</div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Button disabled>OK</Button>
-            <Button>Annuler</Button>
-            <Button>Parcourir...</Button>
-          </div>
-        </>,
-        undefined,
+        <RunDialog windowId="run" />,
+        <img src={RunDialogTitleIcon} alt="Run icon" />,
         {
           position: { x: 3, y: window.innerHeight - 220 },
           size: { width: 363, height: 186 },
