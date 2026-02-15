@@ -7,12 +7,29 @@ interface DesktopIconProps {
   label: string;
   shortcut?: boolean;
   onDoubleClick: () => void;
+  onMouseDown?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  style?: React.CSSProperties;
+  isDragging?: boolean;
 }
 
-export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, shortcut = false, onDoubleClick }) => {
+export const DesktopIcon: React.FC<DesktopIconProps> = ({
+  icon,
+  label,
+  shortcut = false,
+  onDoubleClick,
+  onMouseDown,
+  style,
+  isDragging = false,
+}) => {
   const [active, setActive] = useState<boolean>(false);
   const iconRef = useRef<HTMLDivElement | null>(null);
   const iconSrc = icon?.props?.src;
+
+  useEffect(() => {
+    if (isDragging) {
+      setActive(false);
+    }
+  }, [isDragging]);
 
   useEffect(() => {
     const handleClickOutsideIcon = (e: MouseEvent) => {
@@ -28,6 +45,10 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, shortcut 
   }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDragging) {
+      return;
+    }
+
     switch (e.detail) {
       case 1:
         setActive(true);
@@ -42,12 +63,15 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, shortcut 
   return (
     <div
       ref={iconRef}
-      className={`${styles.desktopIcon} ${active ? styles.active : ''}`}
+      className={`${styles.desktopIcon} ${active || isDragging ? styles.active : ''} ${isDragging ? styles.dragging : ''}`}
       onClick={handleClick}
+      onMouseDown={onMouseDown}
+      onDragStart={(event) => event.preventDefault()}
+      style={style}
     >
       <div className={styles.desktopIconIconWrapper}>
         <div className={styles.desktopIconIcon}>{icon}</div>
-        {active && (
+        {(active || isDragging) && (
           <div
             className={styles.desktopIconIconOverlay}
             style={{ "--icon-image": `url(${iconSrc})` } as React.CSSProperties}
