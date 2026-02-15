@@ -4,9 +4,11 @@ $toolbar-font-size: 11px;
 $toolbar-bg-gradient: linear-gradient(90deg, rgba(243,244,237,1) 0%, rgba(234,229,213,1) 70%);
 $toolbar-bg-plain: rgba(234,229,213,1);
 $toolbar-border-bottom: 1px solid white;
+$toolbar-border-bottom-last: none;
 
 $inner-container-min-height: 23px;
 $inner-container-border-bottom: 1px solid #d8d2bd;
+$inner-container-border-bottom-last: 1px solid #b9b2a0;
 
 .xpWindowToolbar {
   font-family: $toolbar-font-family;
@@ -16,6 +18,14 @@ $inner-container-border-bottom: 1px solid #d8d2bd;
   .innerContainer {
     display: flex;
     border-bottom: $inner-container-border-bottom;
+  }
+}
+
+.lastToolbar {
+  border-bottom: $toolbar-border-bottom-last;
+
+  .innerContainer {
+    border-bottom: $inner-container-border-bottom-last;
   }
 }
 

@@ -13,7 +13,7 @@ import { getWindowIdForInstance } from '@/common/utils/windowId';
 
 export const ExplorerApp: AppTemplate = {
   id: 'explorer.exe',
-  name: 'Explorateur Windows',
+  name: 'Poste de travail',
   icons: {
     large: iconLarge,
     medium: iconMedium,
@@ -37,8 +37,8 @@ export const ExplorerApp: AppTemplate = {
       <img src={icons.xsmall} />,
       {
         size: {
-          width: 600,
-          height: 400,
+          width: 760,
+          height: 540,
         },
       },
     );

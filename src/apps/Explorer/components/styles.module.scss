@@ -1,0 +1,280 @@
+$xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -0.5 15 17' shape-rendering='crispEdges'%3E%3Cpath stroke='%234d6185' d='M4 6h1m5 0h1M3 7h3m3 0h3M4 8h3m1 0h3M5 9h5m-4 1h3m-2 1h1'/%3E%3C/svg%3E");
+
+.windowsToolbarBrand {
+  margin-left: auto;
+  border-left: 1px solid #aca899;
+}
+
+.addressToolbar {
+  > div {
+    min-height: 26px;
+  }
+}
+
+.addressToolbarRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0px 8px;
+  box-sizing: border-box;
+}
+
+.addressLabel {
+  color: #4f4a3f;
+  min-width: 45px;
+}
+
+.addressFieldRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+}
+
+.addressInputShell {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+}
+
+.addressInputIcon {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.addressInputWrapper {
+  width: 100%;
+}
+
+.addressInputField {
+  padding-left: 27px !important;
+  min-height: 21px !important;
+  height: 24px;
+}
+
+.addressOkButton {
+  min-width: 41px !important;
+  min-height: 21px !important;
+  max-width: none !important;
+  padding: 0 7px !important;
+}
+
+.explorerLayout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  border-top: 1px solid #d6d3c6;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #7a99dd 0%, #637fd2 100%);
+  padding: 12px 10px;
+  overflow-y: auto;
+}
+
+.sidebarSection {
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(206, 220, 245, 0.96) 0%, rgba(192, 208, 239, 0.96) 100%);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.sidebarSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 25px;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(133, 157, 206, 0.8);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(227, 237, 255, 0) 100%);
+  color: #0b3f96;
+  font-family: 'Tahoma';
+  font-weight: 700;
+}
+
+.sidebarCollapseButton {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #5f7fb9;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fbfdff 0%, #c6dafc 65%, #9db7ea 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 0;
+}
+
+.sidebarCollapseButton::before,
+.sidebarCollapseButton::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  width: 14px;
+  height: 8px;
+  background-repeat: no-repeat;
+  background-size: 14px 16px;
+  background-image: $xp-arrow-svg;
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+
+.sidebarCollapseButton::before {
+  top: 3px;
+}
+
+.sidebarCollapseButton::after {
+  top: 8px;
+}
+
+.sidebarTasks {
+  list-style: none;
+  margin: 8px 0 10px 0;
+  padding: 0 8px;
+}
+
+.sidebarTaskButton {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #003ea8;
+  text-align: left;
+  line-height: 1.2;
+  padding: 3px 0;
+
+  &:hover span {
+    text-decoration: underline;
+  }
+
+  img {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+.detailsBlock {
+  padding: 9px 10px 11px;
+}
+
+.detailsTitle {
+  color: #0d1528;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.detailsText {
+  color: #111111;
+}
+
+.mainArea {
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+  border-left: 1px solid #8ea5d6;
+  padding: 0px 12px 12px 0;
+  overflow: auto;
+}
+
+.storageGroup {
+  margin: 0 0 14px;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 8px 12px 8px;
+}
+
+.storageGroupTitle {
+  font-size: 11px;
+  font-weight: bold;
+  margin: 0 -12px 8px;
+  padding: 0 12px 2px;
+  color: #000000;
+  font-weight: bold;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, #4a88da 0%, #6d9fe3 14%, #b9d2f2 30%, #ffffff 48%, #ffffff 100%);
+  }
+}
+
+.storageItemsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 260px));
+  gap: 7px 14px;
+  justify-content: start;
+}
+
+.storageItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  gap: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 4px 5px;
+  text-align: left;
+  color: #000000;
+
+  &:hover {
+    border-color: #b8c9ec;
+    background: linear-gradient(180deg, #f6f9ff 0%, #ebf2ff 100%);
+  }
+
+  img {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+}
+
+.storageItemText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.storageItemLabel {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.storageItemDescription {
+  color: #666666;
+  margin-top: 1px;
+}
+
+.linkLike {
+  text-decoration: underline;
+}
+
+@media (max-width: 780px) {
+  .storageItemsGrid {
+    grid-template-columns: 1fr;
+  }
+}
