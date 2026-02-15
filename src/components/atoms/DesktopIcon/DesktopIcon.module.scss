@@ -19,6 +19,11 @@ $desktop-icon-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
   width: 94px;
   height: 80px;
   padding: 5px;
+
+  .desktopIconIconWrapper {
+    position: relative;
+    @include icon-size;
+  }
   
   // Style commun à l'icône (normal et dans l'état actif)
   .desktopIconIcon {
@@ -80,5 +85,24 @@ $desktop-icon-text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
     width: fit-content;
     margin: auto;
     padding: 0px 2px 2px 2px;
+  }
+
+  .desktopIconShortcutIndicator {
+    position: absolute;
+    left: -2px;
+    bottom: -2px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .desktopIconShortcutImage {
+    display: block;
+    width: 16px;
+    height: 16px;
+    image-rendering: pixelated;
   }
 }

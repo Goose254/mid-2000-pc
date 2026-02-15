@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './DesktopIcon.module.scss';
+import ShortcutOverlayIcon from '@/assets/ui/shortcut-overlay-xp.png';
 
 interface DesktopIconProps {
   icon: React.ReactElement;
   label: string;
+  shortcut?: boolean;
   onDoubleClick: () => void;
 }
 
-export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, onDoubleClick }) => {
+export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, shortcut = false, onDoubleClick }) => {
   const [active, setActive] = useState<boolean>(false);
   const iconRef = useRef<HTMLDivElement | null>(null);
   const iconSrc = icon?.props?.src;
@@ -50,6 +52,11 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({ icon, label, onDoubleC
             className={styles.desktopIconIconOverlay}
             style={{ "--icon-image": `url(${iconSrc})` } as React.CSSProperties}
           ></div>
+        )}
+        {shortcut && (
+          <div className={styles.desktopIconShortcutIndicator}>
+            <img src={ShortcutOverlayIcon} alt="" aria-hidden="true" className={styles.desktopIconShortcutImage} />
+          </div>
         )}
       </div>
       <div className={styles.desktopIconLabelWrapper}>

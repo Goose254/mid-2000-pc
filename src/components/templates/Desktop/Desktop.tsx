@@ -11,6 +11,7 @@ import XPWallpaper from '@/assets/xp-wallpaper.jpg';
 import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-9.png';
 import MyDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_235-9.png';
 import TashbinIcon from '@/assets/windows-icons/shell32.dll_14_254-7.png';
+import TeamsIcon from '@/assets/program-icons/teams.exe.svg';
 
 import { useAppsStore } from '@/common/stores/appsStore';
 import { TaskManagerApp } from '@/apps/TaskManager/main';
@@ -33,6 +34,10 @@ export const Desktop: React.FC = () => {
     y: 0,
   });
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const openTeams = () => {
+    window.open('https://teams-suggest.vercel.app', '_blank', 'noopener,noreferrer');
+  };
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -92,6 +97,12 @@ export const Desktop: React.FC = () => {
           icon={<img src={MinesweeperApp.icons.medium} alt="Minesweeper Icon" />}
           label="Démineur"
           onDoubleClick={() => startApp(MinesweeperApp)}
+        />
+        <DesktopIcon
+          icon={<img src={TeamsIcon} alt="Microsoft Teams Icon" />}
+          label="Microsoft Teams"
+          shortcut
+          onDoubleClick={openTeams}
         />
       </div>
 
