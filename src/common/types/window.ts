@@ -1,5 +1,7 @@
 import { TitleBarButtonOptions } from "@/components/organisms/Window/Window";
-import { ReactElement, ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
+
+export type WindowAnimationState = 'none' | 'minimizing' | 'restoring' | 'maximizing' | 'unmaximizing';
 
 export interface WindowInfo {
   id: string;
@@ -20,4 +22,11 @@ export interface WindowInfo {
     maximize?: TitleBarButtonOptions;
     close?: TitleBarButtonOptions;
   }
+  // Animation state
+  animationState?: WindowAnimationState;
+  // Position and size before maximize (for restoration animation)
+  preMaximizePosition?: { x: number; y: number };
+  preMaximizeSize?: { width: number; height: number };
+  // Taskbar button position (for minimize/restore animation)
+  taskbarButtonRect?: DOMRect;
 }

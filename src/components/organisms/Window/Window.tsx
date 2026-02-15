@@ -32,6 +32,11 @@ export const Window: React.FC<WindowProps> = ({
     buttons,
     isActive,
     isMaximized,
+    isMinimized,
+    animationState,
+    taskbarButtonRect,
+    preMaximizePosition,
+    preMaximizeSize,
   } = useWindowsStore((state) => state.windows.find((w) => id === w.id) || {} as WindowInfo)
 
   // État pour le déplacement / redimensionnement
@@ -204,13 +209,165 @@ export const Window: React.FC<WindowProps> = ({
     };
   }, [windowRef]);
 
+  // Update taskbar button position for animations
+  useEffect(() => {
+    // Find the taskbar button by looking for elements with both data-window-id and data-taskbar-button
+    const taskbarButton = document.querySelector(`[data-window-id="${id}"][data-taskbar-button="true"]`);
+
+    if (taskbarButton) {
+      const rect = taskbarButton.getBoundingClientRect();
+      useWindowsStore.getState().updateWindow(id, { taskbarButtonRect: rect });
+    }
+  }, [id, isMinimized, animationState]); // Re-run when animation state changes
+
+  // State to track if we need to start restore from taskbar position
+  const [startRestoreFromTaskbar, setStartRestoreFromTaskbar] = useState(false);
+
+  // Effect to handle animation start from taskbar button for restore
+  useEffect(() => {
+    if (animationState === 'restoring' && taskbarButtonRect) {
+      // Set flag to start from taskbar position
+      setStartRestoreFromTaskbar(true);
+
+      // Use requestAnimationFrame to ensure React has time to render the initial state
+      requestAnimationFrame(() => {
+        setStartRestoreFromTaskbar(false);
+      });
+    }
+  }, [animationState, taskbarButtonRect]);
+
+  // Handle transitionend events to complete animations
+  useEffect(() => {
+    const windowElement = windowRef.current;
+    if (!windowElement || !animationState || animationState === 'none') return;
+
+    let transitionCompleted = false;
+
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      // Only handle transitions on the window element itself, not children
+      if (e.target !== windowElement) return;
+
+      // Only handle opacity, width, height, top, or left transitions
+      if (!['opacity', 'width', 'height', 'top', 'left'].includes(e.propertyName)) return;
+
+      // Prevent multiple calls (transitionend fires for each CSS property)
+      if (transitionCompleted) return;
+      transitionCompleted = true;
+
+      const store = useWindowsStore.getState();
+
+      switch (animationState) {
+        case 'minimizing':
+          store.completeMinimizeAnimation(id);
+          break;
+        case 'restoring':
+          store.completeRestoreAnimation(id);
+          break;
+        case 'maximizing':
+          store.completeMaximizeAnimation(id);
+          break;
+        case 'unmaximizing':
+          store.completeUnmaximizeAnimation(id);
+          break;
+      }
+    };
+
+    windowElement.addEventListener('transitionend', handleTransitionEnd);
+
+    return () => {
+      windowElement.removeEventListener('transitionend', handleTransitionEnd);
+    };
+  }, [id, animationState]);
+
+  // Calculate position and size for animations
+  const getAnimatedPositionAndSize = () => {
+    let animatedPosition = { ...position };
+    let animatedSize = { ...size };
+    let animatedOpacity = 1;
+
+    // For maximized windows when not animating, use full screen dimensions
+    if (isMaximized && animationState === 'none') {
+      animatedPosition = { x: 0, y: 0 };
+      animatedSize = {
+        width: window.innerWidth,
+        height: window.innerHeight - 30,
+      };
+    }
+
+    if (animationState === 'minimizing' && taskbarButtonRect) {
+      // Animate to taskbar button position
+      animatedPosition = {
+        x: taskbarButtonRect.left,
+        y: taskbarButtonRect.top,
+      };
+      animatedSize = {
+        width: taskbarButtonRect.width,
+        height: taskbarButtonRect.height,
+      };
+      animatedOpacity = 0;
+    } else if (animationState === 'restoring') {
+      // If we need to start from taskbar, use taskbar position
+      if (startRestoreFromTaskbar && taskbarButtonRect) {
+        animatedPosition = {
+          x: taskbarButtonRect.left,
+          y: taskbarButtonRect.top,
+        };
+        animatedSize = {
+          width: taskbarButtonRect.width,
+          height: taskbarButtonRect.height,
+        };
+        animatedOpacity = 0;
+      } else {
+        // Otherwise animate to normal position
+        animatedOpacity = 1;
+      }
+    } else if (animationState === 'maximizing') {
+      // Will animate to maximized state
+      animatedPosition = { x: 0, y: 0 };
+      animatedSize = {
+        width: window.innerWidth,
+        height: window.innerHeight - 30,
+      };
+    } else if (animationState === 'unmaximizing' && preMaximizePosition && preMaximizeSize) {
+      // Will animate to previous position and size
+      animatedPosition = preMaximizePosition;
+      animatedSize = preMaximizeSize;
+    }
+
+    return { animatedPosition, animatedSize, animatedOpacity };
+  };
+
+  // Get animation class based on state
+  const getAnimationClass = () => {
+    if (!animationState || animationState === 'none') return '';
+
+    switch (animationState) {
+      case 'minimizing':
+        return styles['animating-minimize'];
+      case 'restoring':
+        return styles['animating-restore'];
+      case 'maximizing':
+        return styles['animating-maximize'];
+      case 'unmaximizing':
+        return styles['animating-unmaximize'];
+      default:
+        return '';
+    }
+  };
+
+  // Calculate animated position and size
+  const { animatedPosition, animatedSize, animatedOpacity } = getAnimatedPositionAndSize();
+
   // Style inline pour positionner la fenêtre
   const style = {
-    top: `${isMaximized ? 0 : position.y}px`,
-    left: `${isMaximized ? 0 : position.x}px`,
-    width: `${isMaximized ? window.innerWidth : size.width}px`,
-    height: `${isMaximized ? window.innerHeight - 30 : size.height}px`,
+    top: `${animatedPosition.y}px`,
+    left: `${animatedPosition.x}px`,
+    width: `${animatedSize.width}px`,
+    height: `${animatedSize.height}px`,
     zIndex: zIndex,
+    opacity: animatedOpacity,
+    // Hide completely if minimized and not animating (instead of return null)
+    display: (isMinimized && animationState !== 'restoring' && animationState !== 'minimizing') ? 'none' : 'flex',
   };
 
   // Affiche-t-on les poignées de redimensionnement ?
@@ -223,6 +380,8 @@ export const Window: React.FC<WindowProps> = ({
         ${styles.window}
         ${isMaximized ? styles.maximized : ''}
         ${!isActive ? styles.inactive + " inactive" : ''}
+        ${getAnimationClass()}
+        ${(isDragging || isResizing !== 'none' || startRestoreFromTaskbar) ? styles['no-transition'] : ''}
       `}
       style={style}
       onMouseDown={setWindowActive}

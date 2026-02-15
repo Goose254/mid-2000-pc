@@ -58,6 +58,7 @@ export const TaskbarButton: React.FC<TaskbarButtonProps> = ({ linkedWindow }) =>
       onClick={() => toggleMinimizeWindow(linkedWindow.id)}
       className={`${styles.taskbarButton} ${linkedWindow.isActive || contextMenu.visible ? styles.active : ""}`}
       data-window-id={linkedWindow.id}
+      data-taskbar-button="true"
     >
       <div className={styles.taskbarButtonContent}>
         {linkedWindow.icon && <div className={styles.taskbarButtonIcon}>{linkedWindow.icon}</div>}

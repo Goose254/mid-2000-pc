@@ -23,6 +23,8 @@ $active-bottom-border-center: url(../../../assets/window-borders/window-bottom-b
   position: fixed;
   display: flex;
   flex-direction: column;
+  // Smooth transitions for position and size changes
+  transition: top 0.15s ease-in-out, left 0.15s ease-in-out, width 0.15s ease-in-out, height 0.15s ease-in-out, opacity 0.15s ease-in-out;
 
   &.maximized {
     .window-content-wrapper {
@@ -33,23 +35,45 @@ $active-bottom-border-center: url(../../../assets/window-borders/window-bottom-b
   &.inactive {
     // Lorsqu'une fenêtre est inactive, on remplace les images de bord active
     .window-left-border {
-      background-image: 
+      background-image:
         url(../../../assets/window-borders/window-left-border-inactive-top.png),
         url(../../../assets/window-borders/window-left-border-inactive-bottom.png),
         url(../../../assets/window-borders/window-left-border-inactive-center.png);
     }
     .window-right-border {
-      background-image: 
+      background-image:
         url(../../../assets/window-borders/window-right-border-inactive-top.png),
         url(../../../assets/window-borders/window-right-border-inactive-bottom.png),
         url(../../../assets/window-borders/window-right-border-inactive-center.png);
     }
     .window-bottom-border {
-      background-image: 
+      background-image:
         url(../../../assets/window-borders/window-bottom-border-inactive-left.png),
         url(../../../assets/window-borders/window-bottom-border-inactive-right.png),
         url(../../../assets/window-borders/window-bottom-border-inactive-center.png);
     }
+  }
+
+  // Animation states - fading for minimize/restore
+  &.animating-minimize {
+    opacity: 0;
+  }
+
+  &.animating-restore {
+    // Opacity will transition from 0 to 1
+  }
+
+  &.animating-maximize {
+    // Position and size will transition smoothly
+  }
+
+  &.animating-unmaximize {
+    // Position and size will transition smoothly
+  }
+
+  // Disable transitions when dragging or resizing
+  &.no-transition {
+    transition: none;
   }
 }
 

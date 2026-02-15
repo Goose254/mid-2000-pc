@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { WindowInfo } from '../types/window';
+import { WindowInfo, WindowAnimationState } from '../types/window';
 import { bringToFrontPreservingZOrder } from '../utils/bringWindowToFront';
 import { useAppsStore } from './appsStore';
 
@@ -27,6 +27,12 @@ export interface WindowsState {
   setWindowSize: (id: string, size: WindowInfo["size"]) => void;
   toggleMinimizeWindow: (id: string, force?: boolean) => void;
   toggleMaximizeWindow: (id: string) => void;
+
+  // Animation completion methods (called from Window component after transitionend)
+  completeMinimizeAnimation: (id: string) => void;
+  completeRestoreAnimation: (id: string) => void;
+  completeMaximizeAnimation: (id: string) => void;
+  completeUnmaximizeAnimation: (id: string) => void;
 
   updateWindow: (id: string, newConfig: Partial<WindowInfo>) => void;
 }
@@ -57,9 +63,10 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
         // Puis on la "bringToFront".
         const updated = prev.windows.map((w) =>
           w.id === id
-            ? { ...w, isMinimized: false }
+            ? { ...w, isMinimized: false, animationState: 'restoring' as WindowAnimationState }
             : w
         );
+
         return {
           ...prev,
           windows: bringToFrontPreservingZOrder(updated, id),
@@ -83,7 +90,7 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
           isMaximized: false,
           isActive: true,
           zIndex: currentMaxZ + 1,
-  
+
           // Les nouvelles options, avec une valeur par défaut si non fourni
           fixedSize: options.fixedSize ?? false,
           buttons: {
@@ -108,6 +115,9 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
               action: options.buttons?.close?.action,
             },
           },
+
+          // Animation state
+          animationState: 'none',
         };
   
         return {
@@ -211,9 +221,11 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
       let updated = prev.windows.map((w) => {
         if (w.id === id) {
           if (isMinimized) {
-            return { ...w, isMinimized: false };
+            // Start restore animation - set isMinimized to false immediately so window renders
+            return { ...w, isMinimized: false, animationState: 'restoring' as WindowAnimationState };
           } else if ((isActive || force) && isMinimisable) {
-            return { ...w, isMinimized: true, isActive: false };
+            // Start minimize animation
+            return { ...w, animationState: 'minimizing' as WindowAnimationState, isActive: false };
           } else {
             return { ...w, isMinimized: false };
           }
@@ -222,7 +234,7 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
         return w;
       });
 
-      // Si on restaure (était minimisée) ou si on la ramène devant (n’était pas active),
+      // Si on restaure (était minimisée) ou si on la ramène devant (n'était pas active),
       // on applique bringToFrontPreservingZOrder
       const needsFront = isMinimized || (!isMinimized && !isActive);
 
@@ -235,14 +247,82 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
     });
   },
 
+  // Complete minimize animation (called from Window component after transitionend)
+  completeMinimizeAnimation: (id: string) => {
+    set((prev) => ({
+      ...prev,
+      windows: prev.windows.map((w) =>
+        w.id === id
+          ? { ...w, isMinimized: true, animationState: 'none' as WindowAnimationState }
+          : w
+      ),
+    }));
+  },
+
+  // Complete restore animation (called from Window component after transitionend)
+  completeRestoreAnimation: (id: string) => {
+    set((prev) => ({
+      ...prev,
+      windows: prev.windows.map((w) =>
+        w.id === id
+          ? { ...w, animationState: 'none' as WindowAnimationState }
+          : w
+      ),
+    }));
+  },
+
   // --------------------------------------
   // Maximize / Restore
   // --------------------------------------
   toggleMaximizeWindow: (id) => {
+    set((prev) => {
+      const target = prev.windows.find((w) => w.id === id);
+      if (!target) return prev;
+
+      const willMaximize = !target.isMaximized;
+
+      const updated = prev.windows.map((w) => {
+        if (w.id === id) {
+          if (willMaximize) {
+            // Save current position and size before maximizing
+            return {
+              ...w,
+              animationState: 'maximizing' as WindowAnimationState,
+              preMaximizePosition: { ...w.position },
+              preMaximizeSize: { ...w.size },
+            };
+          } else {
+            // Start unmaximize animation
+            return { ...w, animationState: 'unmaximizing' as WindowAnimationState };
+          }
+        }
+        return w;
+      });
+
+      return { ...prev, windows: updated };
+    });
+  },
+
+  // Complete maximize animation (called from Window component after transitionend)
+  completeMaximizeAnimation: (id: string) => {
     set((prev) => ({
       ...prev,
       windows: prev.windows.map((w) =>
-        w.id === id ? { ...w, isMaximized: !w.isMaximized } : w
+        w.id === id
+          ? { ...w, isMaximized: true, animationState: 'none' as WindowAnimationState }
+          : w
+      ),
+    }));
+  },
+
+  // Complete unmaximize animation (called from Window component after transitionend)
+  completeUnmaximizeAnimation: (id: string) => {
+    set((prev) => ({
+      ...prev,
+      windows: prev.windows.map((w) =>
+        w.id === id
+          ? { ...w, isMaximized: false, animationState: 'none' as WindowAnimationState }
+          : w
       ),
     }));
   },
