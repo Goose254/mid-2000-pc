@@ -1,5 +1,6 @@
 import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
 import { MinesweeperMainWindow } from './components/MainWindow';
+import { getWindowSize } from './components/useMinesweeper';
 
 import iconLarge from '@/assets/windows-icons/winmine.exe_14_100-6.png'
 import iconMedium from '@/assets/windows-icons/winmine.exe_14_100-6.png'
@@ -42,10 +43,8 @@ export const MinesweeperApp: AppTemplate<{ windowId: string }> = {
           }
         },
         fixedSize: true,
-        size: {
-          width: 170,
-          height: 303,
-        },
+        // Taille dérivée de la géométrie de la grille débutant (9 × 9)
+        size: getWindowSize(9, 9),
       },
     );
 

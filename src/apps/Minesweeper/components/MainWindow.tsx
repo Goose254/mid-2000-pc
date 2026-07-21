@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './styles.module.scss'
 
 import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar'
@@ -7,6 +7,10 @@ import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu'
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem'
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator'
 import { MinesweeperBanner } from './Banner'
+import { CustomGameDialog } from './dialogs/CustomGameDialog'
+import { BestTimesDialog } from './dialogs/BestTimesDialog'
+import { NameEntryDialog } from './dialogs/NameEntryDialog'
+import { AboutDialog } from './dialogs/AboutDialog'
 import { useWindowsStore } from '@/common/stores/windowsStore'
 
 import icon1 from '../assets/icons/buttons/1.png'
@@ -28,7 +32,7 @@ import iconBlown from '../assets/icons/buttons/blown.png'
 import iconRevealed from '../assets/icons/buttons/revealed.png'
 import iconMistake from '../assets/icons/buttons/mistake.png'
 
-import useMinesweeper, { windowSizes } from './useMinesweeper'
+import useMinesweeper, { getWindowSize, DEFAULT_TOOLBAR_HEIGHT } from './useMinesweeper'
 
 interface MinesweeperMainWindowProps {
       windowId: string
@@ -55,11 +59,17 @@ const cellIcons = {
       mistake: iconMistake,
 }
 
+/* The toolbar menus stay open while their button has the focus, so an item click blurs it to close them */
+const closeMenu = () => {
+      (document.activeElement as HTMLElement | null)?.blur()
+}
+
 export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ windowId }) => {
       const {     grid,
                   gameOver,
                   gameWon,
                   difficulty,
+                  gameParams,
                   isMouseDown,
                   hoveredCell,
                   chordCell,
@@ -68,6 +78,8 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                   isSmileyPressed,
                   marksEnabled,
                   soundEnabled,
+                  activeDialog,
+                  bestTimes,
                   handleRightClick,
                   handleMouseDown,
                   handleMouseUp,
@@ -81,29 +93,46 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                   toggleMarks,
                   toggleSound,
                   resetGame,
+                  startCustomGame,
+                  openDialog,
+                  closeDialog,
+                  submitBestTime,
+                  resetBestTimes,
       } = useMinesweeper('beginner');
 
       const isWindowActive = useWindowsStore((state) => state.windows.find((window) => window.id === windowId)?.isActive ?? false)
 
-      /* F2 starts a new game while the window is active, like in the original */
+      const toolbarRef = useRef<HTMLDivElement>(null)
+      const [toolbarHeight, setToolbarHeight] = useState(DEFAULT_TOOLBAR_HEIGHT)
+
+      /* The menu toolbar height depends on font rendering, so it's measured once to size the window exactly */
       useEffect(() => {
-            if (!isWindowActive) return
+            if (toolbarRef.current) {
+                  setToolbarHeight(toolbarRef.current.offsetHeight)
+            }
+      }, [])
+
+      /* The window size is fully derived from the grid geometry, so it always ends flush with the playfield */
+      const windowSize = getWindowSize(gameParams.rows, gameParams.cols, toolbarHeight)
+
+      useEffect(() => {
+            useWindowsStore.getState().setWindowSize(windowId, { width: windowSize.width, height: windowSize.height })
+      }, [windowId, windowSize.width, windowSize.height])
+
+      /* F2 starts a new game while the window is active and no dialog is open, like in the original */
+      useEffect(() => {
+            if (!isWindowActive || activeDialog) return
 
             const handleKeyDown = (event: KeyboardEvent) => {
                   if (event.key === 'F2') {
                         event.preventDefault()
-                        resetGame(windowId)
+                        resetGame()
                   }
             }
 
             window.addEventListener('keydown', handleKeyDown)
             return () => window.removeEventListener('keydown', handleKeyDown)
-      }, [isWindowActive, windowId, resetGame])
-
-      /* This keeps the window size in sync with the current difficulty, even when the shell restores a remembered size */
-      useEffect(() => {
-            useWindowsStore.getState().setWindowSize(windowId, windowSizes[difficulty])
-      }, [windowId, difficulty])
+      }, [isWindowActive, activeDialog, resetGame])
 
       /* The active difficulty and the enabled options display a checkmark in the menu */
       const getMenuCheck = (checked: boolean) => {
@@ -148,36 +177,38 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
       }
 
       return (
-            <>
-                  <WindowToolbar>
-                        <WindowToolbarMenuButton label="Partie">
-                              <FloatingMenu>
-                                    <MenuItem label="Nouvelle partie" info="F2" onClick={() => resetGame(windowId)} />
-                                    <MenuSeparator />
-                                    <MenuItem label="Débutant" iconElement={getMenuCheck(difficulty === 'beginner')} onClick={() => resetGame(windowId, 'beginner')} />
-                                    <MenuItem label="Intermédiaire" iconElement={getMenuCheck(difficulty === 'intermediate')} onClick={() => resetGame(windowId, 'intermediate')} />
-                                    <MenuItem label="Expert" iconElement={getMenuCheck(difficulty === 'expert')} onClick={() => resetGame(windowId, 'expert')} />
-                                    <MenuItem label="Personnalisé..." />
-                                    <MenuSeparator />
-                                    <MenuItem label="Marques (?)" iconElement={getMenuCheck(marksEnabled)} onClick={() => toggleMarks()} />
-                                    <MenuItem label="Couleur" />
-                                    <MenuItem label="Son" iconElement={getMenuCheck(soundEnabled)} onClick={() => toggleSound()} />
-                                    <MenuSeparator />
-                                    <MenuItem label="Meilleurs temps..." />
-                                    <MenuSeparator />
-                                    <MenuItem label="Quitter" onClick={() => useWindowsStore.getState().closeWindow(windowId)} />
-                              </FloatingMenu>
-                        </WindowToolbarMenuButton>
-                        <WindowToolbarMenuButton label="?">
-                              <FloatingMenu>
-                                    <MenuItem label="Sommaire"/>
-                                    <MenuItem label="Aide sur..."/>
-                                    <MenuItem label="Utiliser l'aide"/>
-                                    <MenuSeparator />
-                                    <MenuItem label="À propos du Démineur..."/>
-                              </FloatingMenu>
-                        </WindowToolbarMenuButton>
-                  </WindowToolbar>
+            <div className={styles.appContent}>
+                  <div ref={toolbarRef}>
+                        <WindowToolbar>
+                              <WindowToolbarMenuButton label="Partie">
+                                    <FloatingMenu>
+                                          <MenuItem label="Nouvelle partie" info="F2" onClick={() => {closeMenu(); resetGame()}} />
+                                          <MenuSeparator />
+                                          <MenuItem label="Débutant" iconElement={getMenuCheck(difficulty === 'beginner')} onClick={() => {closeMenu(); resetGame('beginner')}} />
+                                          <MenuItem label="Intermédiaire" iconElement={getMenuCheck(difficulty === 'intermediate')} onClick={() => {closeMenu(); resetGame('intermediate')}} />
+                                          <MenuItem label="Expert" iconElement={getMenuCheck(difficulty === 'expert')} onClick={() => {closeMenu(); resetGame('expert')}} />
+                                          <MenuItem label="Personnalisé..." iconElement={getMenuCheck(difficulty === 'custom')} onClick={() => {closeMenu(); openDialog('custom')}} />
+                                          <MenuSeparator />
+                                          <MenuItem label="Marques (?)" iconElement={getMenuCheck(marksEnabled)} onClick={() => {closeMenu(); toggleMarks()}} />
+                                          <MenuItem label="Couleur" />
+                                          <MenuItem label="Son" iconElement={getMenuCheck(soundEnabled)} onClick={() => {closeMenu(); toggleSound()}} />
+                                          <MenuSeparator />
+                                          <MenuItem label="Meilleurs temps..." onClick={() => {closeMenu(); openDialog('bestTimes')}} />
+                                          <MenuSeparator />
+                                          <MenuItem label="Quitter" onClick={() => {closeMenu(); useWindowsStore.getState().closeWindow(windowId)}} />
+                                    </FloatingMenu>
+                              </WindowToolbarMenuButton>
+                              <WindowToolbarMenuButton label="?">
+                                    <FloatingMenu>
+                                          <MenuItem label="Sommaire"/>
+                                          <MenuItem label="Aide sur..."/>
+                                          <MenuItem label="Utiliser l'aide"/>
+                                          <MenuSeparator />
+                                          <MenuItem label="À propos du Démineur..." onClick={() => {closeMenu(); openDialog('about')}} />
+                                    </FloatingMenu>
+                              </WindowToolbarMenuButton>
+                        </WindowToolbar>
+                  </div>
 
                   <div className={styles.gameArea}>
                         <MinesweeperBanner
@@ -188,7 +219,7 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                               isMouseDown={isMouseDown || chordCell !== null}
                               isSmileyPressed={isSmileyPressed}
                               onSmileyMouseDown={handleSmileyMouseDown}
-                              onSmileyMouseUp={() => handleSmileyMouseUp(windowId)}
+                              onSmileyMouseUp={handleSmileyMouseUp}
                               onSmileyMouseLeave={handleSmileyMouseLeave}
                         />
 
@@ -233,6 +264,33 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                               ))}
                         </div>
                   </div>
-            </>
+
+                  {activeDialog === 'custom' && (
+                        <CustomGameDialog
+                              windowId={windowId}
+                              initialParams={gameParams}
+                              onSubmit={startCustomGame}
+                              onClose={closeDialog}
+                        />
+                  )}
+                  {activeDialog === 'bestTimes' && (
+                        <BestTimesDialog
+                              windowId={windowId}
+                              bestTimes={bestTimes}
+                              onReset={resetBestTimes}
+                              onClose={closeDialog}
+                        />
+                  )}
+                  {activeDialog === 'nameEntry' && (
+                        <NameEntryDialog
+                              windowId={windowId}
+                              difficulty={difficulty}
+                              onSubmit={submitBestTime}
+                        />
+                  )}
+                  {activeDialog === 'about' && (
+                        <AboutDialog windowId={windowId} onClose={closeDialog} />
+                  )}
+            </div>
       )
 }

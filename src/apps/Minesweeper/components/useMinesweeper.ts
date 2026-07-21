@@ -1,4 +1,3 @@
-import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useEffect, useState } from 'react';
 
 import tickSound from '../assets/sounds/winmine.exe_432.wav'
@@ -19,24 +18,25 @@ type Parameters = {
       mines: number;
 }
 
-type DiffParams = {
-      beginner: Parameters;
-      intermediate: Parameters;
-      expert: Parameters;
-}
+type StandardDifficulty = 'beginner' | 'intermediate' | 'expert'
+
+type Difficulty = StandardDifficulty | 'custom'
+
+type DiffParams = Record<StandardDifficulty, Parameters>
 
 type Sizes = {
       width: number;
       height: number;
 }
 
-type WindowSizes = {
-      beginner: Sizes;
-      intermediate: Sizes;
-      expert: Sizes;
+type DialogType = 'custom' | 'bestTimes' | 'nameEntry' | 'about'
+
+type BestScore = {
+      time: number;
+      name: string;
 }
 
-type Difficulty = 'beginner' | 'intermediate' | 'expert'
+type BestTimes = Record<StandardDifficulty, BestScore>
 
 /* These constants don't depend on any component state, so they live at module level and the grid state can be initialized from them */
 const difficultiesParams: DiffParams = {
@@ -45,10 +45,57 @@ const difficultiesParams: DiffParams = {
       expert: { rows: 16, cols: 30, mines: 99 },
 }
 
-export const windowSizes: WindowSizes = {
-      beginner: { width: 170, height: 303 },
-      intermediate: { width: 282, height: 415 },
-      expert: { width: 506, height: 415 },
+/* The bounds of the custom game dialog, matching the original: out of range values are clamped, never rejected */
+const customBounds = {
+      rows: { min: 9, max: 24 },
+      cols: { min: 9, max: 30 },
+      mines: { min: 10, max: 668 },
+}
+
+/* Playfield geometry, used to derive the exact window size for any grid instead of hardcoding dimensions */
+const CELL_SIZE = 16
+const BANNER_TOTAL_HEIGHT = 44
+
+/* Shell chrome around the app content: 30px title bar, 4px bottom border and 2 x 4px side borders.
+   The menu toolbar height depends on font rendering, so it's measured in the DOM with this fallback. */
+const TITLE_BAR_HEIGHT = 30
+const BOTTOM_BORDER_HEIGHT = 4
+const SIDE_BORDERS_WIDTH = 8
+export const DEFAULT_TOOLBAR_HEIGHT = 20
+
+export const getWindowSize = (rows: number, cols: number, toolbarHeight: number = DEFAULT_TOOLBAR_HEIGHT): Sizes => ({
+      width: cols * CELL_SIZE + SIDE_BORDERS_WIDTH,
+      height: rows * CELL_SIZE + BANNER_TOTAL_HEIGHT + TITLE_BAR_HEIGHT + toolbarHeight + BOTTOM_BORDER_HEIGHT,
+})
+
+/* The best times are persisted in the browser storage, with 999 seconds for "Anonyme" as the original defaults */
+const BEST_TIMES_STORAGE_KEY = 'minesweeper-best-times-v1'
+
+const defaultBestTimes: BestTimes = {
+      beginner: { time: 999, name: 'Anonyme' },
+      intermediate: { time: 999, name: 'Anonyme' },
+      expert: { time: 999, name: 'Anonyme' },
+}
+
+const loadBestTimes = (): BestTimes => {
+      try {
+            const savedBestTimes = window.localStorage.getItem(BEST_TIMES_STORAGE_KEY)
+            if (savedBestTimes) {
+                  return { ...defaultBestTimes, ...JSON.parse(savedBestTimes) }
+            }
+      } catch {
+            /* A corrupted or unavailable storage falls back to the default best times */
+      }
+
+      return defaultBestTimes
+}
+
+const saveBestTimes = (bestTimes: BestTimes) => {
+      try {
+            window.localStorage.setItem(BEST_TIMES_STORAGE_KEY, JSON.stringify(bestTimes))
+      } catch {
+            /* An unavailable storage only loses the persistence, not the current session */
+      }
 }
 
 /* I declare the possible directions from one cell in a [dx, dy] format to simplify later functions */
@@ -113,7 +160,7 @@ const countNeighborFlags = (grid: Cell[][], row: number, col: number): number =>
       }, 0)
 }
 
-/* This reveals every adjacent fully empty cell to the selected cell */
+/* This reveals every adjacent fully empty cell to the selected cell, skipping flagged cells like the original */
 const revealEmptyCells = (grid: Cell[][], row: number, col: number) => {
       directions.forEach(([dx, dy]) => {
             const newRow = row + dx
@@ -124,7 +171,8 @@ const revealEmptyCells = (grid: Cell[][], row: number, col: number) => {
                   newRow < grid.length &&
                   newCol >= 0 &&
                   newCol < grid[0].length &&
-                  !grid[newRow][newCol].isRevealed
+                  !grid[newRow][newCol].isRevealed &&
+                  !grid[newRow][newCol].isFlagged
             ) {
                   grid[newRow][newCol].isRevealed = true
 
@@ -150,7 +198,7 @@ const flagAllMines = (grid: Cell[][]) => {
       }))
 }
 
-const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
+const useMinesweeper = (initialDifficulty: StandardDifficulty = 'beginner') => {
       /* The full grid of unclicked cells is displayed as soon as the window opens, mines only get placed on the first click */
       const [grid, setGrid] = useState<Cell[][]>(() =>
             createEmptyGrid(difficultiesParams[initialDifficulty].rows, difficultiesParams[initialDifficulty].cols)
@@ -159,6 +207,7 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       const [gameOver, setGameOver] = useState(false)
       const [gameWon, setGameWon] = useState(false)
       const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty)
+      const [customParams, setCustomParams] = useState<Parameters>(difficultiesParams[initialDifficulty])
       const [isMouseDown, setIsMouseDown] = useState(false)
       const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
       const [chordCell, setChordCell] = useState<{ row: number; col: number } | null>(null)
@@ -166,10 +215,15 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       const [isSmileyPressed, setIsSmileyPressed] = useState(false)
       const [marksEnabled, setMarksEnabled] = useState(true)
       const [soundEnabled, setSoundEnabled] = useState(false)
+      const [activeDialog, setActiveDialog] = useState<DialogType | null>(null)
+      const [bestTimes, setBestTimes] = useState<BestTimes>(loadBestTimes)
+
+      /* The three standard difficulties come from the table, a custom game uses the player's parameters */
+      const gameParams = difficulty === 'custom' ? customParams : difficultiesParams[difficulty]
 
       /* The mine counter displays the total mines minus the flags the player has placed, so it can go below zero */
       const flagCount = grid.reduce((count, row) => count + row.filter((cell) => cell.isFlagged).length, 0)
-      const minesLeft = difficultiesParams[difficulty].mines - flagCount
+      const minesLeft = gameParams.mines - flagCount
 
       /* Every sound stays muted unless the player enables the sound option in the menu */
       const playSound = (sound: string) => {
@@ -192,17 +246,17 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             return () => clearInterval(timerInterval)
       }, [gameInitialized, gameOver, gameWon, soundEnabled])
 
-      /* The grid initializer generates a random grid with each cell's information */
+      /* The grid initializer generates a random grid with each cell's information, keeping the flags placed before the first click */
       const initializeGrid = (rows: number, cols: number, mines: number, clickedRow: number, clickedCol: number): Cell[][] => {
-            const grid: Cell[][] = createEmptyGrid(rows, cols)
+            const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })))
 
             /* I place mines one by one completely at random, avoiding the clicked cell so the first click is always safe */
             let minesPlaced = 0
             while (minesPlaced < mines) {
                   const row = Math.floor(Math.random() * rows)
                   const col = Math.floor(Math.random() * cols)
-                  if (!grid[row][col].isMine && !(row === clickedRow && col === clickedCol)) {
-                        grid[row][col].isMine = true
+                  if (!newGrid[row][col].isMine && !(row === clickedRow && col === clickedCol)) {
+                        newGrid[row][col].isMine = true
                         minesPlaced++
                   }
             }
@@ -210,23 +264,23 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             /* I calculate the neighboring mines for each cell */
             for (let row = 0; row < rows; row++) {
                   for (let col = 0; col < cols; col++) {
-                        if (!grid[row][col].isMine) {
-                              grid[row][col].neighborMines = countNeighborMines(grid, row, col)
+                        if (!newGrid[row][col].isMine) {
+                              newGrid[row][col].neighborMines = countNeighborMines(newGrid, row, col)
                         }
                   }
             }
 
             /* I reveal the first clicked cell */
-            grid[clickedRow][clickedCol].isRevealed = true
-            if (grid[clickedRow][clickedCol].neighborMines === 0) {
-                  revealEmptyCells(grid, clickedRow, clickedCol)
+            newGrid[clickedRow][clickedCol].isRevealed = true
+            if (newGrid[clickedRow][clickedCol].neighborMines === 0) {
+                  revealEmptyCells(newGrid, clickedRow, clickedCol)
             }
 
             setGameInitialized(true)
             /* The timer displays 1 as soon as the first cell is clicked, just like the original game */
             setTime(1)
 
-            return grid
+            return newGrid
       }
 
       const triggerDefeat = () => {
@@ -238,6 +292,11 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             flagAllMines(grid)
             setGameWon(true)
             playSound(victorySound)
+
+            /* A record time on a standard difficulty asks for the player's name, like the original */
+            if (difficulty !== 'custom' && time < bestTimes[difficulty].time) {
+                  setActiveDialog('nameEntry')
+            }
       }
 
       const handleCellClick = (row: number, col: number) => {
@@ -263,11 +322,7 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
 
                   setGrid(newGrid)
             } else {
-                  const rows = difficultiesParams[difficulty].rows
-                  const cols = difficultiesParams[difficulty].cols
-                  const mines = difficultiesParams[difficulty].mines
-
-                  const newGrid = initializeGrid(rows, cols, mines, row, col)
+                  const newGrid = initializeGrid(gameParams.rows, gameParams.cols, gameParams.mines, row, col)
                   if (checkVictory(newGrid)) {
                         triggerVictory(newGrid)
                   }
@@ -401,24 +456,9 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             setSoundEnabled(!soundEnabled)
       }
 
-      const resetGame = (windowId: string, newDifficulty?: Difficulty) => {
-            let rows, cols
-
-            if (newDifficulty) {
-                  rows = difficultiesParams[newDifficulty].rows
-                  cols = difficultiesParams[newDifficulty].cols
-
-                  useWindowsStore.getState().setWindowSize(windowId, windowSizes[newDifficulty])
-
-                  setDifficulty(newDifficulty)
-            } else {
-                  rows = difficultiesParams[difficulty].rows
-                  cols = difficultiesParams[difficulty].cols
-
-                  useWindowsStore.getState().setWindowSize(windowId, windowSizes[difficulty])
-            }
-
-            setGrid(createEmptyGrid(rows, cols))
+      /* This clears every state of the current game and displays a fresh grid */
+      const startNewGame = (params: Parameters) => {
+            setGrid(createEmptyGrid(params.rows, params.cols))
             setGameOver(false)
             setGameWon(false)
             setGameInitialized(false)
@@ -428,16 +468,60 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             setChordCell(null)
       }
 
+      const resetGame = (newDifficulty?: Difficulty) => {
+            const targetDifficulty = newDifficulty ?? difficulty
+            const targetParams = targetDifficulty === 'custom' ? customParams : difficultiesParams[targetDifficulty]
+
+            setDifficulty(targetDifficulty)
+            startNewGame(targetParams)
+      }
+
+      /* A custom game clamps out of range values instead of rejecting them, and caps the mines to the board capacity */
+      const startCustomGame = (height: number, width: number, mines: number) => {
+            const rows = Math.max(customBounds.rows.min, Math.min(height, customBounds.rows.max))
+            const cols = Math.max(customBounds.cols.min, Math.min(width, customBounds.cols.max))
+            const clampedMines = Math.max(customBounds.mines.min, Math.min(mines, customBounds.mines.max, (rows - 1) * (cols - 1)))
+
+            setCustomParams({ rows, cols, mines: clampedMines })
+            setDifficulty('custom')
+            startNewGame({ rows, cols, mines: clampedMines })
+            setActiveDialog(null)
+      }
+
+      const openDialog = (dialog: DialogType) => {
+            setActiveDialog(dialog)
+      }
+
+      const closeDialog = () => {
+            setActiveDialog(null)
+      }
+
+      /* A record saves the player's name for the current difficulty, then shows the leaderboard like the original */
+      const submitBestTime = (name: string) => {
+            if (difficulty !== 'custom') {
+                  const newBestTimes = { ...bestTimes, [difficulty]: { time, name: name.trim() || 'Anonyme' } }
+                  setBestTimes(newBestTimes)
+                  saveBestTimes(newBestTimes)
+            }
+
+            setActiveDialog('bestTimes')
+      }
+
+      const resetBestTimes = () => {
+            setBestTimes(defaultBestTimes)
+            saveBestTimes(defaultBestTimes)
+      }
+
       /* The smiley button stays pressed while the mouse button is held on it, and releasing it restarts the game */
       const handleSmileyMouseDown = () => {
             setIsSmileyPressed(true)
       }
 
-      const handleSmileyMouseUp = (windowId: string) => {
+      const handleSmileyMouseUp = () => {
             if (!isSmileyPressed) return
 
             setIsSmileyPressed(false)
-            resetGame(windowId)
+            resetGame()
       }
 
       const handleSmileyMouseLeave = () => {
@@ -449,6 +533,7 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             gameOver,
             gameWon,
             difficulty,
+            gameParams,
             isMouseDown,
             hoveredCell,
             chordCell,
@@ -457,6 +542,8 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             isSmileyPressed,
             marksEnabled,
             soundEnabled,
+            activeDialog,
+            bestTimes,
             handleCellClick,
             handleRightClick,
             handleMouseDown,
@@ -471,6 +558,11 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             toggleMarks,
             toggleSound,
             resetGame,
+            startCustomGame,
+            openDialog,
+            closeDialog,
+            submitBestTime,
+            resetBestTimes,
       }
 }
 
