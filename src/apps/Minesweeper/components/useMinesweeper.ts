@@ -1,5 +1,5 @@
 import { useWindowsStore } from '@/common/stores/windowsStore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Cell = {
       isMine: boolean;
@@ -38,9 +38,12 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       const [grid, setGrid] = useState<Cell[][]>([])
       const [gameInitialized, setGameInitialized] = useState(false)
       const [gameOver, setGameOver] = useState(false)
+      const [gameWon, setGameWon] = useState(false)
       const [difficulty, setDifficulty] = useState<Difficulty>(initialDifficulty)
       const [isMouseDown, setIsMouseDown] = useState(false)
       const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
+      const [time, setTime] = useState(0)
+      const [isSmileyPressed, setIsSmileyPressed] = useState(false)
 
       const difficultiesParams: DiffParams = {
             beginner: { rows: 9, cols: 9, mines: 10 },
@@ -49,10 +52,25 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       }
 
       const windowSizes: WindowSizes = {
-            beginner: { width: 170, height: 259 },
-            intermediate: { width: 282, height: 371 },
-            expert: { width: 506, height: 371 },
+            beginner: { width: 170, height: 303 },
+            intermediate: { width: 282, height: 415 },
+            expert: { width: 506, height: 415 },
       }
+
+      /* The mine counter displays the total mines minus the flags the player has placed, so it can go below zero */
+      const flagCount = grid.reduce((count, row) => count + row.filter((cell) => cell.isFlagged).length, 0)
+      const minesLeft = difficultiesParams[difficulty].mines - flagCount
+
+      /* The timer ticks every second once the game is running, stops when it ends and caps at 999 */
+      useEffect(() => {
+            if (!gameInitialized || gameOver || gameWon) return
+
+            const timerInterval = setInterval(() => {
+                  setTime((prevTime) => Math.min(prevTime + 1, 999))
+            }, 1000)
+
+            return () => clearInterval(timerInterval)
+      }, [gameInitialized, gameOver, gameWon])
 
       /* I declare the possible directions from one cell in a [dx, dy] format to simplify later functions */
       const directions = [
@@ -107,6 +125,8 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             }
 
             setGameInitialized(true)
+            /* The timer displays 1 as soon as the first cell is clicked, just like the original game */
+            setTime(1)
 
             return grid
       }
@@ -153,8 +173,13 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
             })
       }
 
+      /* This checks if every safe cell has been revealed, which means the game is won */
+      const checkVictory = (grid: Cell[][]): boolean => {
+            return grid.every((row) => row.every((cell) => cell.isMine || cell.isRevealed))
+      }
+
       const handleCellClick = (row: number, col: number) => {
-            if (gameOver) return;
+            if (gameOver || gameWon) return;
             if (gameInitialized) {
                   setGrid((prevGrid) => {
                         const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })))
@@ -169,8 +194,12 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
                               if (cell.neighborMines === 0) {
                                     revealEmptyCells(newGrid, row, col)
                               }
+
+                              if (checkVictory(newGrid)) {
+                                    setGameWon(true)
+                              }
                         }
-      
+
                         return newGrid
                   })
             } else {
@@ -178,12 +207,17 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
                   const cols = difficultiesParams[difficulty].cols
                   const mines = difficultiesParams[difficulty].mines
 
-                  setGrid(initializeGrid(rows, cols, mines, row, col))
-            }  
+                  const newGrid = initializeGrid(rows, cols, mines, row, col)
+                  if (checkVictory(newGrid)) {
+                        setGameWon(true)
+                  }
+
+                  setGrid(newGrid)
+            }
       }
 
       const handleRightClick = (row: number, col: number) => {
-            if (gameOver) return;
+            if (gameOver || gameWon) return;
 
             setGrid((prevGrid) => {
                   const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })))
@@ -205,7 +239,7 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       }
 
       const handleMouseDown = (row: number, col: number) => {
-            if (gameOver || grid[row][col].isRevealed || grid[row][col].isFlagged) return
+            if (gameOver || gameWon || grid[row][col].isRevealed || grid[row][col].isFlagged) return
 
             setIsMouseDown(true)
             setHoveredCell({ row, col })
@@ -220,7 +254,7 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
       }
       
       const handleMouseEnter = (row: number, col: number) => {
-            if (isMouseDown && !gameOver && !grid[row][col].isRevealed && !grid[row][col].isFlagged) {
+            if (isMouseDown && !gameOver && !gameWon && !grid[row][col].isRevealed && !grid[row][col].isFlagged) {
                   setHoveredCell({ row, col })
             }
       }
@@ -244,20 +278,45 @@ const useMinesweeper = (initialDifficulty: Difficulty = 'beginner') => {
 
             setGrid(createEmptyGrid(rows, cols))
             setGameOver(false)
+            setGameWon(false)
             setGameInitialized(false)
+            setTime(0)
+      }
+
+      /* The smiley button stays pressed while the mouse button is held on it, and releasing it restarts the game */
+      const handleSmileyMouseDown = () => {
+            setIsSmileyPressed(true)
+      }
+
+      const handleSmileyMouseUp = (windowId: string) => {
+            if (!isSmileyPressed) return
+
+            setIsSmileyPressed(false)
+            resetGame(windowId)
+      }
+
+      const handleSmileyMouseLeave = () => {
+            setIsSmileyPressed(false)
       }
 
       return {
             grid,
             gameOver,
+            gameWon,
             difficulty,
             isMouseDown,
             hoveredCell,
+            minesLeft,
+            time,
+            isSmileyPressed,
             handleCellClick,
             handleRightClick,
             handleMouseDown,
             handleMouseUp,
             handleMouseEnter,
+            handleSmileyMouseDown,
+            handleSmileyMouseUp,
+            handleSmileyMouseLeave,
             resetGame,
       }
 }

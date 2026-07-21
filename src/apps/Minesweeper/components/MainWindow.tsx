@@ -6,6 +6,7 @@ import { WindowToolbarMenuButton } from '@/components/atoms/WindowToolbarMenuBut
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu'
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem'
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator'
+import { MinesweeperBanner } from './Banner'
 
 import icon1 from '../assets/icons/buttons/1.png'
 import icon2 from '../assets/icons/buttons/2.png'
@@ -54,12 +55,19 @@ const cellIcons = {
 export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ windowId }) => {
       const {     grid,
                   gameOver,
+                  gameWon,
                   isMouseDown,
                   hoveredCell,
+                  minesLeft,
+                  time,
+                  isSmileyPressed,
                   handleRightClick,
                   handleMouseDown,
                   handleMouseUp,
                   handleMouseEnter,
+                  handleSmileyMouseDown,
+                  handleSmileyMouseUp,
+                  handleSmileyMouseLeave,
                   resetGame,
       } = useMinesweeper('beginner');
 
@@ -127,31 +135,45 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                         </WindowToolbarMenuButton>
                   </WindowToolbar>
 
-                  <div className={styles.gameGrid}>
-                        {grid.map((row, rowIndex) => (
-                              <div key={rowIndex} className={styles.row}>
-                                    {row.map((cell, colIndex) => (
-                                          <div
-                                                key={colIndex}
-                                                className={styles.cell}
-                                                onMouseDown={(e) => {if (e.button === 0) {handleMouseDown(rowIndex, colIndex)}}}
-                                                onMouseUp={(e) => {if (e.button === 0) {handleMouseUp(rowIndex, colIndex)}}}
-                                                onMouseEnter={() => {if (isMouseDown) {handleMouseEnter(rowIndex, colIndex)}}}
-                                                onContextMenu={(e) => {
-                                                      e.preventDefault()
-                                                      handleRightClick(rowIndex, colIndex)
-                                                }}
-                                          >
-                                                <div className={styles.cellCover}></div>
-                                                <img
-                                                      src={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
-                                                      alt="cell"
-                                                      style={{ width: '100%', height: '100%' }}
-                                                />
-                                          </div>
-                                    ))}
-                              </div>
-                        ))}
+                  <div className={styles.gameArea}>
+                        <MinesweeperBanner
+                              minesLeft={minesLeft}
+                              time={time}
+                              gameOver={gameOver}
+                              gameWon={gameWon}
+                              isMouseDown={isMouseDown}
+                              isSmileyPressed={isSmileyPressed}
+                              onSmileyMouseDown={handleSmileyMouseDown}
+                              onSmileyMouseUp={() => handleSmileyMouseUp(windowId)}
+                              onSmileyMouseLeave={handleSmileyMouseLeave}
+                        />
+
+                        <div className={styles.gameGrid}>
+                              {grid.map((row, rowIndex) => (
+                                    <div key={rowIndex} className={styles.row}>
+                                          {row.map((cell, colIndex) => (
+                                                <div
+                                                      key={colIndex}
+                                                      className={styles.cell}
+                                                      onMouseDown={(e) => {if (e.button === 0) {handleMouseDown(rowIndex, colIndex)}}}
+                                                      onMouseUp={(e) => {if (e.button === 0) {handleMouseUp(rowIndex, colIndex)}}}
+                                                      onMouseEnter={() => {if (isMouseDown) {handleMouseEnter(rowIndex, colIndex)}}}
+                                                      onContextMenu={(e) => {
+                                                            e.preventDefault()
+                                                            handleRightClick(rowIndex, colIndex)
+                                                      }}
+                                                >
+                                                      <div className={styles.cellCover}></div>
+                                                      <img
+                                                            src={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
+                                                            alt="cell"
+                                                            style={{ width: '100%', height: '100%' }}
+                                                      />
+                                                </div>
+                                          ))}
+                                    </div>
+                              ))}
+                        </div>
                   </div>
             </>
       )
