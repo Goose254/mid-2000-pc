@@ -3,6 +3,11 @@ $border-light: #fff;
 $border-dark: #808080;
 $counter-black: #000;
 
+.menuCheck {
+      padding: 0 5px;
+      font-size: 10px;
+}
+
 .gameArea {
       display: flex;
       flex-direction: column;

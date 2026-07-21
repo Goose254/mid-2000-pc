@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './styles.module.scss'
 
 import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar'
@@ -7,6 +7,7 @@ import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu'
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem'
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator'
 import { MinesweeperBanner } from './Banner'
+import { useWindowsStore } from '@/common/stores/windowsStore'
 
 import icon1 from '../assets/icons/buttons/1.png'
 import icon2 from '../assets/icons/buttons/2.png'
@@ -20,13 +21,14 @@ import iconEmpty from '../assets/icons/buttons/empty.png'
 
 import iconFlagged from '../assets/icons/buttons/flagged.png'
 import iconMarked from '../assets/icons/buttons/marked.png'
+import iconMarkedPressed from '../assets/icons/buttons/marked-pressed.png'
 import iconUnclicked from '../assets/icons/buttons/unclicked.png'
 
 import iconBlown from '../assets/icons/buttons/blown.png'
 import iconRevealed from '../assets/icons/buttons/revealed.png'
 import iconMistake from '../assets/icons/buttons/mistake.png'
 
-import useMinesweeper from './useMinesweeper'
+import useMinesweeper, { windowSizes } from './useMinesweeper'
 
 interface MinesweeperMainWindowProps {
       windowId: string
@@ -42,9 +44,10 @@ type Cell = {
 
 const cellIcons = {
       numbered: [iconEmpty, icon1, icon2, icon3, icon4, icon5, icon6, icon7, icon8],
-      
+
       flagged: iconFlagged,
       marked: iconMarked,
+      markedPressed: iconMarkedPressed,
       unclicked: iconUnclicked,
 
       blown: iconBlown,
@@ -56,20 +59,56 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
       const {     grid,
                   gameOver,
                   gameWon,
+                  difficulty,
                   isMouseDown,
                   hoveredCell,
+                  chordCell,
                   minesLeft,
                   time,
                   isSmileyPressed,
+                  marksEnabled,
+                  soundEnabled,
                   handleRightClick,
                   handleMouseDown,
                   handleMouseUp,
                   handleMouseEnter,
+                  handleChordStart,
+                  handleChordEnd,
+                  handleGridMouseLeave,
                   handleSmileyMouseDown,
                   handleSmileyMouseUp,
                   handleSmileyMouseLeave,
+                  toggleMarks,
+                  toggleSound,
                   resetGame,
       } = useMinesweeper('beginner');
+
+      const isWindowActive = useWindowsStore((state) => state.windows.find((window) => window.id === windowId)?.isActive ?? false)
+
+      /* F2 starts a new game while the window is active, like in the original */
+      useEffect(() => {
+            if (!isWindowActive) return
+
+            const handleKeyDown = (event: KeyboardEvent) => {
+                  if (event.key === 'F2') {
+                        event.preventDefault()
+                        resetGame(windowId)
+                  }
+            }
+
+            window.addEventListener('keydown', handleKeyDown)
+            return () => window.removeEventListener('keydown', handleKeyDown)
+      }, [isWindowActive, windowId, resetGame])
+
+      /* This keeps the window size in sync with the current difficulty, even when the shell restores a remembered size */
+      useEffect(() => {
+            useWindowsStore.getState().setWindowSize(windowId, windowSizes[difficulty])
+      }, [windowId, difficulty])
+
+      /* The active difficulty and the enabled options display a checkmark in the menu */
+      const getMenuCheck = (checked: boolean) => {
+            return checked ? <span className={styles.menuCheck}>✓</span> : undefined
+      }
 
       const getCellIcon = (
             cell: Cell,
@@ -89,16 +128,21 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                         return cellIcons.mistake
                   }
             }
-      
+
             if (cell.isFlagged) return cellIcons.flagged
-            if (cell.isMarked) return cellIcons.marked
             if (!cell.isRevealed) {
-                  if (isMouseDown && hoveredCell?.row === row && hoveredCell?.col === col) {
-                        return cellIcons["numbered"][0]
+                  /* A cell appears pressed when the mouse is held on it, or when it belongs to the neighborhood of a chording press */
+                  const isPressed =
+                        (isMouseDown && hoveredCell?.row === row && hoveredCell?.col === col) ||
+                        (chordCell !== null && Math.abs(chordCell.row - row) <= 1 && Math.abs(chordCell.col - col) <= 1)
+
+                  if (isPressed) {
+                        return cell.isMarked ? cellIcons.markedPressed : cellIcons["numbered"][0]
                   }
+                  if (cell.isMarked) return cellIcons.marked
                   return cellIcons.unclicked
             }
-      
+
             if (cell.isMine) return cellIcons.blown
             return cellIcons["numbered"][cell.neighborMines]
       }
@@ -108,20 +152,20 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                   <WindowToolbar>
                         <WindowToolbarMenuButton label="Partie">
                               <FloatingMenu>
-                                    <MenuItem label="Nouveau" onClick={() => resetGame(windowId)} />
+                                    <MenuItem label="Nouvelle partie" info="F2" onClick={() => resetGame(windowId)} />
                                     <MenuSeparator />
-                                    <MenuItem label="Débutant" onClick={() => resetGame(windowId, 'beginner')} />
-                                    <MenuItem label="Intermédiaire" onClick={() => resetGame(windowId, 'intermediate')} />
-                                    <MenuItem label="Expert" onClick={() => resetGame(windowId, 'expert')} />
+                                    <MenuItem label="Débutant" iconElement={getMenuCheck(difficulty === 'beginner')} onClick={() => resetGame(windowId, 'beginner')} />
+                                    <MenuItem label="Intermédiaire" iconElement={getMenuCheck(difficulty === 'intermediate')} onClick={() => resetGame(windowId, 'intermediate')} />
+                                    <MenuItem label="Expert" iconElement={getMenuCheck(difficulty === 'expert')} onClick={() => resetGame(windowId, 'expert')} />
                                     <MenuItem label="Personnalisé..." />
                                     <MenuSeparator />
-                                    <MenuItem label="Marques (?)" />
+                                    <MenuItem label="Marques (?)" iconElement={getMenuCheck(marksEnabled)} onClick={() => toggleMarks()} />
                                     <MenuItem label="Couleur" />
-                                    <MenuItem label="Son" />
+                                    <MenuItem label="Son" iconElement={getMenuCheck(soundEnabled)} onClick={() => toggleSound()} />
                                     <MenuSeparator />
                                     <MenuItem label="Meilleurs temps..." />
                                     <MenuSeparator />
-                                    <MenuItem label="Quitter" />
+                                    <MenuItem label="Quitter" onClick={() => useWindowsStore.getState().closeWindow(windowId)} />
                               </FloatingMenu>
                         </WindowToolbarMenuButton>
                         <WindowToolbarMenuButton label="?">
@@ -141,27 +185,41 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                               time={time}
                               gameOver={gameOver}
                               gameWon={gameWon}
-                              isMouseDown={isMouseDown}
+                              isMouseDown={isMouseDown || chordCell !== null}
                               isSmileyPressed={isSmileyPressed}
                               onSmileyMouseDown={handleSmileyMouseDown}
                               onSmileyMouseUp={() => handleSmileyMouseUp(windowId)}
                               onSmileyMouseLeave={handleSmileyMouseLeave}
                         />
 
-                        <div className={styles.gameGrid}>
+                        <div className={styles.gameGrid} onMouseLeave={() => handleGridMouseLeave()}>
                               {grid.map((row, rowIndex) => (
                                     <div key={rowIndex} className={styles.row}>
                                           {row.map((cell, colIndex) => (
                                                 <div
                                                       key={colIndex}
                                                       className={styles.cell}
-                                                      onMouseDown={(e) => {if (e.button === 0) {handleMouseDown(rowIndex, colIndex)}}}
-                                                      onMouseUp={(e) => {if (e.button === 0) {handleMouseUp(rowIndex, colIndex)}}}
-                                                      onMouseEnter={() => {if (isMouseDown) {handleMouseEnter(rowIndex, colIndex)}}}
-                                                      onContextMenu={(e) => {
-                                                            e.preventDefault()
-                                                            handleRightClick(rowIndex, colIndex)
+                                                      onMouseDown={(e) => {
+                                                            if (e.button === 1) {
+                                                                  e.preventDefault()
+                                                                  handleChordStart(rowIndex, colIndex)
+                                                            } else if (e.buttons === 3) {
+                                                                  handleChordStart(rowIndex, colIndex)
+                                                            } else if (e.button === 0) {
+                                                                  handleMouseDown(rowIndex, colIndex)
+                                                            } else if (e.button === 2) {
+                                                                  handleRightClick(rowIndex, colIndex)
+                                                            }
                                                       }}
+                                                      onMouseUp={(e) => {
+                                                            if (chordCell) {
+                                                                  handleChordEnd(rowIndex, colIndex)
+                                                            } else if (e.button === 0) {
+                                                                  handleMouseUp(rowIndex, colIndex)
+                                                            }
+                                                      }}
+                                                      onMouseEnter={() => {if (isMouseDown || chordCell) {handleMouseEnter(rowIndex, colIndex)}}}
+                                                      onContextMenu={(e) => e.preventDefault()}
                                                 >
                                                       <div className={styles.cellCover}></div>
                                                       <img

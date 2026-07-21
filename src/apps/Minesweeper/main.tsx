@@ -43,8 +43,8 @@ export const MinesweeperApp: AppTemplate<{ windowId: string }> = {
         },
         fixedSize: true,
         size: {
-          width: 506,
-          height: 415,
+          width: 170,
+          height: 303,
         },
       },
     );
