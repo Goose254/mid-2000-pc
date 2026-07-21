@@ -102,18 +102,30 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
 
       const isWindowActive = useWindowsStore((state) => state.windows.find((window) => window.id === windowId)?.isActive ?? false)
 
+      const appContentRef = useRef<HTMLDivElement>(null)
       const toolbarRef = useRef<HTMLDivElement>(null)
       const gameAreaRef = useRef<HTMLDivElement>(null)
 
+      /* The shell content wrapper scrolls by default, which Explorer needs but a fixed size game must not:
+         the Minesweeper window locks its own scroll container so it can never scroll */
+      useEffect(() => {
+            const scrollContainer = appContentRef.current?.closest('[class*="window-content-wrapper"]')
+            if (scrollContainer instanceof HTMLElement) {
+                  scrollContainer.style.overflow = 'hidden'
+            }
+      }, [])
+
       /* The window is sized on the toolbar and play area actually rendered in the DOM, so every border
-         and padding of the layout is covered and the window always ends flush with the playfield */
+         and padding of the layout is covered and the window always ends flush with the playfield.
+         Heights are fractional with font rendering, so they are ceiled to never leave a scrollable pixel. */
       useEffect(() => {
             if (!toolbarRef.current || !gameAreaRef.current) return
 
+            const gameAreaRect = gameAreaRef.current.getBoundingClientRect()
             const windowSize = getWindowSizeFromContent(
-                  gameAreaRef.current.offsetWidth,
-                  gameAreaRef.current.offsetHeight,
-                  toolbarRef.current.offsetHeight
+                  Math.ceil(gameAreaRect.width),
+                  Math.ceil(gameAreaRect.height),
+                  Math.ceil(toolbarRef.current.getBoundingClientRect().height)
             )
             useWindowsStore.getState().setWindowSize(windowId, windowSize)
       }, [windowId, gameParams.rows, gameParams.cols])
@@ -176,7 +188,7 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
       }
 
       return (
-            <div className={styles.appContent}>
+            <div className={styles.appContent} ref={appContentRef}>
                   <div ref={toolbarRef}>
                         <WindowToolbar>
                               <WindowToolbarMenuButton label="Partie">
