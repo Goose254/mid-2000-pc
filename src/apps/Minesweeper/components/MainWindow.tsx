@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import styles from './styles.module.scss'
 
 import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar'
@@ -32,7 +32,7 @@ import iconBlown from '../assets/icons/buttons/blown.png'
 import iconRevealed from '../assets/icons/buttons/revealed.png'
 import iconMistake from '../assets/icons/buttons/mistake.png'
 
-import useMinesweeper, { getWindowSize, DEFAULT_TOOLBAR_HEIGHT } from './useMinesweeper'
+import useMinesweeper, { getWindowSizeFromContent } from './useMinesweeper'
 
 interface MinesweeperMainWindowProps {
       windowId: string
@@ -103,21 +103,20 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
       const isWindowActive = useWindowsStore((state) => state.windows.find((window) => window.id === windowId)?.isActive ?? false)
 
       const toolbarRef = useRef<HTMLDivElement>(null)
-      const [toolbarHeight, setToolbarHeight] = useState(DEFAULT_TOOLBAR_HEIGHT)
+      const gameAreaRef = useRef<HTMLDivElement>(null)
 
-      /* The menu toolbar height depends on font rendering, so it's measured once to size the window exactly */
+      /* The window is sized on the toolbar and play area actually rendered in the DOM, so every border
+         and padding of the layout is covered and the window always ends flush with the playfield */
       useEffect(() => {
-            if (toolbarRef.current) {
-                  setToolbarHeight(toolbarRef.current.offsetHeight)
-            }
-      }, [])
+            if (!toolbarRef.current || !gameAreaRef.current) return
 
-      /* The window size is fully derived from the grid geometry, so it always ends flush with the playfield */
-      const windowSize = getWindowSize(gameParams.rows, gameParams.cols, toolbarHeight)
-
-      useEffect(() => {
-            useWindowsStore.getState().setWindowSize(windowId, { width: windowSize.width, height: windowSize.height })
-      }, [windowId, windowSize.width, windowSize.height])
+            const windowSize = getWindowSizeFromContent(
+                  gameAreaRef.current.offsetWidth,
+                  gameAreaRef.current.offsetHeight,
+                  toolbarRef.current.offsetHeight
+            )
+            useWindowsStore.getState().setWindowSize(windowId, windowSize)
+      }, [windowId, gameParams.rows, gameParams.cols])
 
       /* F2 starts a new game while the window is active and no dialog is open, like in the original */
       useEffect(() => {
@@ -210,58 +209,60 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                         </WindowToolbar>
                   </div>
 
-                  <div className={styles.gameArea}>
-                        <MinesweeperBanner
-                              minesLeft={minesLeft}
-                              time={time}
-                              gameOver={gameOver}
-                              gameWon={gameWon}
-                              isMouseDown={isMouseDown || chordCell !== null}
-                              isSmileyPressed={isSmileyPressed}
-                              onSmileyMouseDown={handleSmileyMouseDown}
-                              onSmileyMouseUp={handleSmileyMouseUp}
-                              onSmileyMouseLeave={handleSmileyMouseLeave}
-                        />
+                  <div className={styles.playSurface}>
+                        <div className={styles.gameArea} ref={gameAreaRef}>
+                              <MinesweeperBanner
+                                    minesLeft={minesLeft}
+                                    time={time}
+                                    gameOver={gameOver}
+                                    gameWon={gameWon}
+                                    isMouseDown={isMouseDown || chordCell !== null}
+                                    isSmileyPressed={isSmileyPressed}
+                                    onSmileyMouseDown={handleSmileyMouseDown}
+                                    onSmileyMouseUp={handleSmileyMouseUp}
+                                    onSmileyMouseLeave={handleSmileyMouseLeave}
+                              />
 
-                        <div className={styles.gameGrid} onMouseLeave={() => handleGridMouseLeave()}>
-                              {grid.map((row, rowIndex) => (
-                                    <div key={rowIndex} className={styles.row}>
-                                          {row.map((cell, colIndex) => (
-                                                <div
-                                                      key={colIndex}
-                                                      className={styles.cell}
-                                                      onMouseDown={(e) => {
-                                                            if (e.button === 1) {
-                                                                  e.preventDefault()
-                                                                  handleChordStart(rowIndex, colIndex)
-                                                            } else if (e.buttons === 3) {
-                                                                  handleChordStart(rowIndex, colIndex)
-                                                            } else if (e.button === 0) {
-                                                                  handleMouseDown(rowIndex, colIndex)
-                                                            } else if (e.button === 2) {
-                                                                  handleRightClick(rowIndex, colIndex)
-                                                            }
-                                                      }}
-                                                      onMouseUp={(e) => {
-                                                            if (chordCell) {
-                                                                  handleChordEnd(rowIndex, colIndex)
-                                                            } else if (e.button === 0) {
-                                                                  handleMouseUp(rowIndex, colIndex)
-                                                            }
-                                                      }}
-                                                      onMouseEnter={() => {if (isMouseDown || chordCell) {handleMouseEnter(rowIndex, colIndex)}}}
-                                                      onContextMenu={(e) => e.preventDefault()}
-                                                >
-                                                      <div className={styles.cellCover}></div>
-                                                      <img
-                                                            src={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
-                                                            alt="cell"
-                                                            style={{ width: '100%', height: '100%' }}
-                                                      />
-                                                </div>
-                                          ))}
-                                    </div>
-                              ))}
+                              <div className={styles.gameGrid} onMouseLeave={() => handleGridMouseLeave()}>
+                                    {grid.map((row, rowIndex) => (
+                                          <div key={rowIndex} className={styles.row}>
+                                                {row.map((cell, colIndex) => (
+                                                      <div
+                                                            key={colIndex}
+                                                            className={styles.cell}
+                                                            onMouseDown={(e) => {
+                                                                  if (e.button === 1) {
+                                                                        e.preventDefault()
+                                                                        handleChordStart(rowIndex, colIndex)
+                                                                  } else if (e.buttons === 3) {
+                                                                        handleChordStart(rowIndex, colIndex)
+                                                                  } else if (e.button === 0) {
+                                                                        handleMouseDown(rowIndex, colIndex)
+                                                                  } else if (e.button === 2) {
+                                                                        handleRightClick(rowIndex, colIndex)
+                                                                  }
+                                                            }}
+                                                            onMouseUp={(e) => {
+                                                                  if (chordCell) {
+                                                                        handleChordEnd(rowIndex, colIndex)
+                                                                  } else if (e.button === 0) {
+                                                                        handleMouseUp(rowIndex, colIndex)
+                                                                  }
+                                                            }}
+                                                            onMouseEnter={() => {if (isMouseDown || chordCell) {handleMouseEnter(rowIndex, colIndex)}}}
+                                                            onContextMenu={(e) => e.preventDefault()}
+                                                      >
+                                                            <div className={styles.cellCover}></div>
+                                                            <img
+                                                                  src={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
+                                                                  alt="cell"
+                                                                  style={{ width: '100%', height: '100%' }}
+                                                            />
+                                                      </div>
+                                                ))}
+                                          </div>
+                                    ))}
+                              </div>
                         </div>
                   </div>
 

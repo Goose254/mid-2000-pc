@@ -52,21 +52,35 @@ const customBounds = {
       mines: { min: 10, max: 668 },
 }
 
-/* Playfield geometry, used to derive the exact window size for any grid instead of hardcoding dimensions */
+/* Playfield geometry, used to estimate the window size before the rendered play area can be measured */
 const CELL_SIZE = 16
 const BANNER_TOTAL_HEIGHT = 44
+const GRID_BORDER_WIDTH = 6
+const PLAY_AREA_PADDING = 12
 
 /* Shell chrome around the app content: 30px title bar, 4px bottom border and 2 x 4px side borders.
-   The menu toolbar height depends on font rendering, so it's measured in the DOM with this fallback. */
+   The menu toolbar height depends on font rendering, so it's measured in the DOM with this fallback.
+   The window also keeps a minimal width so the title bar buttons never overflow next to the title. */
 const TITLE_BAR_HEIGHT = 30
 const BOTTOM_BORDER_HEIGHT = 4
 const SIDE_BORDERS_WIDTH = 8
+const MIN_WINDOW_WIDTH = 170
 export const DEFAULT_TOOLBAR_HEIGHT = 20
 
-export const getWindowSize = (rows: number, cols: number, toolbarHeight: number = DEFAULT_TOOLBAR_HEIGHT): Sizes => ({
-      width: cols * CELL_SIZE + SIDE_BORDERS_WIDTH,
-      height: rows * CELL_SIZE + BANNER_TOTAL_HEIGHT + TITLE_BAR_HEIGHT + toolbarHeight + BOTTOM_BORDER_HEIGHT,
+/* The exact window size derived from the play area and toolbar actually rendered in the DOM,
+   so every border and padding of the layout is covered without a fragile sum of constants */
+export const getWindowSizeFromContent = (contentWidth: number, contentHeight: number, toolbarHeight: number): Sizes => ({
+      width: Math.max(MIN_WINDOW_WIDTH, contentWidth + SIDE_BORDERS_WIDTH),
+      height: contentHeight + TITLE_BAR_HEIGHT + toolbarHeight + BOTTOM_BORDER_HEIGHT,
 })
+
+export const getWindowSize = (rows: number, cols: number, toolbarHeight: number = DEFAULT_TOOLBAR_HEIGHT): Sizes => {
+      return getWindowSizeFromContent(
+            cols * CELL_SIZE + GRID_BORDER_WIDTH + PLAY_AREA_PADDING,
+            rows * CELL_SIZE + BANNER_TOTAL_HEIGHT + GRID_BORDER_WIDTH + PLAY_AREA_PADDING,
+            toolbarHeight
+      )
+}
 
 /* The best times are persisted in the browser storage, with 999 seconds for "Anonyme" as the original defaults */
 const BEST_TIMES_STORAGE_KEY = 'minesweeper-best-times-v1'

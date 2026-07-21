@@ -108,6 +108,7 @@ export const DialogFrame: React.FC<DialogFrameProps> = ({ windowId, title, onClo
                         <div className={styles.dialogBody}>{children}</div>
                   </div>
             </div>,
-            document.body
+            /* The portal targets #root so the dialog inherits the shell cursor and its text selection rules */
+            document.getElementById('root') ?? document.body
       )
 }
