@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './ApplicationsTab.module.scss';
 
 import { useWindowsStore } from '@/common/stores/windowsStore';
@@ -77,16 +77,16 @@ export const TaskManagerProcessesTab: React.FC = () => {
     },
   });
 
-  // Calcul des variables CSS pour définir dynamiquement la largeur des colonnes
-  const columnSizeVars = useMemo(() => {
-    const headers = table.getFlatHeaders();
-    const colSizes: { [key: string]: number } = {};
-    headers.forEach(header => {
-      colSizes[`--header-${header.id}-size`] = header.getSize();
-      colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
-    });
-    return colSizes;
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing]);
+  // Calcul des variables CSS pour définir dynamiquement la largeur des colonnes.
+  // Calculé à chaque rendu : un useMemo n'apporterait rien ici, car le
+  // composant ne re-rend que lorsque le state de la table change (notamment à
+  // chaque redimensionnement, qui invaliderait de toute façon la mémoïsation)
+  // et le coût se limite à l'itération de quelques colonnes.
+  const columnSizeVars: { [key: string]: number } = {};
+  table.getFlatHeaders().forEach(header => {
+    columnSizeVars[`--header-${header.id}-size`] = header.getSize();
+    columnSizeVars[`--col-${header.column.id}-size`] = header.column.getSize();
+  });
 
   const killProcess = (appId?: string) => {
     if (appId) useWindowsStore.getState().closeWindow(appId);

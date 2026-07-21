@@ -6,7 +6,10 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // On va collecter toutes les ressources trouvées dans des
 // dossiers "i18n" (ou un pattern plus précis si tu préfères).
 // Les { eager: true } vont immédiatement importer chaque JSON.
-const modules = import.meta.glob('./**/i18n/**/*.json', { eager: true });
+const modules = import.meta.glob<{ default: Record<string, unknown> }>(
+  './**/i18n/**/*.json',
+  { eager: true }
+);
 
 /*
   modules sera un objet du type :
@@ -53,7 +56,7 @@ Object.entries(modules).forEach(([path, file]) => {
   }
 
   // 3) On fusionne le contenu
-  Object.assign(resources[lang][namespace], (file as any).default);
+  Object.assign(resources[lang][namespace], file.default);
 });
 
 i18n

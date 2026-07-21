@@ -47,7 +47,7 @@
 .os-scrollbar-vertical .os-scrollbar-handle::after {
   content: "_\a_\a_\a_";
   line-height: 2px;
-  font-family: 'Tahoma';
+  font-family: Tahoma, 'Segoe UI', Verdana, sans-serif;
   font-size: 14px;
   text-decoration: solid;
   position: absolute;
@@ -172,7 +172,7 @@
 .os-scrollbar-horizontal .os-scrollbar-handle::after {
   content: "||||";
   line-height: 2px;
-  font-family: 'Tahoma';
+  font-family: Tahoma, 'Segoe UI', Verdana, sans-serif;
   font-size: 7px;
   text-decoration: solid;
   position: absolute;

@@ -4,7 +4,6 @@ import styles from './WindowToolbarButton.module.scss';
 interface WindowToolbarButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   icon: string;
   label?: string;
-  variant?: 'xp';
   children?: React.ReactNode;
   className?: string;
 }
@@ -12,7 +11,6 @@ interface WindowToolbarButtonProps extends React.HTMLAttributes<HTMLButtonElemen
 export const WindowToolbarButton: React.FC<WindowToolbarButtonProps> = ({
   icon,
   label,
-  variant = 'xp',
   children,
   className,
   ...props

@@ -6,6 +6,20 @@ import XPBootMicrosoftLogo from "../../../assets/xp-boot-microsoft-logo.png";
 import { BootStage } from "../../../App";
 import styles from "./WindowsXPBootScreenCanvas.module.scss";
 
+// Constantes de module : dimensions du canvas et paramètres de la barre de
+// progression sont statiques, ils n'ont donc pas à figurer dans les
+// dépendances du useEffect d'animation.
+
+// Largeur/hauteur du canvas (vous pouvez adapter les dimensions voulues)
+const WIDTH = 640;
+const HEIGHT = 480;
+
+// Paramètres pour la barre de progression
+const PROGRESS_BAR_WIDTH = 118;
+const PROGRESS_BAR_HEIGHT = 9;
+const PROGRESS_BAR_X = (WIDTH - PROGRESS_BAR_WIDTH) / 2;
+const PROGRESS_BAR_Y = HEIGHT * 0.75; // environ 80% vers le bas
+
 /**
  * Ce composant dessine un écran de boot Windows XP sur un canvas :
  * - fond noir
@@ -14,16 +28,6 @@ import styles from "./WindowsXPBootScreenCanvas.module.scss";
  */
 const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) => void }> = ({ onComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Largeur/hauteur du canvas (vous pouvez adapter les dimensions voulues)
-  const WIDTH = 640;
-  const HEIGHT = 480;
-
-  // Paramètres pour la barre de progression
-  const PROGRESS_BAR_WIDTH = 118;
-  const PROGRESS_BAR_HEIGHT = 9;
-  const PROGRESS_BAR_X = (WIDTH - PROGRESS_BAR_WIDTH) / 2;
-  const PROGRESS_BAR_Y = HEIGHT * 0.75; // environ 80% vers le bas
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -273,7 +273,7 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
       // 1. si minimisée => restaurer (et bring to front)
       // 2. si active => minimiser
       // 3. sinon => ramener devant
-      let updated = prev.windows.map((w) => {
+      const updated = prev.windows.map((w) => {
         if (w.id === id) {
           if (isMinimized) {
             // Start restore animation - set isMinimized to false immediately so window renders

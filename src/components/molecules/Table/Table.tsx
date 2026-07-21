@@ -2,20 +2,20 @@ import React, { useEffect, useRef } from 'react';
 import styles from './Table.module.scss';
 import { flexRender, Table as TableType } from '@tanstack/react-table';
 
-interface TableProps extends React.HTMLAttributes<HTMLDivElement> {
-  table: TableType<any>
+interface TableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
+  table: TableType<TData>
   columnSizeVars: {
     [key: string]: number
   }
   onClickOutside?: () => void
 }
 
-export const Table: React.FC<TableProps> = ({
+export const Table = <TData,>({
   table,
   columnSizeVars,
   onClickOutside,
   ...props
-}) => {
+}: TableProps<TData>): React.ReactElement => {
   const tableRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export const Table: React.FC<TableProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutsideTable);
     }
-  }, []);
+  }, [onClickOutside]);
 
   return (
     <div

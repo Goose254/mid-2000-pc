@@ -221,9 +221,9 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
       });
       e.preventDefault();
     } else if (key === 'Enter') {
-      // Valider l’option
-      // Pour l’exemple, on va juste faire un console.log
-      // On peut imaginer ouvrir un sous-menu, changer un paramètre, etc.
+      // Valider l’option : le Setup est volontairement en lecture seule,
+      // les paramètres affichés ne sont pas modifiables (aucun sous-menu).
+      // La touche est interceptée pour éviter tout comportement par défaut.
       e.preventDefault();
     } else if (key === 'Escape') {
       // Quitter le Setup

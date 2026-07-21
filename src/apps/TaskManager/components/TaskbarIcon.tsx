@@ -21,6 +21,29 @@ interface TaskManagerTaskbarIconProps {
   taskManagerWindowId: string
 }
 
+// Constantes de module : la liste d'icônes et le tirage aléatoire ne dépendent
+// d'aucun état du composant, ce qui permet au useEffect de l'intervalle de
+// rester monté une seule fois avec un tableau de dépendances vide.
+const icons = [
+  TaskManager0Icon,
+  TaskManager9Icon,
+  TaskManager18Icon,
+  TaskManager27Icon,
+  TaskManager36Icon,
+  TaskManager45Icon,
+  TaskManager54Icon,
+  TaskManager63Icon,
+  TaskManager72Icon,
+  TaskManager81Icon,
+  TaskManager90Icon,
+  TaskManager100Icon,
+];
+
+const getRandomIcon = (): string => {
+  const randomIndex = Math.floor(Math.random() * icons.length);
+  return icons[randomIndex];
+};
+
 export const TaskManagerTaskbarIcon: React.FC<TaskManagerTaskbarIconProps> = ({ taskManagerWindowId }) => {
   const [icon, setIcon] = useState<string>(TaskManager0Icon);
   const [contextMenu, setContextMenu] = useState({
@@ -30,21 +53,6 @@ export const TaskManagerTaskbarIcon: React.FC<TaskManagerTaskbarIconProps> = ({ 
   });
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const icons = [
-    TaskManager0Icon,
-    TaskManager9Icon,
-    TaskManager18Icon,
-    TaskManager27Icon,
-    TaskManager36Icon,
-    TaskManager45Icon,
-    TaskManager54Icon,
-    TaskManager63Icon,
-    TaskManager72Icon,
-    TaskManager81Icon,
-    TaskManager90Icon,
-    TaskManager100Icon,
-  ];
-  
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     if (event.target !== event.currentTarget) {
@@ -55,11 +63,6 @@ export const TaskManagerTaskbarIcon: React.FC<TaskManagerTaskbarIconProps> = ({ 
       x: window.innerWidth - event.clientX,
       y: window.innerHeight - event.clientY,
     });
-  };
-
-  const getRandomIcon = (): string => {
-    const randomIndex = Math.floor(Math.random() * icons.length);
-    return icons[randomIndex];
   };
 
   useEffect(() => {

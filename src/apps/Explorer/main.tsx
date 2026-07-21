@@ -11,7 +11,7 @@ import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-export const ExplorerApp: AppTemplate = {
+export const ExplorerApp: AppTemplate<object> = {
   id: 'explorer.exe',
   name: 'Poste de travail',
   icons: {

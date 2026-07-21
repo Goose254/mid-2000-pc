@@ -22,10 +22,9 @@
     src: url(./assets/fonts/perfect-dos.ttf) format('truetype');
 }
 
-@font-face {
-    font-family: 'Tahoma';
-    src: url(./assets/fonts/tahoma.ttf) format('truetype');
-}
+/* Tahoma, Trebuchet MS and MS Reference Sans Serif are not bundled: they are
+   Microsoft-licensed fonts already shipped with Windows. Font stacks with
+   system fallbacks are used at the point of use instead. */
 
 @font-face {
     font-family: 'Franklin Gothic';
@@ -35,24 +34,6 @@
 @font-face {
     font-family: 'Franklin Gothic';
     src: url(./assets/fonts/franklin-gothic-italic.otf) format('opentype');
-    font-style: italic;
-}
-
-@font-face {
-    font-family: 'Trebuchet MS';
-    src: url(./assets/fonts/trebuchet-ms.ttf) format('truetype');
-}
-
-@font-face {
-    font-family: 'Trebuchet MS';
-    src: url(./assets/fonts/trebuchet-ms-bold.ttf) format('truetype');
-    font-style: normal;
-    font-weight: bold;
-}
-
-@font-face {
-    font-family: 'Trebuchet MS';
-    src: url(./assets/fonts/trebuchet-ms-italic.ttf) format('truetype');
     font-style: italic;
 }
 

@@ -1,7 +1,18 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "mid-2000-pc",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A nostalgic simulation of a mid-2000s Windows XP PC running in the browser — BIOS, boot screen, desktop, windows and classic apps.",
+  "author": "Vincent Douay",
+  "contributors": [
+    "Florian Douay"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Goose254/mid-2000-pc.git"
+  },
+  "homepage": "https://mid-2000-pc.douay.me",
   "type": "module",
   "scripts": {
     "dev": "vite",

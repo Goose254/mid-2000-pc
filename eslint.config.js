@@ -35,7 +35,8 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-      'no-unused-var': 'warn',
+      // Unused variables are already reported by @typescript-eslint/no-unused-vars
+      // (enabled through tseslint.configs.recommended above).
     },
   }
 );

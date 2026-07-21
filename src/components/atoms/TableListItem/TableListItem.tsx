@@ -38,7 +38,7 @@ export const TableListItem: React.FC<TableListItemProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutsideIcon);
     };
-  }, []);
+  }, [onInactive]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     switch (e.detail) {

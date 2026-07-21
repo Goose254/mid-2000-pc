@@ -212,7 +212,7 @@ export const Desktop: React.FC = () => {
   const hasLoadedStoredPositionsRef = useRef<boolean>(false);
 
   const openTeams = useCallback(() => {
-    window.open('https://teams-suggest.vercel.app', '_blank', 'noopener,noreferrer');
+    window.open('https://teams-suggest.douay.me', '_blank', 'noopener,noreferrer');
   }, []);
 
   const desktopIcons = useMemo<DesktopIconConfig[]>(
@@ -395,8 +395,14 @@ export const Desktop: React.FC = () => {
     writeStoredIconPositions(iconPositions);
   }, [hasInitializedIconPositions, iconPositions]);
 
+  // Seul l'identifiant de l'icône déplacée importe pour (ré)attacher les
+  // listeners : dépendre de `dragState` entier ré-exécuterait l'effet à chaque
+  // mousemove (x/y changent en continu), alors que les handlers lisent déjà
+  // l'état courant via les setters fonctionnels.
+  const draggedIconId = dragState?.iconId;
+
   useEffect(() => {
-    if (!dragState) {
+    if (!draggedIconId) {
       return;
     }
 
@@ -508,7 +514,7 @@ export const Desktop: React.FC = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [desktopIcons, dragState?.iconId, gridBounds.cols, gridBounds.rows]);
+  }, [desktopIcons, draggedIconId, gridBounds]);
 
   useEffect(() => {
     if (!dragState?.isDragging) {

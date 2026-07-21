@@ -3,14 +3,12 @@ import styles from './WindowToolbarMenuButton.module.scss';
 
 interface WindowToolbarMenuButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   label: string;
-  variant?: 'xp';
   children: React.ReactNode;
   className?: string;
 }
 
 export const WindowToolbarMenuButton: React.FC<WindowToolbarMenuButtonProps> = ({
   label,
-  variant = 'xp',
   children,
   className,
   ...props

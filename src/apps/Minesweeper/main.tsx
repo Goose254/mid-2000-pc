@@ -10,7 +10,7 @@ import iconXsmall from '@/assets/windows-icons/winmine.exe_14_100-7.png'
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-export const MinesweeperApp: AppTemplate = {
+export const MinesweeperApp: AppTemplate<{ windowId: string }> = {
   id: 'winmine.exe',
   name: 'Démineur',
   icons: {

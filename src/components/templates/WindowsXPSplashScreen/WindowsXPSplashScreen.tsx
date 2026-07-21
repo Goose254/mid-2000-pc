@@ -10,8 +10,9 @@ export const WindowsXPSplashScreen: React.FC<{ onComplete: (bootStage?: BootStag
 
   useEffect(() => {
     xpStartupSoundAudioRef.current = new Audio(WindowsXPStartupSound);
-    xpStartupSoundAudioRef.current.play().catch((err) => {
-      console.log('Error trying to read audio file:', err);
+    xpStartupSoundAudioRef.current.play().catch(() => {
+      // Autoplay may be blocked by the browser until the user interacts with
+      // the page: silently skip the startup sound in that case.
     });
 
     const timer = setTimeout(() => onComplete('desktop'), 3000);

@@ -9,7 +9,7 @@ import {
  */
 export const WindowsXpArrowsPlugin: InstancePlugin<'windowsXpArrowsPlugin'> = {
   windowsXpArrowsPlugin: {
-    instance(osInstance, event, _osStatic) {
+    instance(osInstance, event) {
       // On peut choisir la "vitesse" de scroll ici :
       const SCROLL_STEP = 20;
 

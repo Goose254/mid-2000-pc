@@ -4,6 +4,33 @@ import BiosEnergyStarLogo from '../../../assets/bios-energy-star-logo.png';
 import PostBeep from '../../../assets/sounds/post-beep.mp3';
 import { BootStage } from '../../../App';
 
+// Constantes de module : le contenu de l'écran BIOS est entièrement statique,
+// il n'a donc pas besoin d'être recréé à chaque rendu ni de figurer dans les
+// tableaux de dépendances des hooks.
+
+// Mémoire totale installée (ex: 2Go = 2097152K)
+const totalMemory = 2097152;
+
+// Messages BIOS
+const biosMessages = [
+  'ASUS A8N-SLI Premium ACPI BIOS Revision 1011-001',
+  ' ',
+  'Main Processor: AMD Athlon(tm) 64 Processor 4000+',
+  { isMemoryTest: true }, // <= ligne qu'on va traiter en test
+  'Memory information: DDR 400 Dual Channel, 128-bit',
+  ' ',
+  'Chipset Model: nForce 4',
+  'Primary IDE Master   : PLEXTOR DVDR   PX-716AL 1.02',
+  'Primary IDE Slave    : None',
+  'Secondary IDE Master : CD-W524E 1.0E',
+  'Secondary IDE Slave  : None'
+];
+
+// Index de la ligne Memory
+const memoryTestLineIndex = biosMessages.findIndex(
+  (line) => typeof line === 'object' && (line as { isMemoryTest: boolean }).isMemoryTest
+);
+
 const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }> = ({ onComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -17,29 +44,6 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
   const [memoryTestProgress, setMemoryTestProgress] = useState(0);
   const [pauseLineReveal, setPauseLineReveal] = useState(false);
   const [enterSetup, setEnterSetup] = useState(false);
-
-  // Mémoire totale installée (ex: 2Go = 2097152K)
-  const totalMemory = 2097152;
-
-  // Messages BIOS
-  const biosMessages = [
-    'ASUS A8N-SLI Premium ACPI BIOS Revision 1011-001',
-    ' ',
-    'Main Processor: AMD Athlon(tm) 64 Processor 4000+',
-    { isMemoryTest: true }, // <= ligne qu'on va traiter en test
-    'Memory information: DDR 400 Dual Channel, 128-bit',
-    ' ',
-    'Chipset Model: nForce 4',
-    'Primary IDE Master   : PLEXTOR DVDR   PX-716AL 1.02',
-    'Primary IDE Slave    : None',
-    'Secondary IDE Master : CD-W524E 1.0E',
-    'Secondary IDE Slave  : None'
-  ];
-
-  // Index de la ligne Memory
-  const memoryTestLineIndex = biosMessages.findIndex(
-    (line) => typeof line === 'object' && (line as { isMemoryTest: boolean }).isMemoryTest
-  );
 
   // ---- useEffect pour charger les images ----
   useEffect(() => {
@@ -136,7 +140,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
 
     // Re-rendre quand les états changent
     render();
-  }, [currentLineIndex, memoryTestProgress, enterSetup, biosMessages, totalMemory]);
+  }, [currentLineIndex, memoryTestProgress, enterSetup]);
 
   // ---- useEffect pour l'animation des lignes ----
   useEffect(() => {
@@ -155,13 +159,15 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
     }, 400);
 
     return () => clearInterval(lineInterval);
-  }, [pauseLineReveal, biosMessages.length]);
+  }, [pauseLineReveal]);
 
   // ---- useEffect pour jouer le beep ----
   useEffect(() => {
     if (currentLineIndex === 1 && beepAudioRef.current) {
-      beepAudioRef.current.play().catch((err) => {
-        console.log('Erreur lors de la lecture audio:', err);
+      beepAudioRef.current.play().catch(() => {
+        // La lecture automatique peut être bloquée par le navigateur tant que
+        // l'utilisateur n'a pas interagi avec la page : on ignore l'erreur,
+        // le beep du BIOS est purement cosmétique.
       });
     }
   }, [currentLineIndex]);
@@ -171,7 +177,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
     if (memoryTestLineIndex !== -1 && currentLineIndex > memoryTestLineIndex) {
       setPauseLineReveal(true);
     }
-  }, [currentLineIndex, memoryTestLineIndex]);
+  }, [currentLineIndex]);
 
   // ---- useEffect pour le test mémoire ----
   useEffect(() => {
@@ -189,14 +195,14 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
     }, 10);
 
     return () => clearInterval(memInterval);
-  }, [pauseLineReveal, currentLineIndex, memoryTestLineIndex, totalMemory]);
+  }, [pauseLineReveal, currentLineIndex]);
 
   // ---- useEffect pour reprendre après le test mémoire ----
   useEffect(() => {
     if (memoryTestProgress >= totalMemory && pauseLineReveal) {
       setPauseLineReveal(false);
     }
-  }, [memoryTestProgress, pauseLineReveal, totalMemory]);
+  }, [memoryTestProgress, pauseLineReveal]);
 
   // ---- useEffect pour appeler onComplete quand tout est terminé ----
   useEffect(() => {
@@ -206,7 +212,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentLineIndex, biosMessages.length, memoryTestProgress, totalMemory, enterSetup, onComplete]);
+  }, [currentLineIndex, memoryTestProgress, enterSetup, onComplete]);
 
   // ---- useEffect pour la touche DEL ----
   useEffect(() => {

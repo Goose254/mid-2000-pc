@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
@@ -48,6 +48,10 @@ export const Window: React.FC<WindowProps> = ({
 
   const dragStart = useRef({ x: 0, y: 0 });
   const resizeStart = useRef({ x: 0, y: 0 });
+  // Géométrie de la fenêtre au moment où le redimensionnement démarre :
+  // le calcul se fait en delta absolu depuis le début du geste, il doit donc
+  // toujours partir de la taille/position initiales et non des valeurs courantes.
+  const resizeStartGeometry = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
 
   const setWindowActive = () => {
@@ -111,10 +115,19 @@ export const Window: React.FC<WindowProps> = ({
       x: e.clientX,
       y: e.clientY,
     };
+    resizeStartGeometry.current = {
+      x: position.x,
+      y: position.y,
+      width: size.width,
+      height: size.height,
+    };
   };
 
-  // Suivi des mouvements souris quand on est en train de bouger/redimensionner
-  const handleMouseMove = (e: MouseEvent) => {
+  // Suivi des mouvements souris quand on est en train de bouger/redimensionner.
+  // Le redimensionnement est calculé à partir de la géométrie capturée au début
+  // du geste (resizeStartGeometry) : le handler reste ainsi stable pendant tout
+  // le drag/resize et peut être une vraie dépendance du useEffect ci-dessous.
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging) {
       setWindowPosition(id, {
         x: e.clientX - dragStart.current.x,
@@ -123,10 +136,11 @@ export const Window: React.FC<WindowProps> = ({
     }
 
     if (isResizing !== 'none') {
-      let newWidth = size.width;
-      let newHeight = size.height;
-      let newXPosition = position.x;
-      let newYPosition = position.y;
+      const startGeometry = resizeStartGeometry.current;
+      let newWidth = startGeometry.width;
+      let newHeight = startGeometry.height;
+      let newXPosition = startGeometry.x;
+      let newYPosition = startGeometry.y;
 
       switch (isResizing) {
         case 'n':
@@ -150,12 +164,12 @@ export const Window: React.FC<WindowProps> = ({
           break;
         case 'sw':
           newWidth -= e.clientX - resizeStart.current.x;
-          newXPosition = position.x + (e.clientX - resizeStart.current.x);
+          newXPosition = startGeometry.x + (e.clientX - resizeStart.current.x);
           newHeight += e.clientY - resizeStart.current.y;
           break;
         case 'w':
           newWidth -= e.clientX - resizeStart.current.x;
-          newXPosition = position.x + (e.clientX - resizeStart.current.x);
+          newXPosition = startGeometry.x + (e.clientX - resizeStart.current.x);
           break;
         case 'nw':
           newWidth -= e.clientX - resizeStart.current.x;
@@ -170,13 +184,13 @@ export const Window: React.FC<WindowProps> = ({
       setWindowSize(id, { width: newWidth, height: newHeight });
       setWindowPosition(id, { x: newXPosition, y: newYPosition });
     }
-  };
+  }, [id, isDragging, isResizing, setWindowPosition, setWindowSize]);
 
   // Libération du clic souris (fin déplacement/redimensionnement)
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setIsResizing('none');
-  };
+  }, []);
 
   // Attache/détache les events globaux pour suivre le déplacement/redimensionnement
   useEffect(() => {
@@ -188,7 +202,7 @@ export const Window: React.FC<WindowProps> = ({
         window.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, isResizing]);
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
 
   // Gestion du clic en dehors de la fenêtre pour la rendre inactive
   useEffect(() => {
@@ -207,7 +221,7 @@ export const Window: React.FC<WindowProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutsideWindow);
     };
-  }, [windowRef]);
+  }, [id]);
 
   // Update taskbar button position for animations
   useEffect(() => {

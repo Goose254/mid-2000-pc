@@ -13,7 +13,25 @@ export interface AppInstanceControl {
   // D'autres fonctions spécifiques à l'instance pourront être ajoutées ici
 }
 
-export interface AppTemplate {
+/**
+ * Composant de fenêtre d'application.
+ * Type fonction "nu" (sans les statics de React.FC comme propTypes) afin que
+ * la contravariance des props permette d'assigner tout composant concret au
+ * template générique `AppTemplate` (= `AppTemplate<never>`).
+ */
+export type AppWindowComponent<Props extends object> = (props: Props) => React.ReactNode;
+
+/**
+ * Modèle d'application.
+ *
+ * `WindowProps` décrit les props des composants de l'app (fenêtre principale
+ * et icône de taskbar) : chaque app fournit son propre type de props
+ * (ex: `AppTemplate<{ taskManagerWindowId: string }>`).
+ * La valeur par défaut `never` correspond au template "générique" manipulé par
+ * les stores : ils ne rendent jamais ces composants eux-mêmes, et `never`
+ * permet d'accepter n'importe quel template concret.
+ */
+export interface AppTemplate<WindowProps extends object = never> {
   /** Identifiant unique de l’app (ex: taskmgr.exe) */
   id: string;
   /** Nom affiché de l’application */
@@ -26,13 +44,13 @@ export interface AppTemplate {
    * Composant React représentant la fenêtre principale de l’app.
    * Ce composant sera utilisé dans la fonction d'initialisation.
    */
-  MainWindow: React.FC<any>;
+  MainWindow: AppWindowComponent<WindowProps>;
   /**
    * (Optionnel) Composant React affiché dans la taskbar.
    * S’il est défini, l’application ne se ferme pas automatiquement quand
    * toutes ses fenêtres sont fermées.
    */
-  TaskbarIcon?: React.FC<any>;
+  TaskbarIcon?: AppWindowComponent<WindowProps>;
   /**
    * Fonction d'initialisation de l'app.
    * Elle est appelée lors du lancement et doit ouvrir la fenêtre principale,

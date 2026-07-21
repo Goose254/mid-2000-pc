@@ -12,7 +12,7 @@ import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-export const TaskManagerApp: AppTemplate = {
+export const TaskManagerApp: AppTemplate<{ taskManagerWindowId: string }> = {
   id: 'taskmgr.exe',
   name: 'Gestionnaire des tâches de Windows',
   icons: {
