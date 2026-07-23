@@ -16,6 +16,8 @@ export interface UserAccount {
   /** Identifiant d'avatar dans le catalogue `common/utils/avatars` */
   avatar: string;
   isAdmin?: boolean;
+  /** Mot de passe cosmétique (pas de vraie sécurité) : présence = compte protégé. */
+  password?: string;
 }
 
 interface PersistedUsers {
@@ -92,6 +94,9 @@ export interface UsersState {
   renameUser: (id: string, name: string) => void;
   removeUser: (id: string) => void;
   setAvatar: (id: string, avatar: string) => void;
+  setAccountType: (id: string, isAdmin: boolean) => void;
+  /** Mot de passe cosmétique : chaîne vide = suppression du mot de passe. */
+  setPassword: (id: string, password: string) => void;
 }
 
 export const useUsersStore = create<UsersState>((set, get) => {
@@ -163,6 +168,34 @@ export const useUsersStore = create<UsersState>((set, get) => {
       set((state) => {
         const users = state.users.map((user) =>
           user.id === id ? { ...user, avatar } : user
+        );
+        saveUsers(users);
+        return { users };
+      });
+    },
+
+    setAccountType: (id, isAdmin) => {
+      set((state) => {
+        // On empêche de rétrograder le dernier administrateur en compte limité.
+        if (!isAdmin) {
+          const admins = state.users.filter((user) => user.isAdmin);
+          if (admins.length <= 1 && admins[0]?.id === id) {
+            return state;
+          }
+        }
+
+        const users = state.users.map((user) =>
+          user.id === id ? { ...user, isAdmin } : user
+        );
+        saveUsers(users);
+        return { users };
+      });
+    },
+
+    setPassword: (id, password) => {
+      set((state) => {
+        const users = state.users.map((user) =>
+          user.id === id ? { ...user, password: password || undefined } : user
         );
         saveUsers(users);
         return { users };

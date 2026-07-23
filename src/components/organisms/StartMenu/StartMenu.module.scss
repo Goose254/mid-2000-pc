@@ -19,10 +19,13 @@ $start-menu-bg: url(../../../assets/start-menu-background.png);
 .startMenuAccount {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   width: 100%;
-  height: 54px;
-  padding: 0 10px;
+  // Hauteur du bandeau bleu de l'en-tête : DOIT rester à 65px pour que la somme
+  // en-tête (65) + listes (372) + actions (41) = 478 corresponde à l'image de
+  // fond. Toute autre valeur décale les listes sous l'en-tête.
+  height: 65px;
+  padding: 0 9px;
   background: transparent;
   border: none;
   text-align: left;
@@ -31,6 +34,10 @@ $start-menu-bg: url(../../../assets/start-menu-background.png);
 
 .startMenuAvatar {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 }
 

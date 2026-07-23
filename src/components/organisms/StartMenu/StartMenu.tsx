@@ -120,7 +120,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 <Avatar
                   avatar={currentUser?.avatar ?? 'chess'}
                   name={currentUser?.name ?? 'Utilisateur'}
-                  size={42}
+                  size={44}
                 />
               </div>
               <div className={styles.startMenuAccountName}>{currentUser?.name ?? 'Utilisateur'}</div>

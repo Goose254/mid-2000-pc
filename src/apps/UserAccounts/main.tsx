@@ -1,10 +1,13 @@
 import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
 import { UserAccountsMainWindow } from './components/MainWindow';
 
-import iconLarge from '@/assets/windows-icons/shell32.dll_14_137-8.png';
-import iconMedium from '@/assets/windows-icons/shell32.dll_14_137-8.png';
-import iconSmall from '@/assets/windows-icons/shell32.dll_14_137-10.png';
-import iconXsmall from '@/assets/windows-icons/shell32.dll_14_137-10.png';
+// Icône authentique « Comptes d'utilisateurs » (nusrmgr.cpl) aux bonnes tailles :
+// -6 = 48×48, -7 = 32×32, -8 = 16×16. Le xsmall DOIT être un vrai 16×16, sans quoi
+// la taskbar / barre de titre / gestionnaire des tâches l'affichent sur-dimensionné.
+import iconLarge from '@/assets/windows-icons/nusrmgr.cpl_14_200-6.png';
+import iconMedium from '@/assets/windows-icons/nusrmgr.cpl_14_200-7.png';
+import iconSmall from '@/assets/windows-icons/nusrmgr.cpl_14_200-7.png';
+import iconXsmall from '@/assets/windows-icons/nusrmgr.cpl_14_200-8.png';
 
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
@@ -38,15 +41,21 @@ export const UserAccountsApp: AppTemplate<object> = {
       <img src={icons.xsmall} alt="" />,
       {
         size: {
-          width: 620,
-          height: 470,
+          width: 640,
+          height: 480,
         },
       }
     );
 
     return {
+      // On ferme via le pid (et non le windowId) : `closeWindow` est déjà en train
+      // de retirer la fenêtre quand il déclenche `killInstance`, donc rappeler
+      // `closeWindow(windowId)` ici ré-entrerait sur la même fenêtre et bouclerait
+      // à l'infini (le X restait alors sans effet). Passer le pid — qui ne
+      // correspond à aucun id de fenêtre (suffixe `_main`) — est un no-op sûr,
+      // exactement comme les autres apps (Minesweeper, Explorer, TaskManager).
       killInstance: () => {
-        useWindowsStore.getState().closeWindow(windowId);
+        useWindowsStore.getState().closeWindow(pid);
       },
     };
   },

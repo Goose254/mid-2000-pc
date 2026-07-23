@@ -13,8 +13,8 @@
         },
         "loggingOff": "Fermeture de la session...",
         "shuttingDown": "Windows va s'arrêter...",
-        "savingSettings": "Enregistrement de vos paramètres…",
-        "welcomeBack": "Chargement de vos paramètres personnels…",
+        "savingSettings": "Enregistrement de vos paramètres...",
+        "welcomeBack": "Chargement de vos paramètres personnels...",
         "poweroff": {
             "message": "Vous pouvez maintenant éteindre votre ordinateur en toute sécurité.",
             "restart": "Rallumer l'ordinateur"
@@ -22,20 +22,64 @@
     },
     "userAccounts": {
         "title": "Comptes d'utilisateurs",
-        "pickTask": "Choisissez une tâche…",
-        "createAccount": "Créer un nouveau compte",
-        "orPickAccount": "ou choisissez un compte à modifier",
+        "back": "Précédent",
+        "cancel": "Annuler",
+        "connected": "connecté",
         "administrator": "Administrateur de l'ordinateur",
         "limited": "Compte limité",
-        "namePlaceholder": "Nom du nouveau compte",
-        "create": "Créer le compte",
-        "rename": "Renommer",
-        "delete": "Supprimer le compte",
-        "save": "Enregistrer",
-        "cancel": "Annuler",
-        "changePicture": "Changer d'image",
+        "passwordProtected": "Protégé par mot de passe",
         "lastAccountNotice": "Impossible de supprimer le dernier compte de l'ordinateur.",
-        "connected": "connecté"
+        "home": {
+            "pickTask": "Choisissez une tâche :",
+            "taskModify": "Modifier un compte",
+            "taskCreate": "Créer un nouveau compte",
+            "taskLogon": "Modifier la manière dont les utilisateurs ouvrent et ferment une session",
+            "orPickAccount": "ou choisissez un compte à modifier",
+            "seeAlso": "Voir aussi",
+            "seeAlsoManagePasswords": "Gérer mes mots de passe réseau",
+            "seeAlsoPassport": "Configurer mon compte pour utiliser un compte .NET Passport"
+        },
+        "detail": {
+            "relatedTasks": "Tâches apparentées",
+            "relManageOther": "Gérer un autre compte",
+            "relLogon": "Modifier la manière dont les utilisateurs ouvrent et ferment une session",
+            "question": "Que voulez-vous modifier dans le compte de {{name}} ?",
+            "changeName": "Modifier le nom",
+            "createPassword": "Créer un mot de passe",
+            "changePassword": "Modifier le mot de passe",
+            "changePicture": "Modifier l'image",
+            "changeType": "Modifier le type de compte",
+            "deleteAccount": "Supprimer le compte"
+        },
+        "rename": {
+            "title": "Choisissez un nouveau nom pour le compte de {{name}}",
+            "label": "Entrez un nouveau nom pour {{name}} :",
+            "button": "Modifier le nom"
+        },
+        "picture": {
+            "title": "Choisissez une nouvelle image pour le compte de {{name}}",
+            "button": "Modifier l'image"
+        },
+        "type": {
+            "title": "Choisissez un nouveau type de compte pour {{name}}",
+            "adminDesc": "Avec un compte d'administrateur de l'ordinateur, vous pouvez créer et supprimer des comptes, et modifier tous les paramètres.",
+            "limitedDesc": "Avec un compte limité, vous pouvez modifier votre image et créer, modifier ou supprimer votre mot de passe.",
+            "button": "Modifier le type de compte"
+        },
+        "password": {
+            "title": "Créer un mot de passe pour le compte de {{name}}",
+            "field": "Entrez un nouveau mot de passe :",
+            "confirm": "Confirmez le nouveau mot de passe :",
+            "mismatch": "Les mots de passe saisis ne correspondent pas.",
+            "button": "Créer le mot de passe"
+        },
+        "create": {
+            "title": "Nommez le nouveau compte",
+            "nameLabel": "Entrez un nom pour le nouveau compte :",
+            "typeTitle": "Choisissez un type de compte",
+            "next": "Suivant",
+            "button": "Créer le compte"
+        }
     },
     "desktop": {
         "contextMenu": {

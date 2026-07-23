@@ -1,4 +1,7 @@
 $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
+$task-blue: #1c3f95;
+$task-blue-hover: #1b60c9;
+$pointer: url(../../../assets/cursors/pointer.cur), pointer;
 
 .applet {
   display: flex;
@@ -12,20 +15,60 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   overflow: hidden;
 }
 
-.banner {
+/* Barre de navigation (flèche « Précédent ») */
+.navBar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: linear-gradient(90deg, #4a6ccc 0%, #6a8de0 55%, #8fa8e8 100%);
-  border-bottom: 1px solid #29499a;
-  color: #ffffff;
+  height: 30px;
+  padding: 0 8px;
+  background: linear-gradient(180deg, #f6f6f0 0%, #e7e7db 100%);
+  border-bottom: 1px solid #b7b6a5;
   flex-shrink: 0;
 }
 
-.bannerIcon {
-  width: 32px;
-  height: 32px;
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: #0b3d0b;
+  font-family: $font-stack;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: $pointer;
+
+  &:hover {
+    border-color: #b7cdb7;
+    background: #eaf3ea;
+  }
+}
+
+.backArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3aa03a;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Bandeau bleu de titre */
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #5a7edc 0%, #6f95e6 45%, #98b3ec 100%);
+  border-bottom: 2px solid #2c4a9a;
+  color: #ffffff;
+  flex-shrink: 0;
 }
 
 .bannerTitle {
@@ -34,93 +77,216 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
 }
 
-.body {
+.bannerIcon {
+  width: 32px;
+  height: 32px;
+}
+
+.content {
+  display: flex;
   flex: 1 1 auto;
   min-height: 0;
+}
+
+/* Panneau latéral gauche */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 176px;
+  flex-shrink: 0;
+  padding: 14px 12px;
+  background: linear-gradient(180deg, #dbe6fb 0%, #c5d8f6 100%);
+  border-right: 1px solid #a7bfe6;
+}
+
+.sidebarTitle {
+  color: #16336f;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* Zone principale */
+.main {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow-y: auto;
-  padding: 14px 18px;
+  padding: 16px 20px;
   background: #ffffff;
 }
 
-.pickLabel {
-  color: #1c4a8f;
+.mainHeading {
+  color: $task-blue;
+  font-size: 15px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
-.accountList {
+.mainSubHeading {
+  color: #444444;
+  font-weight: 700;
+  margin: 4px 0 10px;
+}
+
+.separator {
+  height: 1px;
+  margin: 16px 0;
+  background: #d2d2c8;
+}
+
+/* Liens de tâches */
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.taskLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 2px;
+  border: none;
+  background: transparent;
+  color: $task-blue;
+  font-family: $font-stack;
+  font-size: 12px;
+  text-align: left;
+  cursor: $pointer;
+
+  &:hover .taskLinkLabel {
+    color: $task-blue-hover;
+    text-decoration: underline;
+  }
+}
+
+.taskLinkDisabled {
+  color: #9a9a9a;
+  cursor: default;
+
+  &:hover .taskLinkLabel {
+    color: #9a9a9a;
+    text-decoration: none;
+  }
+}
+
+.taskLinkIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.taskLinkBullet {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 1px;
+  background: #7fa0dc;
+  transform: rotate(45deg);
+}
+
+.taskLinkLabel {
+  line-height: 16px;
+}
+
+/* Tuiles de comptes (accueil) */
+.accountGrid {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-bottom: 20px;
 }
 
-.accountRow {
-  border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 4px;
-
-  &:hover {
-    background: #eef3fb;
-  }
-}
-
-.accountRowSelected {
-  background: #eaf1fd;
-  border-color: #b8cdee;
-
-  &:hover {
-    background: #eaf1fd;
-  }
-}
-
-.accountMain {
+.accountTile {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
   padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
   background: transparent;
-  border: none;
   text-align: left;
-  cursor: url(../../../assets/cursors/pointer.cur), pointer;
+  cursor: $pointer;
+
+  &:hover {
+    background: #eef3fb;
+    border-color: #c4d6f2;
+  }
 }
 
-.accountText {
+.accountTileText {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.accountName {
-  color: #1c4a8f;
+.accountTileName {
+  color: $task-blue;
   font-weight: 700;
   font-size: 13px;
 }
 
-.accountType {
+.accountTileType {
   color: #6a6a6a;
   font-size: 11px;
 }
 
-.actions {
+/* En-tête d'écran de détail */
+.detailHeader {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px 8px 8px 68px;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #d2d2c8;
 }
 
-.avatarPalette,
-.createPalette {
+.detailHeaderText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detailHeaderName {
+  color: $task-blue;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.detailHeaderType {
+  color: #6a6a6a;
+  font-size: 11px;
+}
+
+/* Champs de formulaire */
+.fieldLabel {
+  display: block;
+  margin: 10px 0 4px;
+  color: #333333;
+}
+
+.textField {
+  max-width: 260px;
+  margin-bottom: 6px;
+}
+
+.errorText {
+  color: #b00000;
+  margin: 6px 0;
+}
+
+.actionRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Palette d'avatars */
+.avatarPalette {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 8px 8px 68px;
-}
-
-.createPalette {
-  padding-left: 56px;
+  margin: 4px 0;
 }
 
 .avatarChoice {
@@ -128,7 +294,7 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   border: 2px solid transparent;
   border-radius: 5px;
   background: transparent;
-  cursor: url(../../../assets/cursors/pointer.cur), pointer;
+  cursor: $pointer;
 
   &:hover {
     border-color: #b8cdee;
@@ -139,24 +305,39 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   border-color: #ff8c1a;
 }
 
-.createSection {
-  border-top: 1px solid #dce3ee;
-  padding-top: 14px;
-}
-
-.createTitle {
-  color: #1c4a8f;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.createRow {
+.createAvatarRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  margin-top: 10px;
 }
 
-.createInput {
-  flex: 1;
-  max-width: 240px;
+/* Choix du type de compte */
+.radioRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  cursor: $pointer;
+
+  input {
+    margin-top: 2px;
+  }
+}
+
+.radioTexts {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.radioTitle {
+  color: $task-blue;
+  font-weight: 700;
+}
+
+.radioDesc {
+  color: #555555;
+  font-size: 11px;
+  max-width: 340px;
 }

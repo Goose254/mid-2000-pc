@@ -13,8 +13,8 @@
         },
         "loggingOff": "Logging off...",
         "shuttingDown": "Windows is shutting down...",
-        "savingSettings": "Saving your settings…",
-        "welcomeBack": "Loading your personal settings…",
+        "savingSettings": "Saving your settings...",
+        "welcomeBack": "Loading your personal settings...",
         "poweroff": {
             "message": "It is now safe to turn off your computer.",
             "restart": "Turn the computer back on"
@@ -22,20 +22,64 @@
     },
     "userAccounts": {
         "title": "User Accounts",
-        "pickTask": "Pick a task…",
-        "createAccount": "Create a new account",
-        "orPickAccount": "or pick an account to change",
+        "back": "Back",
+        "cancel": "Cancel",
+        "connected": "logged on",
         "administrator": "Computer administrator",
         "limited": "Limited account",
-        "namePlaceholder": "New account name",
-        "create": "Create Account",
-        "rename": "Rename",
-        "delete": "Delete the account",
-        "save": "Save",
-        "cancel": "Cancel",
-        "changePicture": "Change the picture",
+        "passwordProtected": "Password protected",
         "lastAccountNotice": "You cannot delete the last account on the computer.",
-        "connected": "logged on"
+        "home": {
+            "pickTask": "Pick a task:",
+            "taskModify": "Change an account",
+            "taskCreate": "Create a new account",
+            "taskLogon": "Change the way users log on or off",
+            "orPickAccount": "or pick an account to change",
+            "seeAlso": "See Also",
+            "seeAlsoManagePasswords": "Manage my network passwords",
+            "seeAlsoPassport": "Set up my account to use a .NET Passport"
+        },
+        "detail": {
+            "relatedTasks": "Related Tasks",
+            "relManageOther": "Manage another account",
+            "relLogon": "Change the way users log on or off",
+            "question": "What do you want to change about {{name}}'s account?",
+            "changeName": "Change the name",
+            "createPassword": "Create a password",
+            "changePassword": "Change the password",
+            "changePicture": "Change the picture",
+            "changeType": "Change the account type",
+            "deleteAccount": "Delete the account"
+        },
+        "rename": {
+            "title": "Provide a new name for {{name}}'s account",
+            "label": "Type a new name for {{name}}:",
+            "button": "Change Name"
+        },
+        "picture": {
+            "title": "Pick a new picture for {{name}}'s account",
+            "button": "Change Picture"
+        },
+        "type": {
+            "title": "Pick a new account type for {{name}}",
+            "adminDesc": "With a computer administrator account, you can create and delete accounts and change all settings.",
+            "limitedDesc": "With a limited account, you can change your picture and create, change or remove your password.",
+            "button": "Change Account Type"
+        },
+        "password": {
+            "title": "Create a password for {{name}}'s account",
+            "field": "Type a new password:",
+            "confirm": "Type the new password again to confirm:",
+            "mismatch": "The passwords you typed do not match.",
+            "button": "Create Password"
+        },
+        "create": {
+            "title": "Name the new account",
+            "nameLabel": "Type a name for the new account:",
+            "typeTitle": "Pick an account type",
+            "next": "Next",
+            "button": "Create Account"
+        }
     },
     "desktop": {
         "contextMenu": {

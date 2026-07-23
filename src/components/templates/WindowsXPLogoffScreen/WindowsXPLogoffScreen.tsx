@@ -64,6 +64,7 @@ export const WindowsXPLogoffScreen: React.FC<WindowsXPLogoffScreenProps> = ({
         <div className={styles.subMessage}>{t('savingSettings')}</div>
       </div>
       <div className={styles.bottomSeparator} />
+      <div className={styles.footer} />
     </div>
   );
 };

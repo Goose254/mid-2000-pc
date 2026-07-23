@@ -13,9 +13,13 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   cursor: none;
 }
 
+// Mêmes proportions que l'écran de logon : bandeau bleu foncé en haut (22vh),
+// bande médiane plus claire au centre, bandeau bleu foncé en bas (15vh), le tout
+// séparé par de fines barres (blanche en haut, orange en bas). L'écran de
+// fermeture de session lit ainsi comme l'écran de bienvenue avec un message.
 .topSeparator {
   height: 2px;
-  margin-top: 78px;
+  margin-top: 22vh;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 30%, rgba(255, 255, 255, 0) 100%);
 }
 
@@ -86,4 +90,9 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
 .bottomSeparator {
   height: 2px;
   background: linear-gradient(90deg, rgba(244, 149, 56, 0) 0%, rgba(244, 149, 56, 1) 30%, rgba(244, 149, 56, 0) 100%);
+}
+
+.footer {
+  height: 15vh;
+  flex-shrink: 0;
 }
