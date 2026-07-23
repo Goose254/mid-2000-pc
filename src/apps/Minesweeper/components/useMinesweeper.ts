@@ -382,14 +382,20 @@ const useMinesweeper = (initialDifficulty: StandardDifficulty = 'beginner') => {
             handleCellClick(row, col)
       }
 
+      /* The positions are compared before updating the state, so the delegated mouseover of the grid
+         can fire repeatedly over the same cell without triggering any extra render */
       const handleMouseEnter = (row: number, col: number) => {
             if (chordCell) {
-                  setChordCell({ row, col })
+                  if (chordCell.row !== row || chordCell.col !== col) {
+                        setChordCell({ row, col })
+                  }
                   return
             }
 
             if (isMouseDown && !gameOver && !gameWon && !grid[row][col].isRevealed && !grid[row][col].isFlagged) {
-                  setHoveredCell({ row, col })
+                  if (hoveredCell?.row !== row || hoveredCell?.col !== col) {
+                        setHoveredCell({ row, col })
+                  }
             }
       }
 

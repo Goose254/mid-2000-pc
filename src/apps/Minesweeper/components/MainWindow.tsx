@@ -7,6 +7,7 @@ import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu'
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem'
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator'
 import { MinesweeperBanner } from './Banner'
+import { MinesweeperCell } from './Cell'
 import { CustomGameDialog } from './dialogs/CustomGameDialog'
 import { BestTimesDialog } from './dialogs/BestTimesDialog'
 import { NameEntryDialog } from './dialogs/NameEntryDialog'
@@ -62,6 +63,15 @@ const cellIcons = {
 /* The toolbar menus stay open while their button has the focus, so an item click blurs it to close them */
 const closeMenu = () => {
       (document.activeElement as HTMLElement | null)?.blur()
+}
+
+/* The grid uses event delegation: one set of handlers on the container instead of one per cell,
+   the targeted cell is found back through the data attributes of the memoized cells */
+const getCellFromEvent = (event: React.MouseEvent): { row: number; col: number } | null => {
+      const cellElement = (event.target as HTMLElement).closest('[data-row]')
+      if (!(cellElement instanceof HTMLElement)) return null
+
+      return { row: Number(cellElement.dataset.row), col: Number(cellElement.dataset.col) }
 }
 
 export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ windowId }) => {
@@ -235,42 +245,51 @@ export const MinesweeperMainWindow: React.FC<MinesweeperMainWindowProps> = ({ wi
                                     onSmileyMouseLeave={handleSmileyMouseLeave}
                               />
 
-                              <div className={styles.gameGrid} onMouseLeave={() => handleGridMouseLeave()}>
+                              <div
+                                    className={styles.gameGrid}
+                                    onMouseDown={(e) => {
+                                          const cell = getCellFromEvent(e)
+                                          if (!cell) return
+
+                                          if (e.button === 1) {
+                                                e.preventDefault()
+                                                handleChordStart(cell.row, cell.col)
+                                          } else if (e.buttons === 3) {
+                                                handleChordStart(cell.row, cell.col)
+                                          } else if (e.button === 0) {
+                                                handleMouseDown(cell.row, cell.col)
+                                          } else if (e.button === 2) {
+                                                handleRightClick(cell.row, cell.col)
+                                          }
+                                    }}
+                                    onMouseUp={(e) => {
+                                          const cell = getCellFromEvent(e)
+                                          if (!cell) return
+
+                                          if (chordCell) {
+                                                handleChordEnd(cell.row, cell.col)
+                                          } else if (e.button === 0) {
+                                                handleMouseUp(cell.row, cell.col)
+                                          }
+                                    }}
+                                    onMouseOver={(e) => {
+                                          if (!isMouseDown && !chordCell) return
+
+                                          const cell = getCellFromEvent(e)
+                                          if (cell) handleMouseEnter(cell.row, cell.col)
+                                    }}
+                                    onMouseLeave={() => handleGridMouseLeave()}
+                                    onContextMenu={(e) => e.preventDefault()}
+                              >
                                     {grid.map((row, rowIndex) => (
                                           <div key={rowIndex} className={styles.row}>
                                                 {row.map((cell, colIndex) => (
-                                                      <div
+                                                      <MinesweeperCell
                                                             key={colIndex}
-                                                            className={styles.cell}
-                                                            onMouseDown={(e) => {
-                                                                  if (e.button === 1) {
-                                                                        e.preventDefault()
-                                                                        handleChordStart(rowIndex, colIndex)
-                                                                  } else if (e.buttons === 3) {
-                                                                        handleChordStart(rowIndex, colIndex)
-                                                                  } else if (e.button === 0) {
-                                                                        handleMouseDown(rowIndex, colIndex)
-                                                                  } else if (e.button === 2) {
-                                                                        handleRightClick(rowIndex, colIndex)
-                                                                  }
-                                                            }}
-                                                            onMouseUp={(e) => {
-                                                                  if (chordCell) {
-                                                                        handleChordEnd(rowIndex, colIndex)
-                                                                  } else if (e.button === 0) {
-                                                                        handleMouseUp(rowIndex, colIndex)
-                                                                  }
-                                                            }}
-                                                            onMouseEnter={() => {if (isMouseDown || chordCell) {handleMouseEnter(rowIndex, colIndex)}}}
-                                                            onContextMenu={(e) => e.preventDefault()}
-                                                      >
-                                                            <div className={styles.cellCover}></div>
-                                                            <img
-                                                                  src={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
-                                                                  alt="cell"
-                                                                  style={{ width: '100%', height: '100%' }}
-                                                            />
-                                                      </div>
+                                                            icon={getCellIcon(cell, gameOver, isMouseDown, hoveredCell, rowIndex, colIndex)}
+                                                            row={rowIndex}
+                                                            col={colIndex}
+                                                      />
                                                 ))}
                                           </div>
                                     ))}

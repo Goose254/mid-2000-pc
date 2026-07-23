@@ -1,6 +1,20 @@
 $dialog-face: #ece9d8;
-$dialog-border-blue: #0831d9;
 $dialog-min-width: 220px;
+$dialog-border-width: 4px;
+
+/* The dialog chrome reuses the shell window borders, so it flashes and turns inactive like any window.
+   No box-shadow anywhere: dropped shadows on windows only appeared with Vista, XP has none. */
+$active-left-border-top: url(../../../../assets/window-borders/window-left-border-active-top.png);
+$active-left-border-bottom: url(../../../../assets/window-borders/window-left-border-active-bottom.png);
+$active-left-border-center: url(../../../../assets/window-borders/window-left-border-active-center.png);
+
+$active-right-border-top: url(../../../../assets/window-borders/window-right-border-active-top.png);
+$active-right-border-bottom: url(../../../../assets/window-borders/window-right-border-active-bottom.png);
+$active-right-border-center: url(../../../../assets/window-borders/window-right-border-active-center.png);
+
+$active-bottom-border-left: url(../../../../assets/window-borders/window-bottom-border-active-left.png);
+$active-bottom-border-right: url(../../../../assets/window-borders/window-bottom-border-active-right.png);
+$active-bottom-border-center: url(../../../../assets/window-borders/window-bottom-border-active-center.png);
 
 .backdrop {
       position: fixed;
@@ -10,18 +24,82 @@ $dialog-min-width: 220px;
 }
 
 .dialog {
+      display: flex;
+      flex-direction: column;
       min-width: $dialog-min-width;
       /* The dialog keeps its natural size even when it's wider than the parent window it's centered on */
       flex-shrink: 0;
       font-family: Tahoma, 'Segoe UI', Verdana, sans-serif;
       font-size: 11px;
-      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
+
+      /* The borders follow the inactive state and the anti-click flash, like the shell window chrome */
+      &.inactive {
+            .dialogLeftBorder {
+                  background-image:
+                        url(../../../../assets/window-borders/window-left-border-inactive-top.png),
+                        url(../../../../assets/window-borders/window-left-border-inactive-bottom.png),
+                        url(../../../../assets/window-borders/window-left-border-inactive-center.png);
+            }
+            .dialogRightBorder {
+                  background-image:
+                        url(../../../../assets/window-borders/window-right-border-inactive-top.png),
+                        url(../../../../assets/window-borders/window-right-border-inactive-bottom.png),
+                        url(../../../../assets/window-borders/window-right-border-inactive-center.png);
+            }
+            .dialogBottomBorder {
+                  background-image:
+                        url(../../../../assets/window-borders/window-bottom-border-inactive-left.png),
+                        url(../../../../assets/window-borders/window-bottom-border-inactive-right.png),
+                        url(../../../../assets/window-borders/window-bottom-border-inactive-center.png);
+            }
+      }
+}
+
+.dialogContentRow {
+      display: flex;
+      flex: 1;
+}
+
+.dialogLeftBorder {
+      flex-shrink: 0;
+      width: $dialog-border-width;
+      background-image:
+            $active-left-border-top,
+            $active-left-border-bottom,
+            $active-left-border-center;
+      background-position: left top, left bottom, left center;
+      background-repeat: no-repeat, no-repeat;
+      background-size: auto, auto, $dialog-border-width calc(100% - 8px);
+}
+
+.dialogRightBorder {
+      flex-shrink: 0;
+      width: $dialog-border-width;
+      background-image:
+            $active-right-border-top,
+            $active-right-border-bottom,
+            $active-right-border-center;
+      background-position: left top, left bottom, left center;
+      background-repeat: no-repeat, no-repeat;
+      background-size: auto, auto, $dialog-border-width calc(100% - 8px);
+}
+
+.dialogBottomBorder {
+      flex-shrink: 0;
+      width: 100%;
+      min-height: $dialog-border-width;
+      background-image:
+            $active-bottom-border-left,
+            $active-bottom-border-right,
+            $active-bottom-border-center;
+      background-position: left top, right top, left top;
+      background-repeat: no-repeat, no-repeat;
+      background-size: auto, auto, 100% $dialog-border-width;
 }
 
 .dialogBody {
+      flex: 1;
       padding: 12px;
-      border: 3px solid $dialog-border-blue;
-      border-top: none;
       background-color: $dialog-face;
 }
 
