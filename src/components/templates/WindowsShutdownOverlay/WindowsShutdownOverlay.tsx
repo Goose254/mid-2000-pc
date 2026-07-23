@@ -5,11 +5,24 @@ import ShutdownComputerIcon from '../../../assets/windows-icons/shell32.dll_14_2
 import RestartComputerIcon from '../../../assets/windows-icons/shell32.dll_14_27-9.png';
 import { Button } from '../../atoms/Button/Button';
 import { useOverlaysStore } from '@/common/stores/overlaysStore';
+import { useSystemStore } from '@/common/stores/systemStore';
 
 export const WindowsShutdownOverlay: React.FC = () => {
   const toggleShutdownOverlay = useOverlaysStore(
     (state) => state.toggleShutdownOverlay
   );
+  const requestShutdown = useSystemStore((state) => state.requestShutdown);
+  const requestRestart = useSystemStore((state) => state.requestRestart);
+
+  const handleShutdown = () => {
+    toggleShutdownOverlay();
+    requestShutdown();
+  };
+
+  const handleRestart = () => {
+    toggleShutdownOverlay();
+    requestRestart();
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -41,7 +54,7 @@ export const WindowsShutdownOverlay: React.FC = () => {
             <div className={styles["shutdown-overlay-icon-label"]}>Mettre en veille</div>
           </div>
           <div className={styles["shutdown-overlay-element"]}>
-            <div className={styles["shutdown-overlay-icon"]}>
+            <div className={styles["shutdown-overlay-icon"]} onClick={handleShutdown}>
               <img src={ShutdownComputerIcon} alt="Arrêter" />
               <div
                 className={styles["shutdown-overlay-icon-overlay"]}
@@ -51,7 +64,7 @@ export const WindowsShutdownOverlay: React.FC = () => {
             <div className={styles["shutdown-overlay-icon-label"]}>Arrêter</div>
           </div>
           <div className={styles["shutdown-overlay-element"]}>
-            <div className={styles["shutdown-overlay-icon"]} onClick={() => window.location.reload()}>
+            <div className={styles["shutdown-overlay-icon"]} onClick={handleRestart}>
               <img src={RestartComputerIcon} alt="Redémarrer" />
               <div
                 className={styles["shutdown-overlay-icon-overlay"]}

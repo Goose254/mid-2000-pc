@@ -4,6 +4,11 @@ import styles from './StartMenu.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useOverlaysStore } from '@/common/stores/overlaysStore';
 import { useStartMenuStore } from '@/common/stores/startMenuStore';
+import { useSystemStore } from '@/common/stores/systemStore';
+import { useCurrentUser } from '@/common/stores/usersStore';
+import { useAppsStore } from '@/common/stores/appsStore';
+import { UserAccountsApp } from '@/apps/UserAccounts/main';
+import { Avatar } from '@/components/atoms/Avatar/Avatar';
 
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 
@@ -55,9 +60,22 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
   ({ isVisible, ...divProps }, ref) => {
     const toggleStartMenu = useStartMenuStore((state) => state.toggleStartMenu);
     const toggleShutdownOverlay = useOverlaysStore((state) => state.toggleShutdownOverlay);
+    const requestLogoff = useSystemStore((state) => state.requestLogoff);
+    const startApp = useAppsStore((state) => state.startApp);
+    const currentUser = useCurrentUser();
 
     const handleShutdownOverlayShow = () => {
       toggleShutdownOverlay();
+      toggleStartMenu();
+    };
+
+    const handleLogoff = () => {
+      requestLogoff();
+      toggleStartMenu();
+    };
+
+    const openUserAccounts = () => {
+      startApp(UserAccountsApp);
       toggleStartMenu();
     };
 
@@ -97,10 +115,16 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
       <>
         {isVisible && (
           <div className={styles.startMenu} ref={ref} {...divProps}>
-            <div className={styles.startMenuAccount}>
-              <div className={styles.startMenuAvatar}></div>
-              <div className={styles.startMenuAccountName}>Utilisateur</div>
-            </div>
+            <button type="button" className={styles.startMenuAccount} onClick={openUserAccounts}>
+              <div className={styles.startMenuAvatar}>
+                <Avatar
+                  avatar={currentUser?.avatar ?? 'chess'}
+                  name={currentUser?.name ?? 'Utilisateur'}
+                  size={42}
+                />
+              </div>
+              <div className={styles.startMenuAccountName}>{currentUser?.name ?? 'Utilisateur'}</div>
+            </button>
             <div className={styles.startMenuLists}>
               <div className={styles.startMenuLeftList}>
                 <MenuItem variant="startPrimary" label="Internet" info="Internet Explorer" icon={IEIcon} primary={true} />
@@ -138,7 +162,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 <MenuItem variant="startSecondary" label="Ma musique" icon={MyMusicIcon} primary={true} />
                 <MenuItem variant="startSecondary" label="Poste de travail" icon={MyComputerIcon} primary={true} />
                 <MenuSeparator variant="startSecondary" />
-                <MenuItem variant="startSecondary" label="Panneau de configuration" icon={ConfigurationPanelIcon} />
+                <MenuItem variant="startSecondary" label="Panneau de configuration" icon={ConfigurationPanelIcon} onClick={openUserAccounts} />
                 <MenuItem variant="startSecondary" label="Configurer les programmes par défaut" icon={DefaultProgramsIcon} />
                 <MenuItem variant="startSecondary" label="Imprimantes et télécopieurs" icon={PrintersIcon} />
                 <MenuSeparator variant="startSecondary" />
@@ -148,7 +172,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
               </div>
             </div>
             <div className={styles.startMenuActions}>
-              <button>
+              <button onClick={handleLogoff}>
                 <img src={CloseSessionIcon} alt="Close session" /> Fermer la session
               </button>
               <button onClick={handleShutdownOverlayShow}>

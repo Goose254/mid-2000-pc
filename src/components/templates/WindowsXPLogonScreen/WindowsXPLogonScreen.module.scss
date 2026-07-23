@@ -1,0 +1,176 @@
+// Dégradés repris du splash / de l'overlay d'arrêt pour rester cohérent.
+$deep-blue: #00309c;
+$mid-blue: #5a7edc;
+$font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
+
+.logon {
+  display: flex;
+  flex-direction: column;
+  background-size: 100% 100%;
+  background-position: 0 0, 0 0;
+  background-image:
+    radial-gradient(60% 60% at 100px 100%, #f4953830 0%, #f4953800 100%),
+    linear-gradient(0deg, #{$deep-blue} 0%, #{$deep-blue} 100%);
+  cursor: url(../../../assets/cursors/pointer.cur), auto;
+}
+
+.topSeparator {
+  height: 2px;
+  margin-top: 22vh;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 30%, rgba(255, 255, 255, 0) 100%);
+}
+
+.body {
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+  background-size: 100% 100%;
+  background-position: 0 0, 0 0;
+  background-image:
+    radial-gradient(600px 300px at 30% 40%, #ffffff20 0%, #ffffff00 100%),
+    linear-gradient(0deg, #{$mid-blue} 0%, #{$mid-blue} 100%);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  flex: 1 1 50%;
+  padding: 0 44px;
+  text-align: right;
+}
+
+.brandLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.brandMicrosoft {
+  color: #ffffff;
+  font-family: $font-stack;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.brandWindows {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #ffffff;
+  font-family: 'Franklin Gothic', $font-stack;
+  font-size: 46px;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.brandEdition {
+  color: #ff8c1a;
+  font-size: 30px;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.brandInstruction {
+  margin-top: 26px;
+  color: #ffffff;
+  font-family: $font-stack;
+  font-size: 15px;
+  max-width: 320px;
+}
+
+.divider {
+  width: 2px;
+  align-self: center;
+  height: 70%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 0) 100%);
+}
+
+.accounts {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  flex: 1 1 50%;
+  padding: 0 44px;
+  overflow-y: auto;
+}
+
+.accountTile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  text-align: left;
+  cursor: url(../../../assets/cursors/pointer.cur), pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:active {
+    background: rgba(255, 255, 255, 0.26);
+  }
+}
+
+.accountName {
+  color: #ffffff;
+  font-family: $font-stack;
+  font-size: 17px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.bottomSeparator {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(244, 149, 56, 0) 0%, rgba(244, 149, 56, 1) 30%, rgba(244, 149, 56, 0) 100%);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 15vh;
+  padding: 0 40px;
+}
+
+.powerButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #ffffff;
+  font-family: $font-stack;
+  font-size: 13px;
+  cursor: url(../../../assets/cursors/pointer.cur), pointer;
+
+  img {
+    width: 28px;
+    height: 28px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.hint {
+  max-width: 360px;
+  color: #cdd8f4;
+  font-family: $font-stack;
+  font-size: 11px;
+  text-align: right;
+  white-space: pre-line;
+}

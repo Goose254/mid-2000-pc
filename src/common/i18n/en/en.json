@@ -2,6 +2,41 @@
     "splashScreen": {
         "welcome": "welcome"
     },
+    "session": {
+        "logon": {
+            "brandLine1": "Microsoft",
+            "brandLine2": "Windows",
+            "edition": "XP",
+            "instruction": "To begin, click your user name",
+            "turnOff": "Turn off computer",
+            "hint": "After you log on, you can add or change accounts.\nJust go to Control Panel and click User Accounts."
+        },
+        "loggingOff": "Logging off...",
+        "shuttingDown": "Windows is shutting down...",
+        "savingSettings": "Saving your settings…",
+        "welcomeBack": "Loading your personal settings…",
+        "poweroff": {
+            "message": "It is now safe to turn off your computer.",
+            "restart": "Turn the computer back on"
+        }
+    },
+    "userAccounts": {
+        "title": "User Accounts",
+        "pickTask": "Pick a task…",
+        "createAccount": "Create a new account",
+        "orPickAccount": "or pick an account to change",
+        "administrator": "Computer administrator",
+        "limited": "Limited account",
+        "namePlaceholder": "New account name",
+        "create": "Create Account",
+        "rename": "Rename",
+        "delete": "Delete the account",
+        "save": "Save",
+        "cancel": "Cancel",
+        "changePicture": "Change the picture",
+        "lastAccountNotice": "You cannot delete the last account on the computer.",
+        "connected": "logged on"
+    },
     "desktop": {
         "contextMenu": {
             "arrangeIconsBy": "Arrange Icons By",

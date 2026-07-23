@@ -2,6 +2,41 @@
     "splashScreen": {
         "welcome": "Bienvenue"
     },
+    "session": {
+        "logon": {
+            "brandLine1": "Microsoft",
+            "brandLine2": "Windows",
+            "edition": "XP",
+            "instruction": "Pour commencer, cliquez sur votre nom d'utilisateur",
+            "turnOff": "Arrêter l'ordinateur",
+            "hint": "Après vous être connecté, vous pouvez ajouter ou modifier des comptes.\nPour cela, ouvrez le Panneau de configuration, puis cliquez sur Comptes d'utilisateurs."
+        },
+        "loggingOff": "Fermeture de la session...",
+        "shuttingDown": "Windows va s'arrêter...",
+        "savingSettings": "Enregistrement de vos paramètres…",
+        "welcomeBack": "Chargement de vos paramètres personnels…",
+        "poweroff": {
+            "message": "Vous pouvez maintenant éteindre votre ordinateur en toute sécurité.",
+            "restart": "Rallumer l'ordinateur"
+        }
+    },
+    "userAccounts": {
+        "title": "Comptes d'utilisateurs",
+        "pickTask": "Choisissez une tâche…",
+        "createAccount": "Créer un nouveau compte",
+        "orPickAccount": "ou choisissez un compte à modifier",
+        "administrator": "Administrateur de l'ordinateur",
+        "limited": "Compte limité",
+        "namePlaceholder": "Nom du nouveau compte",
+        "create": "Créer le compte",
+        "rename": "Renommer",
+        "delete": "Supprimer le compte",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "changePicture": "Changer d'image",
+        "lastAccountNotice": "Impossible de supprimer le dernier compte de l'ordinateur.",
+        "connected": "connecté"
+    },
     "desktop": {
         "contextMenu": {
             "arrangeIconsBy": "Réorganiser les icônes par",
