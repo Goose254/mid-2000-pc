@@ -199,7 +199,7 @@ export const UserAccountsMainWindow: React.FC = () => {
               <div className={styles.accountGrid}>
                 {users.map((user) => (
                   <button key={user.id} type="button" className={styles.accountTile} onClick={() => openDetail(user.id)}>
-                    <Avatar avatar={user.avatar} name={user.name} size={48} />
+                    <Avatar avatar={user.avatar} name={user.name} size={48} framed />
                     <span className={styles.accountTileText}>
                       <span className={styles.accountTileName}>{user.name}</span>
                       <span className={styles.accountTileType}>
@@ -217,7 +217,7 @@ export const UserAccountsMainWindow: React.FC = () => {
           {view === 'detail' && selectedUser && (
             <>
               <div className={styles.detailHeader}>
-                <Avatar avatar={selectedUser.avatar} name={selectedUser.name} size={48} />
+                <Avatar avatar={selectedUser.avatar} name={selectedUser.name} size={48} framed />
                 <div className={styles.detailHeaderText}>
                   <div className={styles.detailHeaderName}>{selectedUser.name}</div>
                   <div className={styles.detailHeaderType}>{accountTypeLabel(selectedUser.isAdmin)}</div>
@@ -345,7 +345,7 @@ export const UserAccountsMainWindow: React.FC = () => {
                     }}
                   />
                   <div className={styles.createAvatarRow}>
-                    <Avatar avatar={createAvatar} name={createName || 'A'} size={48} />
+                    <Avatar avatar={createAvatar} name={createName || 'A'} size={48} framed />
                     <div className={styles.avatarPalette}>
                       {AVATARS.map((avatarDef) => (
                         <button

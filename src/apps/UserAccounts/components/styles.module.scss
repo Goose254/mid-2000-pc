@@ -290,10 +290,14 @@ $pointer: url(../../../assets/cursors/pointer.cur), pointer;
 }
 
 .avatarChoice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 3px;
   border: 2px solid transparent;
   border-radius: 5px;
   background: transparent;
+  line-height: 0;
   cursor: $pointer;
 
   &:hover {

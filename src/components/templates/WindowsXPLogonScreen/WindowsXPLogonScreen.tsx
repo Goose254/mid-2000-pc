@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useUsersStore } from '@/common/stores/usersStore';
 import { Avatar } from '@/components/atoms/Avatar/Avatar';
 import ShutdownIcon from '@/assets/windows-icons/shell32.dll_14_28-9.png';
+import XPLogo from '@/assets/xp-logon-logo.png';
 
 interface WindowsXPLogonScreenProps {
   /** Appelé après qu'un compte a été sélectionné (session ouverte). */
@@ -33,13 +34,12 @@ export const WindowsXPLogonScreen: React.FC<WindowsXPLogonScreenProps> = ({ onLo
 
       <div className={styles.body}>
         <div className={styles.brand}>
-          <div className={styles.brandLogo}>
-            <span className={styles.brandMicrosoft}>{t('logon.brandLine1')}</span>
-            <span className={styles.brandWindows}>
-              {t('logon.brandLine2')}
-              <span className={styles.brandEdition}>{t('logon.edition')}</span>
-            </span>
-          </div>
+          <img
+            className={styles.brandLogo}
+            src={XPLogo}
+            alt={`${t('logon.brandLine1')} ${t('logon.brandLine2')} ${t('logon.edition')}`}
+            draggable={false}
+          />
           <div className={styles.brandInstruction}>{t('logon.instruction')}</div>
         </div>
 
@@ -53,7 +53,7 @@ export const WindowsXPLogonScreen: React.FC<WindowsXPLogonScreenProps> = ({ onLo
               className={styles.accountTile}
               onClick={() => handleSelectAccount(user.id)}
             >
-              <Avatar avatar={user.avatar} name={user.name} size={48} />
+              <Avatar avatar={user.avatar} name={user.name} size={48} framed />
               <span className={styles.accountName}>{user.name}</span>
             </button>
           ))}

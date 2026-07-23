@@ -16,7 +16,7 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
 
 .topSeparator {
   height: 2px;
-  margin-top: 22vh;
+  margin-top: 15vh;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 30%, rgba(255, 255, 255, 0) 100%);
 }
 
@@ -43,52 +43,36 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
 }
 
 .brandLogo {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-.brandMicrosoft {
-  color: #ffffff;
-  font-family: $font-stack;
-  font-size: 20px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-}
-
-.brandWindows {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  color: #ffffff;
-  font-family: 'Franklin Gothic', $font-stack;
-  font-size: 46px;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.brandEdition {
-  color: #ff8c1a;
-  font-size: 30px;
-  font-weight: 700;
-  font-style: italic;
+  width: 150px;
+  height: auto;
+  // Logo affiché tel quel (l'asset porte déjà ses couleurs : « XP » orange, drapeau coloré).
+  user-select: none;
 }
 
 .brandInstruction {
-  margin-top: 26px;
+  margin-top: 20px;
   color: #ffffff;
   font-family: $font-stack;
   font-size: 15px;
   max-width: 320px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .divider {
-  width: 2px;
-  align-self: center;
-  height: 70%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 0) 100%);
+  // Ligne verticale fine (1px) séparant le branding des comptes.
+  // `align-self: stretch` garantit une hauteur réelle (= zone centrale claire),
+  // évitant le rendu à hauteur nulle d'un div vide avec un `height: %`.
+  width: 1px;
+  flex-shrink: 0;
+  align-self: stretch;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  // Léger halo pour que la ligne 1px reste lisible sur le bleu clair.
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
 .accounts {
@@ -138,7 +122,7 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 15vh;
+  height: 20vh;
   padding: 0 40px;
 }
 
