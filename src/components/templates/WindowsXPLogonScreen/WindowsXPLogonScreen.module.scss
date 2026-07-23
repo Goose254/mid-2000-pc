@@ -15,8 +15,10 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
 }
 
 .topSeparator {
+  // Bande bleu foncé haute : mêmes dimensions exactes que le splash screen
+  // (78px haut / 74px bas → zone claire = calc(100vh - 156px)).
   height: 2px;
-  margin-top: 15vh;
+  margin-top: 78px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 30%, rgba(255, 255, 255, 0) 100%);
 }
 
@@ -67,12 +69,10 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   align-self: stretch;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 10%,
     rgba(255, 255, 255, 0.85) 50%,
-    rgba(255, 255, 255, 0) 100%
+    rgba(255, 255, 255, 0) 90%
   );
-  // Léger halo pour que la ligne 1px reste lisible sur le bleu clair.
-  box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
 .accounts {
@@ -122,7 +122,7 @@ $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 20vh;
+  height: 74px;
   padding: 0 40px;
 }
 
