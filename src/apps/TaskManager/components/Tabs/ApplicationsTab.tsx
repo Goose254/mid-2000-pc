@@ -13,6 +13,7 @@ import {
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react';
 import { Table } from '@/components/molecules/Table/Table';
 import { TableListItem } from '@/components/atoms/TableListItem/TableListItem';
+import { openRunDialog } from '../../utils/openRunDialog';
 
 interface TaskManagerApplicationsTabProps {
   taskManagerWindowId: string
@@ -114,7 +115,7 @@ export const TaskManagerApplicationsTab: React.FC<TaskManagerApplicationsTabProp
       <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: 0 }}>
         <Button disabled={!selectedAppId} onClick={() => killApp(selectedAppId)} className="blockOutsideClick" style={{ marginRight: '10px', width: '95px', maxWidth: 'unset' }}>Fin de tâche</Button>
         <Button disabled={!selectedAppId} onClick={() => goToApp(selectedAppId)} className="blockOutsideClick" style={{ marginRight: '10px', width: '95px', maxWidth: 'unset' }}>Basculer vers</Button>
-        <Button>Nouvelle tâche...</Button>
+        <Button onClick={openRunDialog}>Nouvelle tâche...</Button>
       </div>
     </div>
   );

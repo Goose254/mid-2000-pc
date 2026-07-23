@@ -1,0 +1,85 @@
+.perfContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 5px 8px;
+    background-color: #ece9d8;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    font-size: 11px;
+}
+
+.graphRow {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.box {
+    border: 1px solid #aca899;
+    padding: 2px 8px 4px;
+    margin: 0;
+    min-width: 0;
+}
+
+.box > legend {
+    padding: 0 3px;
+    color: #000;
+}
+
+.gaugeBox {
+    flex: 0 0 auto;
+    width: 104px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.graphBox {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.gaugeCanvas {
+    display: block;
+    background: #000;
+    width: 56px;
+    height: 56px;
+}
+
+.graphCanvas {
+    display: block;
+    background: #000;
+    width: 100%;
+    height: 56px;
+}
+
+.gaugeValue {
+    margin-top: 2px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.countersRow {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.counterBox {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.counterLine {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0;
+    line-height: 14px;
+}
+
+.counterValue {
+    font-variant-numeric: tabular-nums;
+}

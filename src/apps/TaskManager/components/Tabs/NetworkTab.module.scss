@@ -1,0 +1,56 @@
+.netContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background-color: #ece9d8;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    font-size: 11px;
+}
+
+.box {
+    border: 1px solid #aca899;
+    padding: 6px 8px 8px;
+    margin: 0;
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.box > legend {
+    padding: 0 3px;
+    color: #000;
+}
+
+.graphCanvas {
+    display: block;
+    background: #000;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 160px;
+}
+
+.adapterTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    flex: 0 0 auto;
+}
+
+.adapterTable th {
+    text-align: left;
+    border: 1px solid #d4d0c8;
+    background: #f1efe2;
+    padding: 2px 6px;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.adapterTable td {
+    border: 1px solid #e4e2d5;
+    padding: 2px 6px;
+    white-space: nowrap;
+}

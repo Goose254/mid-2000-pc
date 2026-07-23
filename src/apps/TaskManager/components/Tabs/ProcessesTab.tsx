@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useMemo, useRef } from 'react';
 import styles from './ApplicationsTab.module.scss';
 
 import { useWindowsStore } from '@/common/stores/windowsStore';
+import { useAppsStore } from '@/common/stores/appsStore';
 import { Button } from '@/components/atoms/Button/Button';
 
 import {
@@ -12,55 +13,77 @@ import {
 } from '@tanstack/react-table';
 import { OverlayScrollbarsComponent, OverlayScrollbarsComponentRef } from 'overlayscrollbars-react';
 import { Table } from '@/components/molecules/Table/Table';
-import { useAppsStore } from '@/common/stores/appsStore';
 
-type Application = {
-  file: string;
-  username: string;
-  processor: React.ReactNode;
-  memory: React.ReactNode;
+import { useTaskManagerStore } from '../../stores/taskManagerStore';
+import { formatCpu, formatKo, IDLE_PID } from '../../utils/processMetrics';
+
+type ProcessRow = {
+  pid: string;
+  imageName: string;
+  userName: string;
+  cpu: number;
+  memoryKo: number;
+  killable: boolean;
 };
 
-const columnHelper = createColumnHelper<Application>();
+const columnHelper = createColumnHelper<ProcessRow>();
 
 const columns = [
-  columnHelper.accessor('file', {
-    cell: info => info.getValue(),
+  columnHelper.accessor('imageName', {
+    cell: (info) => info.getValue(),
     header: () => <span>Nom de l'image</span>,
     enableResizing: true,
-    size: 110,
+    size: 140,
   }),
-  columnHelper.accessor('username', {
-    cell: info => info.getValue(),
+  columnHelper.accessor('userName', {
+    cell: (info) => info.getValue(),
     header: () => <span>Nom de l'utilisateur</span>,
     enableResizing: true,
     size: 110,
   }),
-  columnHelper.accessor('processor', {
-    cell: info => info.getValue(),
+  columnHelper.accessor('cpu', {
+    cell: (info) => (
+      <div style={{ textAlign: 'right', paddingRight: '5px' }}>{formatCpu(info.getValue())}</div>
+    ),
     header: () => <span>Processeur</span>,
     enableResizing: true,
-    size: 65,
+    size: 60,
   }),
-  columnHelper.accessor('memory', {
-    cell: info => info.getValue(),
+  columnHelper.accessor('memoryKo', {
+    cell: (info) => (
+      <div style={{ textAlign: 'right', paddingRight: '5px' }}>{formatKo(info.getValue())}</div>
+    ),
     header: () => <span>Util. mémoire</span>,
     enableResizing: true,
-    size: 65,
+    size: 80,
   }),
 ];
 
 export const TaskManagerProcessesTab: React.FC = () => {
-  const processes = useAppsStore((state) => state.instances);
-  const [data, setData] = useState<Application[]>([]);
-  const [rowSelection, setRowSelection] = React.useState({})
+  const processes = useTaskManagerStore((state) => state.metrics.processes);
+  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({});
 
   const osRef = useRef<OverlayScrollbarsComponentRef>(null);
+
+  const data = useMemo<ProcessRow[]>(
+    () =>
+      processes.map((process) => ({
+        pid: process.pid,
+        imageName: process.imageName,
+        userName: process.userName,
+        cpu: process.cpu,
+        memoryKo: process.memoryKo,
+        killable: process.killable,
+      })),
+    [processes]
+  );
 
   const table = useReactTable({
     data,
     columns,
-    // Configuration du redimensionnement
+    // La ligne est identifiée par le pid : la sélection reste stable malgré le
+    // rafraîchissement des métriques à chaque tick.
+    getRowId: (row) => row.pid,
     defaultColumn: {
       minSize: 60,
       maxSize: 800,
@@ -73,46 +96,69 @@ export const TaskManagerProcessesTab: React.FC = () => {
     enableMultiRowSelection: false,
     onRowSelectionChange: setRowSelection,
     state: {
-        rowSelection,
+      rowSelection,
     },
   });
 
   // Calcul des variables CSS pour définir dynamiquement la largeur des colonnes.
-  // Calculé à chaque rendu : un useMemo n'apporterait rien ici, car le
-  // composant ne re-rend que lorsque le state de la table change (notamment à
-  // chaque redimensionnement, qui invaliderait de toute façon la mémoïsation)
-  // et le coût se limite à l'itération de quelques colonnes.
   const columnSizeVars: { [key: string]: number } = {};
-  table.getFlatHeaders().forEach(header => {
+  table.getFlatHeaders().forEach((header) => {
     columnSizeVars[`--header-${header.id}-size`] = header.getSize();
     columnSizeVars[`--col-${header.column.id}-size`] = header.column.getSize();
   });
 
-  const killProcess = (appId?: string) => {
-    if (appId) useWindowsStore.getState().closeWindow(appId);
-  }
+  // pid du processus sélectionné (le tableau étant en sélection unique, il n'y
+  // a qu'une seule clé au maximum).
+  const selectedPid = Object.keys(rowSelection)[0];
+  const selectedProcess = data.find((row) => row.pid === selectedPid);
+  const canKill = !!selectedProcess && selectedProcess.killable;
 
-  useEffect(() => {
-    setData(processes.map(p => ({
-      file: p.appId,
-      username: 'Utilisateur',
-      processor: <div style={{ justifySelf: 'end', textAlign: 'right', paddingRight: '5px' }}>00</div>,
-      memory: <div style={{ textAlign: 'right', paddingRight: '5px' }}>2 916 Ko</div>,
-    })))
-  }, [processes])
+  const killProcess = () => {
+    if (!selectedProcess || !selectedProcess.killable || selectedProcess.pid === IDLE_PID) {
+      return;
+    }
+
+    const pid = selectedProcess.pid;
+
+    // On ferme les vraies fenêtres associées à l'instance par leur id de
+    // fenêtre : `closeWindow` déclenche en cascade `killInstance` une fois la
+    // dernière fenêtre fermée (même logique que l'onglet Applications).
+    const relatedWindows = useWindowsStore
+      .getState()
+      .windows.filter((window) => window.appPid === pid);
+
+    if (relatedWindows.length > 0) {
+      relatedWindows.forEach((window) => useWindowsStore.getState().closeWindow(window.id));
+    } else {
+      // Processus sans fenêtre (svchost.exe, ctfmon.exe, ...) : on retire
+      // directement l'instance.
+      useAppsStore.getState().killInstance(pid);
+    }
+
+    // Rafraîchissement immédiat pour que la ligne disparaisse sans attendre le
+    // prochain tick.
+    useTaskManagerStore.getState().tick();
+    setRowSelection({});
+  };
 
   return (
     <div className={styles.tabContent}>
       <OverlayScrollbarsComponent
         className={`overlayscrollbars-react ${styles.tableContainer}`}
         ref={osRef}
-        options={{ scrollbars: { autoHide: "never", clickScroll: true } }}
+        options={{ scrollbars: { autoHide: 'never', clickScroll: true } }}
         defer
       >
-        <Table table={table} columnSizeVars={columnSizeVars} onClickOutside={() => setRowSelection({})} />
+        {/* Pas de `onClickOutside` : le molecule Table efface la sélection au
+            `mousedown` (avant le `click`), ce qui désactiverait le bouton
+            « Terminer le processus » au moment même où on le presse. XP conserve
+            d'ailleurs la sélection quand on clique dans le vide. */}
+        <Table table={table} columnSizeVars={columnSizeVars} />
       </OverlayScrollbarsComponent>
       <div style={{ display: 'flex', alignSelf: 'end', justifyContent: 'end', flexGrow: 0 }}>
-        <Button disabled={Object.entries(rowSelection).length <= 0} onClick={() => killProcess('')} className="blockOutsideClick">Terminer le processus</Button>
+        <Button disabled={!canKill} onClick={killProcess} className="blockOutsideClick">
+          Terminer le processus
+        </Button>
       </div>
     </div>
   );
