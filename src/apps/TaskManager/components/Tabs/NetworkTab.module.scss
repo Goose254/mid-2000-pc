@@ -6,7 +6,7 @@
     background-color: #ece9d8;
     height: 100%;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
     font-size: 11px;
 }
 
@@ -33,24 +33,14 @@
     min-height: 160px;
 }
 
-.adapterTable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
+// Même conteneur que les autres onglets : fond blanc, bordure XP. La carte
+// réseau reste une courte liste sous le graphe (le graphe occupe l'espace) ;
+// hauteur définie pour montrer l'en-tête + la ligne de la carte réseau.
+.tableContainer {
+    background: white;
+    padding: 1px;
+    border: 1px solid #7f9db9;
     flex: 0 0 auto;
-}
-
-.adapterTable th {
-    text-align: left;
-    border: 1px solid #d4d0c8;
-    background: #f1efe2;
-    padding: 2px 6px;
-    font-weight: normal;
-    white-space: nowrap;
-}
-
-.adapterTable td {
-    border: 1px solid #e4e2d5;
-    padding: 2px 6px;
-    white-space: nowrap;
+    height: 84px;
+    min-width: 0;
 }

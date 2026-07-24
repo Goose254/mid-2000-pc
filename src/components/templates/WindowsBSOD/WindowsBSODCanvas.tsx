@@ -16,10 +16,10 @@ const HEIGHT = 480;
 
 // Bloc de texte aligné à gauche, positionné en haut (et non centré) comme le
 // vrai écran bleu de Windows XP.
-const LEFT = 66;
-const TOP = 74; // ligne de base de la première ligne
-const LINE_HEIGHT = 15;
-const FONT_SIZE = 13;
+const LEFT = 52;
+const TOP = 72; // ligne de base de la première ligne
+const LINE_HEIGHT = 14;
+const FONT_SIZE = 12;
 const BG = '#0000AA';
 
 /**
