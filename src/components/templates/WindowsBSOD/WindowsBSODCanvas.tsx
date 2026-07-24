@@ -14,12 +14,12 @@ interface WindowsBSODCanvasProps {
 const WIDTH = 640;
 const HEIGHT = 480;
 
-// Bloc de texte aligné à gauche, positionné en haut (et non centré) comme le
-// vrai écran bleu de Windows XP.
-const LEFT = 52;
-const TOP = 72; // ligne de base de la première ligne
-const LINE_HEIGHT = 14;
-const FONT_SIZE = 12;
+// Bloc de texte aligné à gauche, tout en haut à gauche et quasiment sans
+// marge, comme le vrai écran bleu de Windows XP (le texte occupe l'écran).
+const LEFT = 14;
+const TOP = 28; // ligne de base de la première ligne
+const LINE_HEIGHT = 16;
+const FONT_SIZE = 13;
 const BG = '#0000AA';
 
 /**
