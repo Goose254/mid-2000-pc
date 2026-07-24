@@ -12,6 +12,8 @@ import { HISTORY_LENGTH } from '../../stores/taskManagerStore';
 const BACKGROUND = '#000000';
 const GRID_COLOR = '#0b5f0b';
 const GRID_CELL = 12;
+// Grille plus fine pour les jauges (petites cases, façon « écran vert » XP).
+const GAUGE_GRID_CELL = 8;
 
 interface GraphCanvasProps {
   /** Historique des valeurs (0..max), le plus récent en fin de tableau. */
@@ -150,17 +152,23 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
     ctx.fillStyle = BACKGROUND;
     ctx.fillRect(0, 0, w, h);
 
-    // Barre de remplissage
+    // Barre de remplissage verte (valeur instantanée, du bas vers le haut).
     const ratio = Math.max(0, Math.min(1, value / max));
     const barHeight = ratio * h;
     ctx.fillStyle = color;
     ctx.fillRect(0, h - barHeight, w, barHeight);
 
-    // Lignes de grille horizontales par-dessus
+    // Quadrillage vert COMPLET par-dessus (lignes verticales ET horizontales,
+    // petites cases) — c'est ce qui donne à la jauge XP son aspect « écran
+    // vert » caractéristique, aussi bien sur la barre que sur le fond noir.
     ctx.strokeStyle = GRID_COLOR;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let y = h; y >= 0; y -= GRID_CELL) {
+    for (let x = w; x >= 0; x -= GAUGE_GRID_CELL) {
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, h);
+    }
+    for (let y = h; y >= 0; y -= GAUGE_GRID_CELL) {
       ctx.moveTo(0, y + 0.5);
       ctx.lineTo(w, y + 0.5);
     }
