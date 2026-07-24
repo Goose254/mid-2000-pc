@@ -8,13 +8,15 @@
     gap: 6px;
     padding: 6px 8px;
     background-color: #ece9d8;
-    // Remplit toute la largeur ET la hauteur du panneau d'onglet (parent flex).
+    // Remplit la largeur ET la hauteur du panneau d'onglet (parent flex).
     flex: 1 1 auto;
     min-width: 0;
-    height: 100%;
     box-sizing: border-box;
     overflow: hidden;
     font-size: 11px;
+    // Bordure blanche non uniforme du panneau react-tabs qui transparaît
+    // (comme les onglets Applications/Processus/Utilisateurs).
+    margin: 1px 1px 1px 3px;
 }
 
 .graphRow {
@@ -51,17 +53,28 @@
     min-width: 0;
 }
 
+// Bezel enfoncé (sunken) autour de chaque graphe : sombre en haut/à gauche,
+// clair en bas/à droite — comme le cadre creusé des graphes du vrai
+// Gestionnaire des tâches XP.
+.graphBezel {
+    border: 2px solid;
+    border-color: #7f7f7f #ffffff #ffffff #7f7f7f;
+    box-sizing: border-box;
+}
+
 // La jauge s'étire verticalement dans son encadré (comme sous XP).
 .gaugeCanvas {
+    composes: graphBezel;
     display: block;
     background: #000;
-    width: 44px;
+    width: 48px;
     flex: 1 1 auto;
     min-height: 0;
 }
 
 // Le graphe d'historique occupe toute la place de l'encadré.
 .graphCanvas {
+    composes: graphBezel;
     display: block;
     background: #000;
     width: 100%;
