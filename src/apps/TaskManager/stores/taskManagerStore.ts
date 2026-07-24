@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import { useAppsStore } from '@/common/stores/appsStore';
 import { useUsersStore } from '@/common/stores/usersStore';
+import { useWindowsStore } from '@/common/stores/windowsStore';
 
 import {
   computeNetworkUsage,
@@ -39,6 +40,11 @@ export function getRefreshIntervalMs(rate: RefreshRate): number {
   return REFRESH_RATE_MS[rate];
 }
 
+/** Index des onglets (react-tabs) — permet le basculement inter-onglets. */
+export const TAB_APPLICATIONS = 0;
+export const TAB_PROCESSES = 1;
+export const TAB_PERFORMANCE = 2;
+
 interface TaskManagerState {
   tickCount: number;
   refreshRate: RefreshRate;
@@ -47,7 +53,25 @@ interface TaskManagerState {
   pfHistory: number[];
   netHistory: number[];
   commitPeakKo: number;
+  /** pids des processus système synthétiques terminés par l'utilisateur. */
+  terminatedPids: Set<string>;
+  /** Priorité affichée par pid (cosmétique, style XP). */
+  priorities: Record<string, string>;
+  /** Onglet actif (contrôlé pour permettre « Aller au processus »). */
+  activeTabIndex: number;
+  /** pid à sélectionner dans l'onglet Processus (consommé une fois). */
+  processToSelect: string | null;
   setRefreshRate: (rate: RefreshRate) => void;
+  setActiveTabIndex: (index: number) => void;
+  /** Bascule sur l'onglet Processus en pré-sélectionnant le pid indiqué. */
+  goToProcess: (pid: string) => void;
+  clearProcessToSelect: () => void;
+  /** Termine un processus système synthétique (le retire de la liste). */
+  terminateProcess: (pid: string) => void;
+  /** Réinitialise les processus terminés (après un redémarrage). */
+  resetTerminatedProcesses: () => void;
+  /** Mémorise la priorité (cosmétique) d'un processus. */
+  setPriority: (pid: string, priority: string) => void;
   /** Avance d'un pas la simulation et rafraîchit métriques + historiques. */
   tick: () => void;
 }
@@ -65,6 +89,19 @@ function currentUserName(): string {
   return users.find((user) => user.id === currentUserId)?.name ?? 'Utilisateur';
 }
 
+/**
+ * Instances d'applications réellement en cours d'exécution : celles qui
+ * possèdent au moins une fenêtre. On écarte ainsi les instances « fantômes »
+ * du socle (svchost, etc.) : la liste authentique des processus système est
+ * désormais fournie par `processMetrics`.
+ */
+function runningUserInstances() {
+  const windows = useWindowsStore.getState().windows;
+  return useAppsStore
+    .getState()
+    .instances.filter((instance) => windows.some((window) => window.appPid === instance.pid));
+}
+
 export const useTaskManagerStore = create<TaskManagerState>((set, get) => ({
   tickCount: 0,
   refreshRate: 'normal',
@@ -73,15 +110,41 @@ export const useTaskManagerStore = create<TaskManagerState>((set, get) => ({
   pfHistory: [],
   netHistory: [],
   commitPeakKo: 0,
+  terminatedPids: new Set<string>(),
+  priorities: {},
+  activeTabIndex: 0,
+  processToSelect: null,
 
   setRefreshRate: (rate) => set({ refreshRate: rate }),
+
+  setActiveTabIndex: (index) => set({ activeTabIndex: index }),
+
+  goToProcess: (pid) => set({ activeTabIndex: TAB_PROCESSES, processToSelect: pid }),
+
+  clearProcessToSelect: () => set({ processToSelect: null }),
+
+  terminateProcess: (pid) => {
+    const terminatedPids = new Set(get().terminatedPids);
+    terminatedPids.add(pid);
+    set({ terminatedPids });
+    get().tick();
+  },
+
+  resetTerminatedProcesses: () => set({ terminatedPids: new Set<string>() }),
+
+  setPriority: (pid, priority) =>
+    set((state) => ({ priorities: { ...state.priorities, [pid]: priority } })),
 
   tick: () => {
     const state = get();
     const nextTick = state.tickCount + 1;
 
-    const instances = useAppsStore.getState().instances;
-    const metrics = computeSystemMetrics(instances, currentUserName(), nextTick);
+    const metrics = computeSystemMetrics(
+      runningUserInstances(),
+      currentUserName(),
+      nextTick,
+      state.terminatedPids
+    );
     const networkUsage = computeNetworkUsage(nextTick);
     const pfUsage = (metrics.commitTotalKo / metrics.commitLimitKo) * 100;
 

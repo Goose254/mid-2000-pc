@@ -136,8 +136,9 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
   className,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawRef = useRef<() => void>(() => {});
 
-  useEffect(() => {
+  drawRef.current = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -164,7 +165,32 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
       ctx.lineTo(w, y + 0.5);
     }
     ctx.stroke();
+  };
+
+  // Redessine à chaque changement de valeur.
+  useEffect(() => {
+    drawRef.current();
   }, [value, max, color]);
+
+  // Ajuste la résolution du canvas à sa taille CSS réelle (re-render au resize
+  // du conteneur, pour que la jauge s'étire avec la fenêtre).
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const resize = () => {
+      const width = canvas.clientWidth || canvas.width;
+      const height = canvas.clientHeight || canvas.height;
+      if (canvas.width !== width) canvas.width = width;
+      if (canvas.height !== height) canvas.height = height;
+      drawRef.current();
+    };
+
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
 
   return <canvas ref={canvasRef} width={60} height={90} className={className} />;
 };

@@ -1,0 +1,26 @@
+// Écran bleu XP : bleu « BSOD » classique, texte blanc en police à chasse fixe.
+.bsod {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0000aa;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    z-index: 100000;
+}
+
+.text {
+    margin: 0;
+    padding: 8vh 6vw 0;
+    font-family: 'Lucida Console', 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.35;
+    letter-spacing: 0.2px;
+    white-space: pre-wrap;
+    text-align: left;
+    max-width: 900px;
+}

@@ -25,16 +25,40 @@ export const SYSTEM_ACCOUNT = 'SYSTEM';
 export const LOCAL_SERVICE = 'SERVICE LOCAL';
 export const NETWORK_SERVICE = 'SERVICE RÉSEAU';
 
+// ---------------------------------------------------------------------------
 // Enveloppe mémoire de la machine simulée (en Ko).
-export const PHYSICAL_TOTAL_KO = 1_047_980; // ~1 Go de mémoire physique
-export const COMMIT_LIMIT_KO = 2_097_152; // 2048 Mo de limite de charge dédiée
-const OS_BASE_COMMIT_KO = 94_208; // ~92 Mo de charge dédiée de base (noyau + services)
-const SYSTEM_CACHE_BASE_KO = 96_000;
-const KERNEL_PAGED_BASE_KO = 31_400;
-const KERNEL_NONPAGED_BASE_KO = 4_600;
+//
+// Un seul point de vérité : `TOTAL_PHYSICAL_MEMORY_KB`. La mémoire physique
+// totale, la limite de charge dédiée et toutes les valeurs dérivées
+// (disponible, cache, charge dédiée) en découlent, de sorte que la barre
+// d'état, l'onglet Performances et la somme des colonnes Processus restent
+// cohérents entre eux.
+// ---------------------------------------------------------------------------
+
+/** Mémoire physique totale (Ko) = mémoire affichée par le BIOS (2 Go). */
+export const TOTAL_PHYSICAL_MEMORY_KB = 2_097_152;
+
+/** Mémoire physique totale exposée à l'onglet Performances. */
+export const PHYSICAL_TOTAL_KO = TOTAL_PHYSICAL_MEMORY_KB;
+
+/** Limite de la charge dédiée : alignée sur la mémoire physique (« / 2048 Mo »). */
+export const COMMIT_LIMIT_KO = TOTAL_PHYSICAL_MEMORY_KB;
+
+const OS_BASE_COMMIT_KO = 118_000; // charge dédiée de base (noyau + services) non comptée dans les working sets
+const SYSTEM_CACHE_BASE_KO = 178_000;
+const KERNEL_PAGED_BASE_KO = 41_400;
+const KERNEL_NONPAGED_BASE_KO = 6_600;
+
+/**
+ * Catégorie d'arrêtabilité d'un processus (fidèle à Windows XP) :
+ * - `protected` : non arrêtable (« Accès refusé »).
+ * - `fatal`     : arrêt = plantage système (écran bleu / BSOD).
+ * - `normal`    : arrêtable après avertissement.
+ */
+export type ProcessCategory = 'protected' | 'fatal' | 'normal';
 
 export interface ProcessMetric {
-  /** pid réel de l'instance (ou IDLE_PID pour le processus inactif). */
+  /** pid réel de l'instance (ou pid synthétique pour les processus système). */
   pid: string;
   /** Nom de l'image affiché (ex: svchost.exe). */
   imageName: string;
@@ -48,7 +72,9 @@ export interface ProcessMetric {
   threads: number;
   /** Nombre de handles. */
   handles: number;
-  /** false pour les entrées non terminables (processus inactif). */
+  /** Catégorie d'arrêtabilité. */
+  category: ProcessCategory;
+  /** false pour les entrées protégées (processus inactif, System). */
   killable: boolean;
 }
 
@@ -69,11 +95,13 @@ export interface SystemMetrics {
   kernelNonPagedKo: number;
 }
 
+type AccountKind = 'system' | 'service' | 'local' | 'network' | 'user';
+
 interface ProcessProfile {
   memMin: number;
   memMax: number;
   cpuMax: number;
-  account: 'system' | 'service' | 'local' | 'network' | 'user';
+  account: AccountKind;
   threadsBase: number;
   handlesBase: number;
 }
@@ -82,9 +110,17 @@ interface ProcessProfile {
 // compte. Les valeurs restent modestes pour que la somme des UC laisse une
 // large part au processus inactif (comportement fidèle à XP au repos).
 const PROFILES: Record<string, ProcessProfile> = {
-  'svchost.exe': { memMin: 1600, memMax: 5200, cpuMax: 3, account: 'service', threadsBase: 6, handlesBase: 60 },
+  'System': { memMin: 212, memMax: 288, cpuMax: 1, account: 'system', threadsBase: 52, handlesBase: 260 },
+  'smss.exe': { memMin: 380, memMax: 520, cpuMax: 1, account: 'system', threadsBase: 3, handlesBase: 20 },
+  'csrss.exe': { memMin: 3200, memMax: 5200, cpuMax: 2, account: 'system', threadsBase: 11, handlesBase: 320 },
+  'winlogon.exe': { memMin: 2000, memMax: 3600, cpuMax: 1, account: 'system', threadsBase: 18, handlesBase: 420 },
+  'services.exe': { memMin: 3000, memMax: 4600, cpuMax: 2, account: 'system', threadsBase: 15, handlesBase: 260 },
+  'lsass.exe': { memMin: 1200, memMax: 2200, cpuMax: 1, account: 'system', threadsBase: 18, handlesBase: 360 },
+  'svchost.exe': { memMin: 1900, memMax: 13_000, cpuMax: 3, account: 'service', threadsBase: 6, handlesBase: 60 },
+  'spoolsv.exe': { memMin: 4000, memMax: 5600, cpuMax: 1, account: 'system', threadsBase: 10, handlesBase: 120 },
   'ctfmon.exe': { memMin: 2400, memMax: 3600, cpuMax: 2, account: 'user', threadsBase: 1, handlesBase: 40 },
   'alg.exe': { memMin: 3000, memMax: 3900, cpuMax: 1, account: 'local', threadsBase: 5, handlesBase: 90 },
+  'wuauclt.exe': { memMin: 4000, memMax: 6000, cpuMax: 2, account: 'user', threadsBase: 5, handlesBase: 130 },
   'rundll32.exe': { memMin: 3200, memMax: 4600, cpuMax: 2, account: 'user', threadsBase: 2, handlesBase: 40 },
   'explorer.exe': { memMin: 14_000, memMax: 22_000, cpuMax: 5, account: 'user', threadsBase: 12, handlesBase: 300 },
   'taskmgr.exe': { memMin: 4200, memMax: 6400, cpuMax: 4, account: 'user', threadsBase: 3, handlesBase: 90 },
@@ -99,6 +135,44 @@ const DEFAULT_PROFILE: ProcessProfile = {
   threadsBase: 5,
   handlesBase: 80,
 };
+
+/**
+ * Définition d'un processus système « de base » lancé au démarrage de Windows XP.
+ * Ces processus sont synthétiques (non liés à une vraie fenêtre) : ils sont
+ * toujours présents, sauf ceux que l'utilisateur a explicitement terminés.
+ */
+interface SystemProcessDef {
+  pid: string;
+  imageName: string;
+  category: ProcessCategory;
+  /** Compte forcé (prioritaire sur celui du profil). */
+  account?: AccountKind;
+}
+
+/**
+ * Liste authentique des processus lancés par défaut sous Windows XP, dans un
+ * ordre plausible. `taskmgr.exe` et les applications de l'utilisateur ne
+ * figurent PAS ici : ils proviennent des vraies instances fenêtrées.
+ */
+export const SYSTEM_PROCESSES: SystemProcessDef[] = [
+  { pid: IDLE_PID, imageName: IDLE_IMAGE, category: 'protected', account: 'system' },
+  { pid: 'system-4', imageName: 'System', category: 'protected', account: 'system' },
+  { pid: 'smss-0', imageName: 'smss.exe', category: 'fatal', account: 'system' },
+  { pid: 'csrss-0', imageName: 'csrss.exe', category: 'fatal', account: 'system' },
+  { pid: 'winlogon-0', imageName: 'winlogon.exe', category: 'fatal', account: 'system' },
+  { pid: 'services-0', imageName: 'services.exe', category: 'fatal', account: 'system' },
+  { pid: 'lsass-0', imageName: 'lsass.exe', category: 'fatal', account: 'system' },
+  { pid: 'svchost-0', imageName: 'svchost.exe', category: 'normal', account: 'system' },
+  { pid: 'svchost-1', imageName: 'svchost.exe', category: 'normal', account: 'network' },
+  { pid: 'svchost-2', imageName: 'svchost.exe', category: 'normal', account: 'local' },
+  { pid: 'svchost-3', imageName: 'svchost.exe', category: 'normal', account: 'system' },
+  { pid: 'svchost-4', imageName: 'svchost.exe', category: 'normal', account: 'local' },
+  { pid: 'spoolsv-0', imageName: 'spoolsv.exe', category: 'normal', account: 'system' },
+  { pid: 'explorer-shell', imageName: 'explorer.exe', category: 'normal', account: 'user' },
+  { pid: 'ctfmon-0', imageName: 'ctfmon.exe', category: 'normal', account: 'user' },
+  { pid: 'alg-0', imageName: 'alg.exe', category: 'normal', account: 'local' },
+  { pid: 'wuauclt-0', imageName: 'wuauclt.exe', category: 'normal', account: 'user' },
+];
 
 /** Hash déterministe 32 bits (FNV-1a). */
 function hashString(str: string): number {
@@ -121,9 +195,9 @@ function wave(seed: number, tick: number): number {
   return (a * 0.6 + b * 0.4 + 1) / 2;
 }
 
-/** Résout le compte propriétaire à partir du profil et du pid. */
-function resolveUserName(profile: ProcessProfile, pid: string, currentUserName: string): string {
-  switch (profile.account) {
+/** Résout le nom de compte affiché à partir d'un type de compte et du pid. */
+function accountToUserName(kind: AccountKind, pid: string, currentUserName: string): string {
+  switch (kind) {
     case 'system':
       return SYSTEM_ACCOUNT;
     case 'local':
@@ -131,8 +205,8 @@ function resolveUserName(profile: ProcessProfile, pid: string, currentUserName: 
     case 'network':
       return NETWORK_SERVICE;
     case 'service': {
-      // Les instances svchost.exe se répartissent de façon stable entre les
-      // trois comptes de service, dérivées du pid.
+      // Les instances svchost.exe sans compte explicite se répartissent de
+      // façon stable entre les trois comptes de service, dérivées du pid.
       const accounts = [SYSTEM_ACCOUNT, LOCAL_SERVICE, NETWORK_SERVICE];
       return accounts[hashString(pid) % accounts.length];
     }
@@ -142,11 +216,20 @@ function resolveUserName(profile: ProcessProfile, pid: string, currentUserName: 
   }
 }
 
-/** Métrique d'un processus à un instant (tick) donné. */
-function buildProcessMetric(instance: AppInstance, currentUserName: string, tick: number): ProcessMetric {
-  const imageName = instance.appId;
+/**
+ * Construit la métrique d'un processus à partir d'un pid, d'un nom d'image et
+ * d'une catégorie. Utilisé aussi bien pour les processus système synthétiques
+ * que pour les vraies instances fenêtrées.
+ */
+function buildMetric(
+  pid: string,
+  imageName: string,
+  category: ProcessCategory,
+  accountOverride: AccountKind | undefined,
+  currentUserName: string,
+  tick: number
+): ProcessMetric {
   const profile = PROFILES[imageName] ?? DEFAULT_PROFILE;
-  const pid = instance.pid;
 
   // Mémoire : base stable (dérivée du pid) + ondulation ±3 %.
   const span = Math.max(1, profile.memMax - profile.memMin);
@@ -163,27 +246,49 @@ function buildProcessMetric(instance: AppInstance, currentUserName: string, tick
   return {
     pid,
     imageName,
-    userName: resolveUserName(profile, pid, currentUserName),
+    userName: accountToUserName(accountOverride ?? profile.account, pid, currentUserName),
     cpu,
     memoryKo,
     threads,
     handles,
-    killable: true,
+    category,
+    killable: category !== 'protected',
   };
 }
 
-/** Métriques système complètes à un instant donné. */
+/**
+ * Métriques système complètes à un instant donné.
+ *
+ * @param userInstances Instances d'applications réellement en cours (fenêtrées).
+ * @param currentUserName Nom du compte connecté (colonne utilisateur).
+ * @param tick Temps virtuel.
+ * @param terminatedPids pids des processus système synthétiques déjà terminés.
+ */
 export function computeSystemMetrics(
-  instances: AppInstance[],
+  userInstances: AppInstance[],
   currentUserName: string,
-  tick: number
+  tick: number,
+  terminatedPids: ReadonlySet<string> = new Set()
 ): SystemMetrics {
-  const processes = instances.map((instance) => buildProcessMetric(instance, currentUserName, tick));
+  // Processus système « de base » (hors processus inactif, traité à part) et
+  // hors ceux que l'utilisateur a terminés.
+  const baseProcesses = SYSTEM_PROCESSES.filter(
+    (def) => def.pid !== IDLE_PID && !terminatedPids.has(def.pid)
+  ).map((def) => buildMetric(def.pid, def.imageName, def.category, def.account, currentUserName, tick));
 
-  const sumCpu = processes.reduce((acc, p) => acc + p.cpu, 0);
+  // Applications réellement ouvertes par l'utilisateur (winmine.exe, taskmgr.exe,
+  // explorer.exe si le Poste de travail est ouvert, ...). Toujours « normal ».
+  const userProcesses = userInstances.map((instance) =>
+    buildMetric(instance.pid, instance.appId, 'normal', undefined, currentUserName, tick)
+  );
+
+  const realProcesses = [...userProcesses, ...baseProcesses];
+
+  const sumCpu = realProcesses.reduce((acc, p) => acc + p.cpu, 0);
   const cpuUsage = Math.min(99, sumCpu);
 
   // Processus inactif du système : absorbe l'UC restante (colonne UC → 100 %).
+  // Protégé : jamais retiré de la liste.
   const idle: ProcessMetric = {
     pid: IDLE_PID,
     imageName: IDLE_IMAGE,
@@ -192,12 +297,13 @@ export function computeSystemMetrics(
     memoryKo: 28,
     threads: 1,
     handles: 0,
+    category: 'protected',
     killable: false,
   };
 
-  const allProcesses = [idle, ...processes];
+  const allProcesses = [...realProcesses, idle];
 
-  const sumWorkingSet = processes.reduce((acc, p) => acc + p.memoryKo, 0);
+  const sumWorkingSet = realProcesses.reduce((acc, p) => acc + p.memoryKo, 0);
   const commitTotalKo = Math.min(COMMIT_LIMIT_KO, OS_BASE_COMMIT_KO + sumWorkingSet);
   const physicalAvailableKo = Math.max(
     32_768,

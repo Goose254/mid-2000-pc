@@ -10,6 +10,7 @@ import { WindowsXPSplashScreen } from './components/templates/WindowsXPSplashScr
 import { WindowsXPLogonScreen } from './components/templates/WindowsXPLogonScreen/WindowsXPLogonScreen';
 import { WindowsXPLogoffScreen } from './components/templates/WindowsXPLogoffScreen/WindowsXPLogoffScreen';
 import { WindowsXPShutdownScreen } from './components/templates/WindowsXPShutdownScreen/WindowsXPShutdownScreen';
+import { WindowsBSOD } from './components/templates/WindowsBSOD/WindowsBSOD';
 import { useSystemStore } from './common/stores/systemStore';
 import { useUsersStore } from './common/stores/usersStore';
 import 'overlayscrollbars/overlayscrollbars.css'
@@ -29,6 +30,7 @@ export type BootStage =
   | 'desktop'
   | 'logoff'
   | 'shutting-down'
+  | 'bsod'
   | 'poweroff';
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
 
   const sessionRequest = useSystemStore((state) => state.sessionRequest);
   const clearSessionRequest = useSystemStore((state) => state.clearSessionRequest);
+  const bsodProcessName = useSystemStore((state) => state.bsodProcessName);
+  const clearBsod = useSystemStore((state) => state.clearBsod);
   const logout = useUsersStore((state) => state.logout);
 
   // Pont store -> machine à états : l'overlay d'arrêt et le menu Démarrer
@@ -50,6 +54,14 @@ function App() {
       setBootStage('shutting-down');
     }
   }, [sessionRequest]);
+
+  // Pont BSOD : la terminaison d'un processus système critique (Gestionnaire des
+  // tâches) déclenche l'écran bleu, quel que soit l'écran courant.
+  useEffect(() => {
+    if (bsodProcessName) {
+      setBootStage('bsod');
+    }
+  }, [bsodProcessName]);
 
   const renderStage = () => {
     switch (bootStage) {
@@ -99,6 +111,19 @@ function App() {
           />
         );
       }
+      case 'bsod':
+        // Écran bleu plein écran, puis redémarrage vers le BIOS (reboot in-app).
+        return (
+          <WindowsBSOD
+            processName={bsodProcessName ?? 'csrss.exe'}
+            onComplete={() => {
+              logout();
+              clearBsod();
+              clearSessionRequest();
+              setBootStage('bios');
+            }}
+          />
+        );
       case 'poweroff':
         return <WindowsXPShutdownScreen onPowerOn={() => setBootStage('bios')} />;
       default:
