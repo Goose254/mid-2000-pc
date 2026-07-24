@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './PerformanceTab.module.scss';
 
 import { useTaskManagerStore } from '../../stores/taskManagerStore';
-import { formatNumber } from '../../utils/processMetrics';
+import { formatNumber, formatMo } from '../../utils/processMetrics';
 import { GaugeCanvas, GraphCanvas } from './PerfCanvas';
 
 /** Ligne « libellé : valeur » d'un encadré de compteurs. */
@@ -28,8 +28,7 @@ export const TaskManagerPerformanceTab: React.FC = () => {
       <div className={styles.graphRow}>
         <fieldset className={`${styles.box} ${styles.gaugeBox}`}>
           <legend>Utilisation de l'UC</legend>
-          <GaugeCanvas value={metrics.cpuUsage} className={styles.gaugeCanvas} />
-          <div className={styles.gaugeValue}>{metrics.cpuUsage} %</div>
+          <GaugeCanvas value={metrics.cpuUsage} label={`${metrics.cpuUsage} %`} className={styles.gaugeCanvas} />
         </fieldset>
         <fieldset className={`${styles.box} ${styles.graphBox}`}>
           <legend>Historique de l'utilisation de l'UC</legend>
@@ -40,8 +39,7 @@ export const TaskManagerPerformanceTab: React.FC = () => {
       <div className={styles.graphRow}>
         <fieldset className={`${styles.box} ${styles.gaugeBox}`}>
           <legend>Fichier d'échange</legend>
-          <GaugeCanvas value={pfUsage} className={styles.gaugeCanvas} />
-          <div className={styles.gaugeValue}>{Math.round(pfUsage)} %</div>
+          <GaugeCanvas value={pfUsage} label={formatMo(metrics.commitTotalKo)} className={styles.gaugeCanvas} />
         </fieldset>
         <fieldset className={`${styles.box} ${styles.graphBox}`}>
           <legend>Historique de l'utilisation du fichier d'échange</legend>

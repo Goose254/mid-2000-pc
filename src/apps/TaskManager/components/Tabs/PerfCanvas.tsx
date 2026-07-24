@@ -12,8 +12,11 @@ import { HISTORY_LENGTH } from '../../stores/taskManagerStore';
 const BACKGROUND = '#000000';
 const GRID_COLOR = '#0b5f0b';
 const GRID_CELL = 12;
-// Grille plus fine pour les jauges (petites cases, façon « écran vert » XP).
-const GAUGE_GRID_CELL = 8;
+
+// Jauge LED (valeur instantanée) : vert vif pour les cellules allumées, damier
+// vert sombre/noir pour les cellules éteintes.
+const GAUGE_ON = '#00ff00';
+const GAUGE_OFF_DOT = '#0a3a0a';
 
 interface GraphCanvasProps {
   /** Historique des valeurs (0..max), le plus récent en fin de tableau. */
@@ -123,21 +126,29 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
 };
 
 interface GaugeCanvasProps {
-  /** Valeur courante (0..max). */
+  /** Valeur courante servant au remplissage (0..max). */
   value: number;
   max?: number;
-  color?: string;
+  /** Texte affiché en vert DANS la boîte (ex: « 10 % » ou « 207 Mo »). */
+  label: string;
   className?: string;
 }
 
-/** Jauge verticale (valeur instantanée), style XP. */
+/**
+ * Jauge LED verticale à deux colonnes (valeur instantanée), fidèle au
+ * Gestionnaire des tâches XP : boîte noire (à bezel côté CSS) contenant le
+ * texte en vert et deux colonnes de cellules empilées de hauteur fixe. Une
+ * cellule allumée est verte pleine ; une cellule éteinte affiche un damier fin
+ * vert sombre / noir. Le remplissage part du bas, proportionnel à la valeur.
+ */
 export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
   value,
   max = 100,
-  color = '#00ff00',
+  label,
   className,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const patternRef = useRef<CanvasPattern | null>(null);
   const drawRef = useRef<() => void>(() => {});
 
   drawRef.current = () => {
@@ -149,36 +160,65 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
     const w = canvas.width;
     const h = canvas.height;
 
+    // Motif mosaïque des cellules éteintes : damier 1px vert sombre / noir.
+    if (!patternRef.current) {
+      const off = document.createElement('canvas');
+      off.width = 2;
+      off.height = 2;
+      const octx = off.getContext('2d');
+      if (octx) {
+        octx.fillStyle = '#000000';
+        octx.fillRect(0, 0, 2, 2);
+        octx.fillStyle = GAUGE_OFF_DOT;
+        octx.fillRect(0, 0, 1, 1);
+        octx.fillRect(1, 1, 1, 1);
+        patternRef.current = ctx.createPattern(off, 'repeat');
+      }
+    }
+
     ctx.fillStyle = BACKGROUND;
     ctx.fillRect(0, 0, w, h);
 
-    // Barre de remplissage verte (valeur instantanée, du bas vers le haut).
-    const ratio = Math.max(0, Math.min(1, value / max));
-    const barHeight = ratio * h;
-    ctx.fillStyle = color;
-    ctx.fillRect(0, h - barHeight, w, barHeight);
+    // Texte (%/Mo) en vert, en haut de la boîte.
+    ctx.fillStyle = GAUGE_ON;
+    ctx.font = 'bold 10px "Lucida Console", Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(label, Math.round(w / 2), 3);
 
-    // Quadrillage vert COMPLET par-dessus (lignes verticales ET horizontales,
-    // petites cases) — c'est ce qui donne à la jauge XP son aspect « écran
-    // vert » caractéristique, aussi bien sur la barre que sur le fond noir.
-    ctx.strokeStyle = GRID_COLOR;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let x = w; x >= 0; x -= GAUGE_GRID_CELL) {
-      ctx.moveTo(x + 0.5, 0);
-      ctx.lineTo(x + 0.5, h);
+    // Bargraph LED à deux colonnes, sous le texte.
+    const top = 17;
+    const bottom = h - 3;
+    const padX = 4;
+    const colGap = 3;
+    const cellH = 3;
+    const cellGap = 1;
+    const slot = cellH + cellGap;
+    const areaH = bottom - top;
+    const numCells = Math.max(1, Math.floor(areaH / slot));
+    const ratio = Math.max(0, Math.min(1, value / max));
+    const litCells = Math.round(ratio * numCells);
+    const colW = Math.max(1, Math.floor((w - padX * 2 - colGap) / 2));
+
+    for (let col = 0; col < 2; col++) {
+      const x = padX + col * (colW + colGap);
+      for (let i = 0; i < numCells; i++) {
+        const y = bottom - (i + 1) * slot + cellGap;
+        if (i < litCells) {
+          ctx.fillStyle = GAUGE_ON;
+          ctx.fillRect(x, y, colW, cellH);
+        } else if (patternRef.current) {
+          ctx.fillStyle = patternRef.current;
+          ctx.fillRect(x, y, colW, cellH);
+        }
+      }
     }
-    for (let y = h; y >= 0; y -= GAUGE_GRID_CELL) {
-      ctx.moveTo(0, y + 0.5);
-      ctx.lineTo(w, y + 0.5);
-    }
-    ctx.stroke();
   };
 
-  // Redessine à chaque changement de valeur.
+  // Redessine à chaque changement de valeur / libellé.
   useEffect(() => {
     drawRef.current();
-  }, [value, max, color]);
+  }, [value, max, label]);
 
   // Ajuste la résolution du canvas à sa taille CSS réelle (re-render au resize
   // du conteneur, pour que la jauge s'étire avec la fenêtre).
@@ -200,5 +240,5 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  return <canvas ref={canvasRef} width={60} height={90} className={className} />;
+  return <canvas ref={canvasRef} width={56} height={120} className={className} />;
 };
