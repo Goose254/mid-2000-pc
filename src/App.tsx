@@ -10,7 +10,7 @@ import { WindowsXPSplashScreen } from './components/templates/WindowsXPSplashScr
 import { WindowsXPLogonScreen } from './components/templates/WindowsXPLogonScreen/WindowsXPLogonScreen';
 import { WindowsXPLogoffScreen } from './components/templates/WindowsXPLogoffScreen/WindowsXPLogoffScreen';
 import { WindowsXPShutdownScreen } from './components/templates/WindowsXPShutdownScreen/WindowsXPShutdownScreen';
-import { WindowsBSOD } from './components/templates/WindowsBSOD/WindowsBSOD';
+import { WindowsBSODCanvas } from './components/templates/WindowsBSOD/WindowsBSODCanvas';
 import { useSystemStore } from './common/stores/systemStore';
 import { useUsersStore } from './common/stores/usersStore';
 import 'overlayscrollbars/overlayscrollbars.css'
@@ -112,17 +112,21 @@ function App() {
         );
       }
       case 'bsod':
-        // Écran bleu plein écran, puis redémarrage vers le BIOS (reboot in-app).
+        // Écran bleu rendu au canvas et enveloppé dans Display (comme le BIOS)
+        // pour obtenir le ratio 4:3 et le flou CRT ; puis redémarrage vers le
+        // BIOS (reboot in-app).
         return (
-          <WindowsBSOD
-            processName={bsodProcessName ?? 'csrss.exe'}
-            onComplete={() => {
-              logout();
-              clearBsod();
-              clearSessionRequest();
-              setBootStage('bios');
-            }}
-          />
+          <Display width={640} height={480}>
+            <WindowsBSODCanvas
+              processName={bsodProcessName ?? 'csrss.exe'}
+              onComplete={() => {
+                logout();
+                clearBsod();
+                clearSessionRequest();
+                setBootStage('bios');
+              }}
+            />
+          </Display>
         );
       case 'poweroff':
         return <WindowsXPShutdownScreen onPowerOn={() => setBootStage('bios')} />;
