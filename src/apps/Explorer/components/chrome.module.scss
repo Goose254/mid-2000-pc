@@ -1,0 +1,377 @@
+// Chrome de l'Explorateur : disposition générale, barres (menus/outils/adresse),
+// volet des tâches (bleu), arborescence, barre d'état.
+
+$xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -0.5 15 17' shape-rendering='crispEdges'%3E%3Cpath stroke='%234d6185' d='M4 6h1m5 0h1M3 7h3m3 0h3M4 8h3m1 0h3M5 9h5m-4 1h3m-2 1h1'/%3E%3C/svg%3E");
+
+/* --------------------------------------------------------------------------
+   Disposition générale
+   -------------------------------------------------------------------------- */
+.explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: #ece9d8;
+  overflow: hidden;
+  font-family: Tahoma, 'Segoe UI', Verdana, sans-serif;
+  font-size: 11px;
+}
+
+.body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-top: 1px solid #d6d3c6;
+}
+
+/* --------------------------------------------------------------------------
+   Barres de menus / outils
+   -------------------------------------------------------------------------- */
+.menuToolbar,
+.navToolbar {
+  align-items: stretch;
+}
+
+.windowsBrand {
+  margin-left: auto;
+  align-self: center;
+  border-left: 1px solid #aca899;
+  padding-left: 2px;
+}
+
+.toolbarActive {
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.toolbarDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.menuBullet,
+.menuCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  font-size: 10px;
+  line-height: 1;
+  color: #000;
+}
+.menuBullet {
+  font-size: 9px;
+}
+.menuBlank {
+  display: inline-block;
+  width: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Barre d'adresse
+   -------------------------------------------------------------------------- */
+.addressToolbar > div {
+  min-height: 26px;
+}
+
+.addressRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.addressLabel {
+  color: #4f4a3f;
+  min-width: 45px;
+}
+
+.addressFieldRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+}
+
+.addressInputShell {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+}
+
+.addressInputIcon {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.addressInputWrapper {
+  width: 100%;
+}
+
+.addressInputField {
+  padding-left: 27px !important;
+  min-height: 21px !important;
+  height: 24px;
+}
+
+.addressOkButton {
+  min-width: 41px !important;
+  min-height: 21px !important;
+  max-width: none !important;
+  padding: 0 7px !important;
+}
+
+/* --------------------------------------------------------------------------
+   Volet des tâches (bleu) et arborescence — largeur commune
+   -------------------------------------------------------------------------- */
+.taskPane,
+.treePane {
+  width: 200px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.taskPane {
+  background: linear-gradient(180deg, #7a99dd 0%, #637fd2 100%);
+  padding: 10px 8px;
+}
+
+.taskSection {
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(206, 220, 245, 0.96) 0%, rgba(192, 208, 239, 0.96) 100%);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.taskSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 23px;
+  padding: 0 8px;
+  border-bottom: 1px solid rgba(133, 157, 206, 0.8);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(227, 237, 255, 0) 100%);
+  color: #0b3f96;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.collapseButton {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #5f7fb9;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fbfdff 0%, #c6dafc 65%, #9db7ea 100%);
+  position: relative;
+  overflow: hidden;
+  font-size: 0;
+  flex-shrink: 0;
+}
+
+.collapseButton::before,
+.collapseButton::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  width: 14px;
+  height: 8px;
+  background-repeat: no-repeat;
+  background-size: 14px 16px;
+  background-image: $xp-arrow-svg;
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+.collapseButton::before {
+  top: 2px;
+}
+.collapseButton::after {
+  top: 7px;
+}
+/* Chevron vers le bas quand la section est repliée. */
+.collapsed::before,
+.collapsed::after {
+  transform: rotate(0deg);
+}
+.collapsed::before {
+  top: 3px;
+}
+.collapsed::after {
+  top: 8px;
+}
+
+.taskList {
+  list-style: none;
+  margin: 7px 0 9px;
+  padding: 0 8px;
+}
+
+.taskButton {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #003ea8;
+  text-align: left;
+  line-height: 1.2;
+  padding: 3px 0;
+  cursor: default;
+
+  &:hover span {
+    text-decoration: underline;
+    color: #2b6ad0;
+  }
+
+  img {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+.detailsBlock {
+  padding: 8px 10px 10px;
+}
+
+.detailsTitle {
+  color: #0d1528;
+  font-weight: bold;
+  margin-bottom: 3px;
+  word-break: break-word;
+}
+
+.detailsText {
+  color: #1a1a1a;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   Arborescence (« Dossiers »)
+   -------------------------------------------------------------------------- */
+.treePane {
+  background: #ffffff;
+  border-right: 1px solid #8ea5d6;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.treeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 22px;
+  padding: 0 6px;
+  background: linear-gradient(180deg, #f7f6f0 0%, #e6e3d5 100%);
+  border-bottom: 1px solid #aca899;
+  font-weight: bold;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.treeBody {
+  flex: 1;
+  overflow: auto;
+  padding: 4px 2px;
+}
+
+.treeRow {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding-right: 6px;
+  cursor: default;
+  white-space: nowrap;
+
+  &:hover {
+    background: #e8eef9;
+  }
+}
+
+.treeRowActive {
+  background: #316ac5 !important;
+  color: #fff;
+}
+
+.treeToggle {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border: 1px solid #808080;
+  background: #fff;
+  color: #000;
+  font-size: 10px;
+  line-height: 11px;
+  text-align: center;
+  padding: 0;
+  margin-right: 2px;
+  cursor: default;
+}
+
+.treeToggleSpacer {
+  display: inline-block;
+  width: 15px;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
+.treeIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.treeLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------------------------------
+   Barre d'état
+   -------------------------------------------------------------------------- */
+.statusBar {
+  flex-shrink: 0;
+}
+
+.statusMain {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+
+.statusSize {
+  flex: 1 1 auto;
+}
+
+.statusZone {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 110px;
+}
+
+.zoneIcon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(180deg, #d7e4fb 0%, #9db8e8 100%);
+  border: 1px solid #6f8fc4;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

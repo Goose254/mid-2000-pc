@@ -8,6 +8,9 @@ import { useSystemStore } from '@/common/stores/systemStore';
 import { useCurrentUser } from '@/common/stores/usersStore';
 import { useAppsStore } from '@/common/stores/appsStore';
 import { UserAccountsApp } from '@/apps/UserAccounts/main';
+import { openExplorerAt } from '@/apps/Explorer/main';
+import { COMPUTER, folderLocation, SPECIAL_PATHS } from '@/apps/Explorer/model';
+import { Location } from '@/apps/Explorer/model';
 import { Avatar } from '@/components/atoms/Avatar/Avatar';
 
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
@@ -76,6 +79,11 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
 
     const openUserAccounts = () => {
       startApp(UserAccountsApp);
+      toggleStartMenu();
+    };
+
+    const openExplorer = (location: Location) => {
+      openExplorerAt(location);
       toggleStartMenu();
     };
 
@@ -155,11 +163,35 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 </MenuItem>
               </div>
               <div className={styles.startMenuRightList}>
-                <MenuItem variant="startSecondary" label="Mes documents" icon={MyDocumentsIcon} primary={true} />
+                <MenuItem
+                  variant="startSecondary"
+                  label="Mes documents"
+                  icon={MyDocumentsIcon}
+                  primary={true}
+                  onClick={() => openExplorer(folderLocation(SPECIAL_PATHS.myDocuments))}
+                />
                 <MenuItem variant="startSecondary" label="Mes documents récents" icon={MyRecentDocumentsIcon} primary={true} />
-                <MenuItem variant="startSecondary" label="Mes images" icon={MyImagesIcon} primary={true} />
-                <MenuItem variant="startSecondary" label="Ma musique" icon={MyMusicIcon} primary={true} />
-                <MenuItem variant="startSecondary" label="Poste de travail" icon={MyComputerIcon} primary={true} />
+                <MenuItem
+                  variant="startSecondary"
+                  label="Mes images"
+                  icon={MyImagesIcon}
+                  primary={true}
+                  onClick={() => openExplorer(folderLocation(SPECIAL_PATHS.myPictures))}
+                />
+                <MenuItem
+                  variant="startSecondary"
+                  label="Ma musique"
+                  icon={MyMusicIcon}
+                  primary={true}
+                  onClick={() => openExplorer(folderLocation(SPECIAL_PATHS.myMusic))}
+                />
+                <MenuItem
+                  variant="startSecondary"
+                  label="Poste de travail"
+                  icon={MyComputerIcon}
+                  primary={true}
+                  onClick={() => openExplorer(COMPUTER)}
+                />
                 <MenuSeparator variant="startSecondary" />
                 <MenuItem variant="startSecondary" label="Panneau de configuration" icon={ConfigurationPanelIcon} onClick={openUserAccounts} />
                 <MenuItem variant="startSecondary" label="Configurer les programmes par défaut" icon={DefaultProgramsIcon} />

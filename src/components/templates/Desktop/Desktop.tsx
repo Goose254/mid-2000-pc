@@ -15,7 +15,8 @@ import TeamsIcon from '@/assets/program-icons/teams.exe.svg';
 
 import { useAppsStore } from '@/common/stores/appsStore';
 import { TaskManagerApp } from '@/apps/TaskManager/main';
-import { ExplorerApp } from '@/apps/Explorer/main';
+import { openExplorerAt } from '@/apps/Explorer/main';
+import { COMPUTER, TRASH, folderLocation, SPECIAL_PATHS } from '@/apps/Explorer/model';
 import { MinesweeperApp } from '@/apps/Minesweeper/main';
 import { DesktopContextMenu } from './DesktopContextMenu';
 
@@ -221,19 +222,19 @@ export const Desktop: React.FC = () => {
         id: 'my-computer',
         icon: <img src={MyComputerIcon} alt="MyComputer Icon" />,
         label: 'Poste de travail',
-        onDoubleClick: () => startApp(ExplorerApp),
+        onDoubleClick: () => openExplorerAt(COMPUTER),
       },
       {
         id: 'my-documents',
         icon: <img src={MyDocumentsIcon} alt="MyDocuments Icon" />,
         label: 'Mes Documents',
-        onDoubleClick: () => startApp(ExplorerApp),
+        onDoubleClick: () => openExplorerAt(folderLocation(SPECIAL_PATHS.myDocuments)),
       },
       {
         id: 'recycle-bin',
         icon: <img src={TashbinIcon} alt="Trash bin Icon" />,
         label: 'Corbeille',
-        onDoubleClick: () => {},
+        onDoubleClick: () => openExplorerAt(TRASH),
       },
       {
         id: 'task-manager',

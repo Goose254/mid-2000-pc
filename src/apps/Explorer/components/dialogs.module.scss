@@ -1,0 +1,122 @@
+// Boîtes de dialogue de l'Explorateur (rendu dans le corps de TmDialog, fond
+// Luna #ece9d8). Largeur fixe façon XP.
+
+.dialogRoot {
+  width: 300px;
+  padding: 12px;
+  font-size: 11px;
+  color: #000;
+  box-sizing: border-box;
+}
+
+.wide {
+  width: 340px;
+}
+
+/* --- Propriétés --- */
+.propHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+}
+
+.propHeader img {
+  width: 32px;
+  height: 32px;
+}
+
+.propName {
+  flex: 1;
+  min-width: 0;
+  font-weight: normal;
+  word-break: break-word;
+}
+
+.sep {
+  height: 0;
+  border: 0;
+  border-top: 1px solid #aca899;
+  border-bottom: 1px solid #ffffff;
+  margin: 6px 0;
+}
+
+.propRow {
+  display: flex;
+  align-items: baseline;
+  padding: 2px 0;
+}
+
+.propLabel {
+  width: 96px;
+  flex-shrink: 0;
+  color: #000;
+}
+
+.propValue {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* --- Options des dossiers / radios --- */
+.optionGroup {
+  border: 1px solid #aca899;
+  border-radius: 3px;
+  padding: 10px 12px;
+  margin-top: 4px;
+}
+
+.radioRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0;
+  cursor: default;
+}
+
+.radioRow input {
+  margin: 1px 0 0;
+}
+
+.optionHint {
+  color: #333;
+  margin: 4px 0 0 22px;
+}
+
+/* --- Visionneuse texte (Bloc-notes) --- */
+.viewerBody {
+  padding: 0;
+  width: 420px;
+}
+
+.viewerTextarea {
+  width: 100%;
+  height: 240px;
+  box-sizing: border-box;
+  resize: none;
+  font-family: 'Lucida Console', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 15px;
+  border: 1px solid #7f9db9;
+  padding: 3px 4px;
+  background: #fff;
+  color: #000;
+  outline: none;
+}
+
+/* --- Boutons --- */
+.buttonsRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.dialogButton {
+  min-width: 73px !important;
+}
+
+.aboutText {
+  line-height: 1.5;
+}

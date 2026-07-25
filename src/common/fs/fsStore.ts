@@ -75,8 +75,8 @@ export interface FsState {
   rename: (path: string, newName: string) => void;
   /** Déplace un nœud dans un dossier destination (nom conservé). */
   move: (src: string, destDir: string) => void;
-  /** Copie (profonde) un nœud dans un dossier destination. */
-  copy: (src: string, destDir: string) => void;
+  /** Copie (profonde) un nœud dans un dossier destination (nom optionnel). */
+  copy: (src: string, destDir: string, newName?: string) => void;
 
   // --- Corbeille ---
   /** Envoie un nœud à la Corbeille (pas de suppression sèche par défaut). */
@@ -284,7 +284,7 @@ export const useFsStore = create<FsState>((set, get) => {
         return { root, trash };
       }),
 
-    copy: (src, destDir) =>
+    copy: (src, destDir, newName) =>
       applyMutation((root, trash) => {
         const srcSegments = splitPath(src).segments;
         if (srcSegments.length === 0) throw new FsError('EPERM', 'Impossible de copier la racine', src);
@@ -299,16 +299,22 @@ export const useFsStore = create<FsState>((set, get) => {
         if (!dest) throw new FsError('ENOENT', `Destination introuvable : ${destDir}`, destDir);
         if (dest.type !== 'folder') throw new FsError('ENOTDIR', `La destination n'est pas un dossier : ${destDir}`, destDir);
 
+        // Nom cible (défaut : nom de la source). Permet « Coller » dans le même
+        // dossier via un nom « Copie de … » sans conflit.
+        const targetName = newName ?? node.name;
+        assertValidName(targetName);
+
         if (node.type === 'folder' && isSameOrDescendant(normalizePath(src), normalizePath(destDir))) {
           throw new FsError('EPERM', `Copie d'un dossier dans lui-même : ${src}`, src);
         }
-        if (findChild(dest, node.name)) {
-          throw new FsError('EEXIST', `Le nom existe déjà dans la destination : ${node.name}`, destDir);
+        if (findChild(dest, targetName)) {
+          throw new FsError('EEXIST', `Le nom existe déjà dans la destination : ${targetName}`, destDir);
         }
 
         const now = Date.now();
         const copyNode = cloneNode(node);
         reassignIds(copyNode, now);
+        copyNode.name = targetName;
         dest.children.push(copyNode);
         dest.modifiedAt = now;
         return { root, trash };

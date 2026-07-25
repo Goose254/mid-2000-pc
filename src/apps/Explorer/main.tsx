@@ -1,63 +1,61 @@
 import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
 import { ExplorerMainWindow } from './components/MainWindow';
+import { COMPUTER, Location, locationIcon, locationTitle } from './model';
 
-import iconLarge from '@/assets/windows-icons/wiashext.dll_14_105-6.png'
-import iconMedium from '@/assets/windows-icons/wiashext.dll_14_105-7.png'
-import iconSmall from '@/assets/windows-icons/wiashext.dll_14_105-7.png'
-import iconXsmall from '@/assets/windows-icons/wiashext.dll_14_105-8.png'
-
-// Importe tes stores correspondants
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
+import { useAppsStore } from '@/common/stores/appsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
+
+// Icône « Poste de travail » (l'ancienne icône scanner était un placeholder).
+import iconLarge from '@/assets/windows-icons/explorer.exe_14_100-9.png';
+import iconSmall from '@/assets/windows-icons/explorer.exe_14_100-10.png';
+
+/**
+ * Emplacement d'ouverture de la PROCHAINE instance d'Explorateur. `startApp`
+ * ne transmet pas d'argument à `init` : on dépose donc l'emplacement ici juste
+ * avant l'appel (lecture synchrone dans `init`, aucune course possible).
+ */
+let pendingInitialLocation: Location | null = null;
+
+/** Ouvre une nouvelle fenêtre d'Explorateur sur l'emplacement demandé. */
+export const openExplorerAt = (location: Location): void => {
+  pendingInitialLocation = location;
+  useAppsStore.getState().startApp(ExplorerApp);
+};
 
 export const ExplorerApp: AppTemplate<object> = {
   id: 'explorer.exe',
   name: 'Poste de travail',
   icons: {
     large: iconLarge,
-    medium: iconMedium,
+    medium: iconLarge,
     small: iconSmall,
-    xsmall: iconXsmall,
+    xsmall: iconSmall,
   },
   multiInstance: true,
-  MainWindow: ExplorerMainWindow,
+  MainWindow: ExplorerMainWindow as unknown as AppTemplate<object>['MainWindow'],
   init: function (pid: string): AppInstanceControl {
-    const { name, icons, MainWindow, TaskbarIcon } = this
-
-    // Génère un ID de fenêtre stable pour cette instance
+    const { name } = this;
     const windowId = getWindowIdForInstance(pid, 'main');
 
-    // Ouvre la fenêtre principale via le store windows
+    const initialLocation = pendingInitialLocation ?? COMPUTER;
+    pendingInitialLocation = null;
+
     useWindowsStore.getState().openWindow(
       windowId,
       pid,
-      name,
-      <MainWindow />,
-      <img src={icons.xsmall} />,
-      {
-        size: {
-          width: 760,
-          height: 540,
-        },
-      },
+      initialLocation.kind === 'computer' ? name : locationTitle(initialLocation),
+      <ExplorerMainWindow windowId={windowId} initialLocation={initialLocation} />,
+      <img src={locationIcon(initialLocation)} alt="" />,
+      { size: { width: 760, height: 540 } },
     );
 
-    // Si une TaskbarIcon est définie, on l'ajoute dans le store dédié
-    if (TaskbarIcon) {
-      useTaskbarStore.getState().addToolIcon(pid, <TaskbarIcon />);
-    }
-
-    // On retourne l'objet de contrôle pour cette instance
     return {
       killInstance: () => {
-        // Ferme la fenêtre via le store windows
-        useWindowsStore.getState().closeWindow(pid);
-        // Retire l'icône de la taskbar via le store dédié
+        useWindowsStore.getState().closeWindow(windowId);
         useTaskbarStore.getState().removeToolIcon(pid);
-        // Ici, d'autres actions de nettoyage spécifiques peuvent être effectuées.
-      }
-      // D'autres fonctions de contrôle (bringToFront, minimize, etc.) peuvent être ajoutées ici.
+      },
     };
-  }
+  },
 };
