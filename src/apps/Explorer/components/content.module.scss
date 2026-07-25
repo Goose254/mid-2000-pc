@@ -2,7 +2,6 @@
 // Palette XP : fond blanc, sélection bleue #316ac5, texte Tahoma 11px.
 
 $sel: #316ac5;
-$selSoft: #d3e0f6;
 
 .contentScroll {
   flex: 1 1 auto;
@@ -12,6 +11,7 @@ $selSoft: #d3e0f6;
 }
 
 .contentInner {
+  position: relative;
   box-sizing: border-box;
   min-height: 100%;
   outline: none;
@@ -20,8 +20,37 @@ $selSoft: #d3e0f6;
 }
 
 /* --------------------------------------------------------------------------
-   Sélection commune (icônes / mosaïques / miniatures)
+   Icône + teinte bleue de sélection (calque masqué par l'icône)
    -------------------------------------------------------------------------- */
+.iconWrap {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  line-height: 0;
+
+  img {
+    display: block;
+  }
+}
+
+.iconSelOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: $sel;
+  opacity: 0.5;
+  -webkit-mask-image: var(--m);
+  mask-image: var(--m);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  pointer-events: none;
+}
+
+/* Libellé sélectionné : fond bleu plein, texte blanc (Icônes/Mosaïques/Liste). */
 .itemSelected {
   .iconLabel,
   .tileName,
@@ -32,43 +61,55 @@ $selSoft: #d3e0f6;
 }
 
 /* --------------------------------------------------------------------------
-   Vue Détails (tableau)
+   Vue Détails — en-tête au style des tableaux du Gestionnaire des tâches
    -------------------------------------------------------------------------- */
 .detailsTable {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 
-  thead th {
+  .th {
     position: sticky;
     top: 0;
     z-index: 1;
     text-align: left;
     font-weight: normal;
-    padding: 1px 6px;
-    height: 17px;
-    background: linear-gradient(180deg, #ffffff 0%, #f3f1e6 55%, #e8e5d6 100%);
-    border-right: 1px solid #d5d2c6;
-    border-bottom: 1px solid #aca998;
+    padding: 1px 8px;
+    height: 20px;
+    background: #ebeadb;
+    box-shadow: inset 0 -2px 2px 0 lightgray;
+    border-right: 1px solid #ffffff;
     color: #10100c;
     cursor: default;
     user-select: none;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
 
     &:hover {
-      background: linear-gradient(180deg, #ffffff 0%, #eef4fb 55%, #dbe8f8 100%);
+      background: #ffffff;
+
+      &::after {
+        content: '';
+        position: absolute;
+        height: 3px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ffc73c;
+        border-top: 1px solid #e68b2c;
+        border-radius: 0 0 3px 3px;
+      }
     }
   }
 
-  .sortActive {
-    background: linear-gradient(180deg, #eef4fb 0%, #dbe8f8 100%);
+  .thLabel {
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .sortArrow {
     font-size: 8px;
-    margin-left: 4px;
+    margin-left: 5px;
     color: #4a4a44;
     vertical-align: middle;
   }
@@ -85,6 +126,10 @@ $selSoft: #d3e0f6;
   tbody tr {
     cursor: default;
   }
+
+  .colName .iconWrap {
+    margin-right: 5px;
+  }
 }
 
 .colName {
@@ -99,30 +144,18 @@ $selSoft: #d3e0f6;
 .colDate {
   width: 23%;
 }
-
 .sizeCell {
   text-align: right;
 }
-
-.detailsIcon {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-  margin-right: 5px;
-}
-
 .detailsName {
   display: inline-block;
   vertical-align: middle;
   line-height: 16px;
 }
-
 .rowSelected td {
   background: $sel;
   color: #fff;
 }
-
 .emptyCell {
   color: #444;
   padding: 10px 8px !important;
@@ -130,7 +163,7 @@ $selSoft: #d3e0f6;
 }
 
 /* --------------------------------------------------------------------------
-   Vue Liste (petites icônes, colonnes verticales)
+   Vue Liste
    -------------------------------------------------------------------------- */
 .listView {
   display: flex;
@@ -145,18 +178,12 @@ $selSoft: #d3e0f6;
 .listItem {
   display: flex;
   align-items: center;
+  gap: 4px;
   width: 170px;
   height: 17px;
   padding: 0 2px;
   cursor: default;
   box-sizing: border-box;
-}
-
-.listIcon {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
-  flex-shrink: 0;
 }
 
 .listLabel {
@@ -175,7 +202,7 @@ $selSoft: #d3e0f6;
   flex-wrap: wrap;
   align-content: flex-start;
   padding: 6px;
-  gap: 6px 4px;
+  gap: 8px 4px;
 }
 
 .iconItem {
@@ -185,10 +212,7 @@ $selSoft: #d3e0f6;
   width: 76px;
   padding: 4px 2px 3px;
   cursor: default;
-
-  img {
-    margin-bottom: 3px;
-  }
+  gap: 3px;
 }
 
 .iconLabelWrap {
@@ -211,7 +235,7 @@ $selSoft: #d3e0f6;
 }
 
 /* --------------------------------------------------------------------------
-   Vue Mosaïques
+   Vue Mosaïques (icône 48px)
    -------------------------------------------------------------------------- */
 .tileGrid {
   display: grid;
@@ -224,16 +248,10 @@ $selSoft: #d3e0f6;
 .tileItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   padding: 3px 4px;
   cursor: default;
   min-width: 0;
-}
-
-.tileIcon {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
 }
 
 .tileText {
@@ -248,7 +266,6 @@ $selSoft: #d3e0f6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: normal;
 }
 
 .tileSecondary {
@@ -294,22 +311,15 @@ $selSoft: #d3e0f6;
   margin-bottom: 4px;
 }
 
-.thumbIcon {
-  width: 48px;
-  height: 48px;
-}
-
 /* --------------------------------------------------------------------------
    Regroupement (vue Poste de travail)
    -------------------------------------------------------------------------- */
 .groupsWrap {
   padding: 4px 0 8px;
 }
-
 .group {
   margin-bottom: 8px;
 }
-
 .groupTitle {
   font-size: 11px;
   font-weight: bold;
@@ -327,6 +337,17 @@ $selSoft: #d3e0f6;
     height: 1px;
     background: linear-gradient(90deg, #a6bad6 0%, #c9d9ee 30%, #ffffff 100%);
   }
+}
+
+/* --------------------------------------------------------------------------
+   Sélection au lasso
+   -------------------------------------------------------------------------- */
+.marquee {
+  position: absolute;
+  border: 1px solid #3b6ea5;
+  background: rgba(49, 106, 197, 0.2);
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* --------------------------------------------------------------------------

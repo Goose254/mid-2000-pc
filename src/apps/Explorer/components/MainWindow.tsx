@@ -1,4 +1,5 @@
 import React from 'react';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import styles from './chrome.module.scss';
 
 import { ExplorerProvider, useExplorer } from '../ExplorerContext';
@@ -23,7 +24,17 @@ const ExplorerShell: React.FC = () => {
       <Toolbar />
       <AddressBar />
       <div className={styles.body}>
-        {state.showTree ? <FolderTree /> : <TaskPane />}
+        {state.showTree ? (
+          <FolderTree />
+        ) : (
+          <OverlayScrollbarsComponent
+            className={`overlayscrollbars-react ${styles.taskScroll}`}
+            options={{ scrollbars: { autoHide: 'never', clickScroll: true } }}
+            defer
+          >
+            <TaskPane />
+          </OverlayScrollbarsComponent>
+        )}
         <ContentView />
       </div>
       {state.showStatusBar && <StatusBar />}

@@ -13,40 +13,93 @@
 import { DRIVE, ROOT_PATH, SEPARATOR, getBaseName, getParentPath, normalizePath } from '@/common/fs';
 import type { FsDirEntry, FsNodeType } from '@/common/fs';
 
-// --- Icônes ----------------------------------------------------------------
-import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-9.png';
-import FolderIcon from '@/assets/windows-icons/shell32.dll_14_235-8.png';
-import OpenFolderIcon from '@/assets/windows-icons/shell32.dll_14_267-6.png';
-import LocalDiskIcon from '@/assets/windows-icons/shell32.dll_14_9-6.png';
-import FloppyIcon from '@/assets/windows-icons/shell32.dll_14_7-6.png';
-import CdDriveIcon from '@/assets/windows-icons/shell32.dll_14_12-6.png';
-import MyDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_235-9.png';
-import MyPicturesIcon from '@/assets/windows-icons/folder-pics-16.png';
-import MyMusicIcon from '@/assets/windows-icons/folder-music-32.png';
-import FavorisIcon from '@/assets/windows-icons/favoris-32.png';
-import RecycleIcon from '@/assets/windows-icons/shell32.dll_14_254-7.png';
-import ControlPanelIcon from '@/assets/windows-icons/shell32.dll_14_137-8.png';
-import NetworkPlacesIcon from '@/assets/windows-icons/hnetcfg.dll_14_60.png';
-import FileTextIcon from '@/assets/windows-icons/file-text-32.png';
-import FileGenericIcon from '@/assets/windows-icons/file-generic-16.png';
+// --- Icônes multi-tailles (16/24/32/48) ------------------------------------
+// Chaque entité expose un jeu d'icônes ; les vues choisissent la taille adaptée
+// (16 pour Détails/Liste/arborescence, 32 pour Icônes, 48 pour Mosaïques/Miniatures).
+import Computer16 from '@/assets/windows-icons/mycomputer-16.png';
+import Computer24 from '@/assets/windows-icons/mycomputer-24.png';
+import Computer32 from '@/assets/windows-icons/mycomputer-32.png';
+import Computer48 from '@/assets/windows-icons/mycomputer-48.png';
+import Folder16 from '@/assets/windows-icons/folder-16.png';
+import Folder24 from '@/assets/windows-icons/folder-24.png';
+import Folder32 from '@/assets/windows-icons/folder-32.png';
+import Folder48 from '@/assets/windows-icons/folder-48.png';
+import Pics16 from '@/assets/windows-icons/folder-pics-16.png';
+import Pics24 from '@/assets/windows-icons/folder-pics-24.png';
+import Pics32 from '@/assets/windows-icons/folder-pics-32.png';
+import Pics48 from '@/assets/windows-icons/folder-pics-48.png';
+import Music16 from '@/assets/windows-icons/folder-music-16.png';
+import Music24 from '@/assets/windows-icons/folder-music-24.png';
+import Music32 from '@/assets/windows-icons/folder-music-32.png';
+import Music48 from '@/assets/windows-icons/folder-music-48.png';
+import Favoris16 from '@/assets/windows-icons/favoris-16.png';
+import Favoris24 from '@/assets/windows-icons/favoris-24.png';
+import Favoris32 from '@/assets/windows-icons/favoris-32.png';
+import Favoris48 from '@/assets/windows-icons/favoris-48.png';
+import MyDocs32 from '@/assets/windows-icons/shell32.dll_14_235-9.png';
+import MyDocs48 from '@/assets/windows-icons/shell32.dll_14_235-8.png';
+import LocalDisk48 from '@/assets/windows-icons/shell32.dll_14_9-6.png';
+import Floppy48 from '@/assets/windows-icons/shell32.dll_14_7-6.png';
+import Cd48 from '@/assets/windows-icons/shell32.dll_14_12-6.png';
+import Recycle32 from '@/assets/windows-icons/shell32.dll_14_254-7.png';
+import ControlPanel32 from '@/assets/windows-icons/shell32.dll_14_137-8.png';
+import NetworkPlaces from '@/assets/windows-icons/hnetcfg.dll_14_60.png';
+import FileText16 from '@/assets/windows-icons/file-text-16.png';
+import FileText32 from '@/assets/windows-icons/file-text-32.png';
+import FileGeneric16 from '@/assets/windows-icons/file-generic-16.png';
 
-export {
-  MyComputerIcon,
-  FolderIcon,
-  OpenFolderIcon,
-  LocalDiskIcon,
-  FloppyIcon,
-  CdDriveIcon,
-  MyDocumentsIcon,
-  MyPicturesIcon,
-  MyMusicIcon,
-  FavorisIcon,
-  RecycleIcon,
-  ControlPanelIcon,
-  NetworkPlacesIcon,
-  FileTextIcon,
-  FileGenericIcon,
-};
+/** Jeu d'icônes d'une entité, indexé par taille (px). */
+export interface IconSet {
+  16: string;
+  24: string;
+  32: string;
+  48: string;
+}
+
+const iconSet = (s16: string, s24: string, s32: string, s48: string): IconSet => ({
+  16: s16,
+  24: s24,
+  32: s32,
+  48: s48,
+});
+/** Réplique une icône unique sur toutes les tailles (mise à l'échelle CSS). */
+const uniform = (src: string): IconSet => iconSet(src, src, src, src);
+
+export type IconSize = 16 | 24 | 32 | 48;
+
+/** Choisit dans un jeu l'icône de la taille demandée. */
+export const pickIcon = (set: IconSet, size: IconSize): string => set[size];
+
+// Jeux d'icônes.
+export const COMPUTER_ICONS = iconSet(Computer16, Computer24, Computer32, Computer48);
+export const FOLDER_ICONS = iconSet(Folder16, Folder24, Folder32, Folder48);
+export const PICS_ICONS = iconSet(Pics16, Pics24, Pics32, Pics48);
+export const MUSIC_ICONS = iconSet(Music16, Music24, Music32, Music48);
+export const FAVORIS_ICONS = iconSet(Favoris16, Favoris24, Favoris32, Favoris48);
+export const MYDOCS_ICONS = iconSet(MyDocs32, MyDocs32, MyDocs32, MyDocs48);
+export const FILE_TEXT_ICONS = iconSet(FileText16, FileText16, FileText32, FileText32);
+export const FILE_GENERIC_ICONS = uniform(FileGeneric16);
+export const LOCALDISK_ICONS = uniform(LocalDisk48);
+export const FLOPPY_ICONS = uniform(Floppy48);
+export const CD_ICONS = uniform(Cd48);
+export const RECYCLE_ICONS = uniform(Recycle32);
+
+// Icônes uniques (16px) pour le volet des tâches / l'arborescence / les dialogues.
+export const MyComputerIcon = Computer16;
+export const FolderIcon = Folder16;
+export const OpenFolderIcon = Folder16;
+export const MyDocumentsIcon = MyDocs32;
+export const MyPicturesIcon = Pics16;
+export const MyMusicIcon = Music16;
+export const FavorisIcon = Favoris16;
+export const RecycleIcon = Recycle32;
+export const ControlPanelIcon = ControlPanel32;
+export const NetworkPlacesIcon = NetworkPlaces;
+export const FileTextIcon = FileText32;
+export const FileGenericIcon = FileGeneric16;
+export const LocalDiskIcon = LocalDisk48;
+export const FloppyIcon = Floppy48;
+export const CdDriveIcon = Cd48;
 
 // ---------------------------------------------------------------------------
 // Emplacements
@@ -101,6 +154,7 @@ export interface VirtualDrive {
   /** Libellé affiché, ex. « Disque local (C:) ». */
   label: string;
   icon: string;
+  icons: IconSet;
   group: DriveGroup;
   /** Emplacement ouvert au double-clic (null = lecteur non prêt). */
   location: Location | null;
@@ -118,6 +172,7 @@ export const VIRTUAL_DRIVES: VirtualDrive[] = [
     id: 'C',
     label: 'Disque local (C:)',
     icon: LocalDiskIcon,
+    icons: LOCALDISK_ICONS,
     group: 'hdd',
     location: folderLocation(ROOT_PATH),
     typeLabel: 'Disque local',
@@ -128,6 +183,7 @@ export const VIRTUAL_DRIVES: VirtualDrive[] = [
     id: 'A',
     label: 'Disquette 3½ (A:)',
     icon: FloppyIcon,
+    icons: FLOPPY_ICONS,
     group: 'removable',
     location: null,
     typeLabel: 'Disquette 3½ pouces',
@@ -136,6 +192,7 @@ export const VIRTUAL_DRIVES: VirtualDrive[] = [
     id: 'D',
     label: 'Lecteur CD (D:)',
     icon: CdDriveIcon,
+    icons: CD_ICONS,
     group: 'removable',
     location: null,
     typeLabel: 'Disque compact',
@@ -232,28 +289,31 @@ export const folderTypeLabel = (path: string): string => {
   return 'Dossier de fichiers';
 };
 
-/** Icône d'un fichier (16px pour Liste/Détails ; 32px pour Icônes/Mosaïques). */
-export const fileIcon = (name: string): string => {
+/** Jeu d'icônes d'un fichier selon son extension. */
+export const fileIconSet = (name: string): IconSet => {
   const ext = extensionOf(name);
-  if (TEXT_EXTS.has(ext) || ext === 'ini' || ext === 'inf' || ext === '') return FileTextIcon;
-  if (IMAGE_EXTS.has(ext)) return FileGenericIcon;
-  if (AUDIO_EXTS.has(ext)) return MyMusicIcon;
-  return FileTextIcon;
+  if (IMAGE_EXTS.has(ext)) return FILE_GENERIC_ICONS;
+  if (AUDIO_EXTS.has(ext)) return MUSIC_ICONS;
+  if (TEXT_EXTS.has(ext) || ext === 'ini' || ext === 'inf' || ext === '') return FILE_TEXT_ICONS;
+  return FILE_TEXT_ICONS;
 };
 
-/** Icône d'un dossier selon son chemin (dossiers spéciaux reconnus). */
-export const folderIcon = (path: string): string => {
+/** Jeu d'icônes d'un dossier selon son chemin (dossiers spéciaux reconnus). */
+export const folderIconSet = (path: string): IconSet => {
   const p = normalizePath(path).toLowerCase();
-  if (p === SPECIAL_PATHS.myDocuments.toLowerCase()) return MyDocumentsIcon;
-  if (p === SPECIAL_PATHS.myPictures.toLowerCase()) return MyPicturesIcon;
-  if (p === SPECIAL_PATHS.myMusic.toLowerCase()) return MyMusicIcon;
-  if (p === SPECIAL_PATHS.favoris.toLowerCase()) return FavorisIcon;
-  return FolderIcon;
+  if (p === SPECIAL_PATHS.myDocuments.toLowerCase()) return MYDOCS_ICONS;
+  if (p === SPECIAL_PATHS.myPictures.toLowerCase()) return PICS_ICONS;
+  if (p === SPECIAL_PATHS.myMusic.toLowerCase()) return MUSIC_ICONS;
+  if (p === SPECIAL_PATHS.favoris.toLowerCase()) return FAVORIS_ICONS;
+  return FOLDER_ICONS;
 };
 
-/** Icône d'une entrée de dossier (fichier ou sous-dossier). */
-export const entryIcon = (entry: Pick<FsDirEntry, 'name' | 'type' | 'path'>): string =>
-  entry.type === 'folder' ? folderIcon(entry.path) : fileIcon(entry.name);
+/** Jeu d'icônes d'une entrée (fichier ou sous-dossier). */
+export const entryIconSet = (entry: Pick<FsDirEntry, 'name' | 'type' | 'path'>): IconSet =>
+  entry.type === 'folder' ? folderIconSet(entry.path) : fileIconSet(entry.name);
+
+/** Icône 16px d'un dossier (arborescence, volet des tâches). */
+export const folderIcon = (path: string): string => pickIcon(folderIconSet(path), 16);
 
 /** Libellé de type d'une entrée. */
 export const entryTypeLabel = (entry: Pick<FsDirEntry, 'name' | 'type' | 'path'>): string =>
@@ -282,17 +342,20 @@ export const locationTitle = (loc: Location): string => {
   }
 };
 
-/** Icône d'un emplacement (barre de titre / barre d'adresse). */
-export const locationIcon = (loc: Location): string => {
+/** Jeu d'icônes d'un emplacement. */
+export const locationIconSet = (loc: Location): IconSet => {
   switch (loc.kind) {
     case 'computer':
-      return MyComputerIcon;
+      return COMPUTER_ICONS;
     case 'trash':
-      return RecycleIcon;
+      return RECYCLE_ICONS;
     case 'folder':
-      return isDriveRoot(loc.path) ? LocalDiskIcon : folderIcon(loc.path);
+      return isDriveRoot(loc.path) ? LOCALDISK_ICONS : folderIconSet(loc.path);
   }
 };
+
+/** Icône d'un emplacement à la taille voulue (16px par défaut : barre de titre/adresse). */
+export const locationIcon = (loc: Location, size: IconSize = 16): string => pickIcon(locationIconSet(loc), size);
 
 /** Emplacement parent (remonter d'un niveau), ou null si déjà à la racine. */
 export const parentLocation = (loc: Location): Location | null => {

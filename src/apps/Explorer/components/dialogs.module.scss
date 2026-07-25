@@ -59,19 +59,58 @@
   word-break: break-word;
 }
 
+/* --- Onglets (Propriétés / Options des dossiers) --- */
+.tabsRow {
+  display: flex;
+  padding-left: 3px;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.tab {
+  padding: 3px 10px;
+  border: 1px solid #aca899;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  background: #dedbcc;
+  margin-right: 2px;
+  color: #333;
+  cursor: default;
+}
+
+.tabActive {
+  background: #ece9d8;
+  padding-bottom: 4px;
+  color: #000;
+}
+
+.tabPanel {
+  border: 1px solid #aca899;
+  border-radius: 0 3px 3px 3px;
+  padding: 12px;
+  background: #ece9d8;
+}
+
 /* --- Options des dossiers / radios --- */
 .optionGroup {
   border: 1px solid #aca899;
   border-radius: 3px;
-  padding: 10px 12px;
-  margin-top: 4px;
+  padding: 8px 12px 10px;
+  margin-top: 10px;
+  position: relative;
+}
+
+.optionGroup > legend {
+  padding: 0 4px;
+  color: #000;
 }
 
 .radioRow {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  padding: 4px 0;
+  padding: 3px 0;
   cursor: default;
 }
 
@@ -79,9 +118,48 @@
   margin: 1px 0 0;
 }
 
+.subRadios {
+  margin-left: 20px;
+}
+
 .optionHint {
   color: #333;
-  margin: 4px 0 0 22px;
+  margin: 2px 0 0 22px;
+}
+
+.resetRight {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* --- Propriétés : attributs / ligne « s'ouvre avec » --- */
+.attrRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.opensWith {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opensWith img {
+  width: 16px;
+  height: 16px;
+}
+
+.opensWith .grow {
+  flex: 1;
 }
 
 /* --- Visionneuse texte (Bloc-notes) --- */

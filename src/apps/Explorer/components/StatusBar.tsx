@@ -1,11 +1,8 @@
 import React from 'react';
 import styles from './chrome.module.scss';
 
-import { WindowStatusBar } from '@/components/atoms/WindowStatusBar/WindowStatusBar';
-import { StatusBarItem } from '@/components/atoms/StatusBarItem/StatusBarItem';
-
 import { useExplorer } from '../ExplorerContext';
-import { objectCount } from '../model';
+import { MyComputerIcon, objectCount } from '../model';
 
 /** Somme d'octets formatée façon barre d'état XP (Ko / Mo). */
 const formatTotal = (bytes: number): string => {
@@ -16,7 +13,11 @@ const formatTotal = (bytes: number): string => {
   return '';
 };
 
-/** Barre d'état : nombre d'objets, taille, zone (« Mon ordinateur »). */
+/**
+ * Barre d'état de l'Explorateur : élément de flux (non absolu) placé sous la
+ * zone de contenu — le contenu défilant s'arrête donc au-dessus d'elle. Panneaux
+ * gravés (sunken) façon XP, avec l'icône « Mon ordinateur » à droite.
+ */
 export const StatusBar: React.FC = () => {
   const { items, selectedItems } = useExplorer();
 
@@ -25,16 +26,17 @@ export const StatusBar: React.FC = () => {
   const totalBytes = relevant.filter((it) => it.kind === 'file').reduce((sum, it) => sum + it.size, 0);
   const sizeText = formatTotal(totalBytes);
 
-  const leftLabel = selCount > 0 ? `${objectCount(selCount)} sélectionné${selCount > 1 ? 's' : ''}` : objectCount(items.length);
+  const leftLabel =
+    selCount > 0 ? `${objectCount(selCount)} sélectionné${selCount > 1 ? 's' : ''}` : objectCount(items.length);
 
   return (
-    <WindowStatusBar className={styles.statusBar}>
-      <StatusBarItem className={styles.statusMain}>{leftLabel}</StatusBarItem>
-      <StatusBarItem className={styles.statusSize}>{sizeText}</StatusBarItem>
-      <StatusBarItem className={styles.statusZone}>
-        <span className={styles.zoneIcon} />
-        Mon ordinateur
-      </StatusBarItem>
-    </WindowStatusBar>
+    <div className={styles.statusBar}>
+      <div className={`${styles.statusPanel} ${styles.statusMain}`}>{leftLabel}</div>
+      <div className={`${styles.statusPanel} ${styles.statusSize}`}>{sizeText}</div>
+      <div className={`${styles.statusPanel} ${styles.statusZone}`}>
+        <img src={MyComputerIcon} alt="" width={16} height={16} />
+        <span>Mon ordinateur</span>
+      </div>
+    </div>
   );
 };

@@ -1,20 +1,30 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import styles from './content.module.scss';
 
 import { useExplorer } from '../ExplorerContext';
 import { ExplorerItem } from '../items';
-import { SortKey } from '../model';
+import { IconSize, SortKey, pickIcon } from '../model';
 import { RenameInput } from './RenameInput';
 
 // ---------------------------------------------------------------------------
-// Élément (rendu commun : icône + libellé, avec renommage inline)
+// Icône d'un élément, avec teinte bleue de sélection (technique du Bureau XP :
+// un calque masqué par l'icône, rempli de bleu #316ac5 à 50 %).
 // ---------------------------------------------------------------------------
-
-interface CellProps {
-  item: ExplorerItem;
-  iconSize: number;
-}
+const ItemIcon: React.FC<{ item: ExplorerItem; size: IconSize; selected: boolean }> = ({ item, size, selected }) => {
+  const src = pickIcon(item.icons, size);
+  return (
+    <span className={styles.iconWrap} style={{ width: size, height: size }}>
+      <img src={src} width={size} height={size} alt="" />
+      {selected && (
+        <span
+          className={styles.iconSelOverlay}
+          style={{ ['--m' as string]: `url(${src})` } as React.CSSProperties}
+        />
+      )}
+    </span>
+  );
+};
 
 /** Libellé d'un élément : bascule en champ d'édition pendant le renommage. */
 const ItemLabel: React.FC<{ item: ExplorerItem; className?: string }> = ({ item, className }) => {
@@ -28,7 +38,6 @@ const ItemLabel: React.FC<{ item: ExplorerItem; className?: string }> = ({ item,
 // ---------------------------------------------------------------------------
 // Vue Détails (tableau trié)
 // ---------------------------------------------------------------------------
-
 const COLUMNS: { key: SortKey; label: string; className: string }[] = [
   { key: 'name', label: 'Nom', className: styles.colName },
   { key: 'size', label: 'Taille', className: styles.colSize },
@@ -47,10 +56,10 @@ const DetailsView: React.FC = () => {
           {COLUMNS.map((col) => (
             <th
               key={col.key}
-              className={`${col.className} ${sortKey === col.key ? styles.sortActive : ''}`}
+              className={`${styles.th} ${col.className} ${sortKey === col.key ? styles.sortActive : ''}`}
               onClick={() => setSort(col.key)}
             >
-              <span>{col.label}</span>
+              <span className={styles.thLabel}>{col.label}</span>
               {sortKey === col.key && <span className={styles.sortArrow}>{sortDir === 'asc' ? '▲' : '▼'}</span>}
             </th>
           ))}
@@ -60,13 +69,14 @@ const DetailsView: React.FC = () => {
         {items.map((item) => (
           <tr
             key={item.key}
+            data-itemkey={item.key}
             className={isSelected(item.key) ? styles.rowSelected : ''}
             onMouseDown={(e) => handleItemMouse(e, item)}
             onDoubleClick={() => handleItemDouble(item)}
             onContextMenu={(e) => handleItemContext(e, item)}
           >
             <td className={styles.colName}>
-              <img className={styles.detailsIcon} src={item.icon} alt="" />
+              <ItemIcon item={item} size={16} selected={isSelected(item.key)} />
               <ItemLabel item={item} className={styles.detailsName} />
             </td>
             <td className={`${styles.colSize} ${styles.sizeCell}`}>{item.sizeText}</td>
@@ -89,9 +99,8 @@ const DetailsView: React.FC = () => {
 };
 
 // ---------------------------------------------------------------------------
-// Vue Liste (petites icônes en colonnes)
+// Vue Liste
 // ---------------------------------------------------------------------------
-
 const ListView: React.FC = () => {
   const { items, isSelected, handleItemMouse, handleItemDouble, handleItemContext } = useExplorerView();
   return (
@@ -99,12 +108,13 @@ const ListView: React.FC = () => {
       {items.map((item) => (
         <div
           key={item.key}
+          data-itemkey={item.key}
           className={`${styles.listItem} ${isSelected(item.key) ? styles.itemSelected : ''}`}
           onMouseDown={(e) => handleItemMouse(e, item)}
           onDoubleClick={() => handleItemDouble(item)}
           onContextMenu={(e) => handleItemContext(e, item)}
         >
-          <img className={styles.listIcon} src={item.icon} alt="" />
+          <ItemIcon item={item} size={16} selected={isSelected(item.key)} />
           <ItemLabel item={item} className={styles.listLabel} />
         </div>
       ))}
@@ -113,19 +123,19 @@ const ListView: React.FC = () => {
 };
 
 // ---------------------------------------------------------------------------
-// Vues à grille (Icônes / Mosaïques / Miniatures), avec regroupement éventuel
+// Cellules à grille (Icônes / Mosaïques / Miniatures)
 // ---------------------------------------------------------------------------
-
-const IconCell: React.FC<CellProps> = ({ item, iconSize }) => {
+const IconCell: React.FC<{ item: ExplorerItem }> = ({ item }) => {
   const { isSelected, handleItemMouse, handleItemDouble, handleItemContext } = useExplorerView();
   return (
     <div
+      data-itemkey={item.key}
       className={`${styles.iconItem} ${isSelected(item.key) ? styles.itemSelected : ''}`}
       onMouseDown={(e) => handleItemMouse(e, item)}
       onDoubleClick={() => handleItemDouble(item)}
       onContextMenu={(e) => handleItemContext(e, item)}
     >
-      <img style={{ width: iconSize, height: iconSize }} src={item.icon} alt="" />
+      <ItemIcon item={item} size={32} selected={isSelected(item.key)} />
       <div className={styles.iconLabelWrap}>
         <ItemLabel item={item} className={styles.iconLabel} />
       </div>
@@ -137,12 +147,13 @@ const TileCell: React.FC<{ item: ExplorerItem }> = ({ item }) => {
   const { isSelected, handleItemMouse, handleItemDouble, handleItemContext } = useExplorerView();
   return (
     <div
+      data-itemkey={item.key}
       className={`${styles.tileItem} ${isSelected(item.key) ? styles.itemSelected : ''}`}
       onMouseDown={(e) => handleItemMouse(e, item)}
       onDoubleClick={() => handleItemDouble(item)}
       onContextMenu={(e) => handleItemContext(e, item)}
     >
-      <img className={styles.tileIcon} src={item.icon} alt="" />
+      <ItemIcon item={item} size={48} selected={isSelected(item.key)} />
       <div className={styles.tileText}>
         <ItemLabel item={item} className={styles.tileName} />
         <span className={styles.tileSecondary}>{item.secondary ?? item.typeLabel}</span>
@@ -155,13 +166,14 @@ const ThumbCell: React.FC<{ item: ExplorerItem }> = ({ item }) => {
   const { isSelected, handleItemMouse, handleItemDouble, handleItemContext } = useExplorerView();
   return (
     <div
+      data-itemkey={item.key}
       className={`${styles.thumbItem} ${isSelected(item.key) ? styles.itemSelected : ''}`}
       onMouseDown={(e) => handleItemMouse(e, item)}
       onDoubleClick={() => handleItemDouble(item)}
       onContextMenu={(e) => handleItemContext(e, item)}
     >
       <div className={styles.thumbFrame}>
-        <img className={styles.thumbIcon} src={item.icon} alt="" />
+        <ItemIcon item={item} size={48} selected={isSelected(item.key)} />
       </div>
       <div className={styles.iconLabelWrap}>
         <ItemLabel item={item} className={styles.iconLabel} />
@@ -172,22 +184,17 @@ const ThumbCell: React.FC<{ item: ExplorerItem }> = ({ item }) => {
 
 const GridView: React.FC<{ mode: 'icons' | 'tiles' | 'thumbnails' }> = ({ mode }) => {
   const { items, groups } = useExplorerView();
+  const Cell = mode === 'tiles' ? TileCell : mode === 'thumbnails' ? ThumbCell : IconCell;
+  const gridClass = mode === 'tiles' ? styles.tileGrid : mode === 'thumbnails' ? styles.thumbGrid : styles.iconGrid;
 
   const renderItems = (list: ExplorerItem[]) => (
-    <div className={mode === 'tiles' ? styles.tileGrid : mode === 'thumbnails' ? styles.thumbGrid : styles.iconGrid}>
-      {list.map((item) =>
-        mode === 'tiles' ? (
-          <TileCell key={item.key} item={item} />
-        ) : mode === 'thumbnails' ? (
-          <ThumbCell key={item.key} item={item} />
-        ) : (
-          <IconCell key={item.key} item={item} iconSize={32} />
-        ),
-      )}
+    <div className={gridClass}>
+      {list.map((item) => (
+        <Cell key={item.key} item={item} />
+      ))}
     </div>
   );
 
-  // Regroupement (vue Poste de travail) : un intitulé + un séparateur par groupe.
   if (groups) {
     return (
       <div className={styles.groupsWrap}>
@@ -204,9 +211,8 @@ const GridView: React.FC<{ mode: 'icons' | 'tiles' | 'thumbnails' }> = ({ mode }
 };
 
 // ---------------------------------------------------------------------------
-// Contexte de vue (mutualise les gestionnaires souris/clavier)
+// Contexte de vue (mutualise les gestionnaires souris)
 // ---------------------------------------------------------------------------
-
 interface ViewHelpers {
   items: ExplorerItem[];
   groups: ReturnType<typeof useExplorer>['groups'];
@@ -230,6 +236,12 @@ const useExplorerView = (): ViewHelpers => {
 // ---------------------------------------------------------------------------
 // Zone de contenu principale
 // ---------------------------------------------------------------------------
+interface Rect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 export const ContentView: React.FC = () => {
   const explorer = useExplorer();
@@ -255,11 +267,12 @@ export const ContentView: React.FC = () => {
     selectKeys,
   } = explorer;
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [marquee, setMarquee] = useState<Rect | null>(null);
+  const marqueeStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleItemMouse = useCallback(
     (e: React.MouseEvent, item: ExplorerItem) => {
-      // Clic droit sur un élément non sélectionné : on le sélectionne d'abord.
       if (e.button === 2) {
         if (!isSelected(item.key)) clickSelect(item.key, { ctrlKey: false, shiftKey: false, metaKey: false });
         return;
@@ -283,18 +296,62 @@ export const ContentView: React.FC = () => {
     [isSelected, selectKeys, openContextMenu],
   );
 
+  // --- Sélection au lasso (rubber-band) ----------------------------------
+  const runMarquee = useCallback(
+    (clientX: number, clientY: number) => {
+      const start = marqueeStart.current;
+      const inner = innerRef.current;
+      if (!start || !inner) return;
+      const clientRect = {
+        left: Math.min(start.x, clientX),
+        top: Math.min(start.y, clientY),
+        right: Math.max(start.x, clientX),
+        bottom: Math.max(start.y, clientY),
+      };
+      // Rectangle affiché (coordonnées relatives au contenu, défilement inclus).
+      const box = inner.getBoundingClientRect();
+      setMarquee({
+        left: clientRect.left - box.left,
+        top: clientRect.top - box.top,
+        width: clientRect.right - clientRect.left,
+        height: clientRect.bottom - clientRect.top,
+      });
+      // Test d'intersection avec chaque élément.
+      const hits: string[] = [];
+      inner.querySelectorAll<HTMLElement>('[data-itemkey]').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        const intersect = !(r.right < clientRect.left || r.left > clientRect.right || r.bottom < clientRect.top || r.top > clientRect.bottom);
+        if (intersect) hits.push(el.dataset.itemkey as string);
+      });
+      selectKeys(hits);
+    },
+    [selectKeys],
+  );
+
   const handleBackgroundMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      // Clic dans le vide (pas sur un élément) : désélectionne.
-      if (e.target === e.currentTarget || (e.target as HTMLElement).dataset?.bg === 'true') {
-        if (!state.renaming) clearSelection();
-      }
+      if (e.button !== 0) return;
+      const onItem = (e.target as HTMLElement).closest('[data-itemkey]');
+      if (onItem) return; // clic sur un élément : géré par l'élément
+      if (state.renaming) return;
+      if (!e.ctrlKey) clearSelection();
+      marqueeStart.current = { x: e.clientX, y: e.clientY };
+      const onMove = (ev: MouseEvent) => runMarquee(ev.clientX, ev.clientY);
+      const onUp = () => {
+        marqueeStart.current = null;
+        setMarquee(null);
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
     },
-    [clearSelection, state.renaming],
+    [clearSelection, runMarquee, state.renaming],
   );
 
   const handleBackgroundContext = useCallback(
     (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest('[data-itemkey]')) return;
       e.preventDefault();
       openContextMenu(e.clientX, e.clientY, null);
     },
@@ -349,16 +406,14 @@ export const ContentView: React.FC = () => {
         case 'ArrowLeft': {
           e.preventDefault();
           if (keys.length === 0) break;
-          const idx = currentIndex <= 0 ? 0 : currentIndex - 1;
-          selectKeys([keys[idx]]);
+          selectKeys([keys[currentIndex <= 0 ? 0 : currentIndex - 1]]);
           break;
         }
         case 'ArrowDown':
         case 'ArrowRight': {
           e.preventDefault();
           if (keys.length === 0) break;
-          const idx = currentIndex < 0 ? 0 : Math.min(keys.length - 1, currentIndex + 1);
-          selectKeys([keys[idx]]);
+          selectKeys([keys[currentIndex < 0 ? 0 : Math.min(keys.length - 1, currentIndex + 1)]]);
           break;
         }
         case 'Home':
@@ -397,9 +452,8 @@ export const ContentView: React.FC = () => {
         defer
       >
         <div
-          ref={containerRef}
+          ref={innerRef}
           className={styles.contentInner}
-          data-bg="true"
           tabIndex={0}
           onMouseDown={handleBackgroundMouseDown}
           onContextMenu={handleBackgroundContext}
@@ -410,6 +464,12 @@ export const ContentView: React.FC = () => {
           {mode === 'icons' && <GridView mode="icons" />}
           {mode === 'tiles' && <GridView mode="tiles" />}
           {mode === 'thumbnails' && <GridView mode="thumbnails" />}
+          {marquee && (
+            <div
+              className={styles.marquee}
+              style={{ left: marquee.left, top: marquee.top, width: marquee.width, height: marquee.height }}
+            />
+          )}
         </div>
       </OverlayScrollbarsComponent>
     </ViewCtx.Provider>

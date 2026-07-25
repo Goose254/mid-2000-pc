@@ -73,14 +73,30 @@ export const ExplorerContextMenu: React.FC = () => {
   if (target) {
     // Menu d'un élément (fichier / dossier / lecteur)
     const editable = target.editable;
+    const isDrive = target.kind === 'drive';
     content = (
       <>
         <Row label="Ouvrir" bold onClick={() => open(target)} />
         {target.kind !== 'file' && <Row label="Explorer" onClick={() => open(target)} />}
+        {target.kind !== 'file' && <Row label="Rechercher..." disabled />}
+        {target.kind === 'file' && <Row label="Imprimer" disabled />}
         <MenuSeparator />
+        {!isDrive && (
+          <>
+            <Row label="Envoyer vers">
+              <FloatingMenu>
+                <MenuItem label="Bureau (créer un raccourci)" aria-disabled />
+                <MenuItem label="Destinataire" aria-disabled />
+                <MenuItem label="Dossier compressé" aria-disabled />
+              </FloatingMenu>
+            </Row>
+            <MenuSeparator />
+          </>
+        )}
         <Row label="Couper" disabled={!editable} onClick={cut} />
         <Row label="Copier" disabled={!editable} onClick={copy} />
         <MenuSeparator />
+        <Row label="Créer un raccourci" disabled />
         <Row label="Supprimer" disabled={!editable} onClick={deleteSelection} />
         <Row label="Renommer" disabled={!editable} onClick={() => beginRename(target.key)} />
         <MenuSeparator />
@@ -119,6 +135,7 @@ export const ExplorerContextMenu: React.FC = () => {
         <Row label="Actualiser" onClick={refresh} />
         <MenuSeparator />
         <Row label="Coller" disabled={!canPaste} onClick={paste} />
+        <Row label="Coller le raccourci" disabled />
         <MenuSeparator />
         <Row label="Nouveau" disabled={!inFolder}>
           <FloatingMenu>

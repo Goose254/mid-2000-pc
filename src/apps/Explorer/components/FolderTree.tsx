@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import styles from './chrome.module.scss';
 
 import { useFsStore } from '@/common/fs';
@@ -157,9 +158,15 @@ export const FolderTree: React.FC = () => {
       <div className={styles.treeHeader}>
         <span>Dossiers</span>
       </div>
-      <div className={styles.treeBody}>
-        <TreeRow node={desktopRoot} depth={0} expanded={expanded} toggle={toggle} />
-      </div>
+      <OverlayScrollbarsComponent
+        className={`overlayscrollbars-react ${styles.treeBody}`}
+        options={{ scrollbars: { autoHide: 'never', clickScroll: true } }}
+        defer
+      >
+        <div className={styles.treeInner}>
+          <TreeRow node={desktopRoot} depth={0} expanded={expanded} toggle={toggle} />
+        </div>
+      </OverlayScrollbarsComponent>
     </div>
   );
 };

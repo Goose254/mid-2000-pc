@@ -9,14 +9,16 @@
  */
 import type { FsDirEntry, TrashItem } from '@/common/fs';
 import {
+  IconSet,
   VirtualDrive,
-  entryIcon,
+  entryIconSet,
   entryTypeLabel,
   folderLocation,
   formatDateTime,
   formatDiskSize,
   formatSize,
   Location,
+  pickIcon,
 } from './model';
 
 /** Nature d'affichage d'un élément. */
@@ -28,8 +30,10 @@ export interface ExplorerItem {
   /** Nom affiché. */
   name: string;
   kind: ItemKind;
-  /** Icône (mise à l'échelle par la vue selon le mode). */
+  /** Icône 32px (usage courant : volet Détails, barre d'état…). */
   icon: string;
+  /** Jeu d'icônes multi-tailles (les vues choisissent 16/32/48). */
+  icons: IconSet;
   /** Libellé de type (colonne Type / volet Détails). */
   typeLabel: string;
   /** Taille en octets (0 pour dossiers/lecteurs). */
@@ -57,7 +61,8 @@ export const entryToItem = (entry: FsDirEntry): ExplorerItem => ({
   key: entry.path,
   name: entry.name,
   kind: entry.type === 'folder' ? 'folder' : 'file',
-  icon: entryIcon(entry),
+  icon: pickIcon(entryIconSet(entry), 32),
+  icons: entryIconSet(entry),
   typeLabel: entryTypeLabel(entry),
   size: entry.size,
   sizeText: formatSize(entry.type, entry.size),
@@ -79,6 +84,7 @@ export const driveToItem = (drive: VirtualDrive): ExplorerItem => {
     name: drive.label,
     kind: 'drive',
     icon: drive.icon,
+    icons: drive.icons,
     typeLabel: drive.typeLabel,
     size: 0,
     sizeText: '',
@@ -95,12 +101,14 @@ export const driveToItem = (drive: VirtualDrive): ExplorerItem => {
 /** Élément de Corbeille → élément d'affichage (avec emplacement d'origine). */
 export const trashToItem = (item: TrashItem): ExplorerItem => {
   const isFolder = item.node.type === 'folder';
+  const ref = { name: item.node.name, type: item.node.type, path: item.originalPath };
   return {
     key: `trash:${item.id}`,
     name: item.node.name,
     kind: isFolder ? 'folder' : 'file',
-    icon: entryIcon({ name: item.node.name, type: item.node.type, path: item.originalPath }),
-    typeLabel: entryTypeLabel({ name: item.node.name, type: item.node.type, path: item.originalPath }),
+    icon: pickIcon(entryIconSet(ref), 32),
+    icons: entryIconSet(ref),
+    typeLabel: entryTypeLabel(ref),
     size: item.node.type === 'file' ? item.node.size : 0,
     sizeText: formatSize(item.node.type, item.node.type === 'file' ? item.node.size : 0),
     modifiedAt: item.deletedAt,

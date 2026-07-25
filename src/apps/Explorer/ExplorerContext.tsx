@@ -11,6 +11,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { FsError, childPath, getBaseName, getParentPath, isValidName, useFsStore } from '@/common/fs';
 import type { FsFolderNode, TrashItem } from '@/common/fs';
 import { useWindowsStore } from '@/common/stores/windowsStore';
+import { openNotepad } from '@/apps/Notepad/main';
 
 import {
   COMPUTER,
@@ -51,7 +52,6 @@ export interface Clipboard {
 export type DialogState =
   | { kind: 'properties'; item: ExplorerItem | null } // null = propriétés du dossier courant
   | { kind: 'folderOptions' }
-  | { kind: 'textViewer'; path: string; name: string }
   | { kind: 'about' };
 
 export interface MessageState {
@@ -302,7 +302,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ windowId, in
         return;
       }
       if (item.kind === 'file' && item.path) {
-        setDialog({ kind: 'textViewer', path: item.path, name: item.name });
+        openNotepad(item.path, item.name);
       }
     },
     [navigate, showMessage],
@@ -330,7 +330,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ windowId, in
           return;
         }
         if (stat?.type === 'file') {
-          setDialog({ kind: 'textViewer', path: stat.path, name: stat.name });
+          openNotepad(stat.path, stat.name);
           return;
         }
       }

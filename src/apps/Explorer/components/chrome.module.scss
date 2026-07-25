@@ -30,6 +30,10 @@ $xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3
 .menuToolbar,
 .navToolbar {
   align-items: stretch;
+  // Contexte d'empilement au-dessus de la barre d'adresse : les menus déroulants
+  // doivent passer PAR-DESSUS l'icône de la barre d'adresse (et non l'inverse).
+  position: relative;
+  z-index: 30;
 }
 
 .windowsBrand {
@@ -70,8 +74,13 @@ $xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3
 /* --------------------------------------------------------------------------
    Barre d'adresse
    -------------------------------------------------------------------------- */
-.addressToolbar > div {
-  min-height: 26px;
+.addressToolbar {
+  position: relative;
+  z-index: 1;
+
+  > div {
+    min-height: 26px;
+  }
 }
 
 .addressRow {
@@ -134,15 +143,17 @@ $xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3
 /* --------------------------------------------------------------------------
    Volet des tâches (bleu) et arborescence — largeur commune
    -------------------------------------------------------------------------- */
-.taskPane,
+.taskScroll,
 .treePane {
   width: 200px;
   flex-shrink: 0;
   box-sizing: border-box;
-  overflow: auto;
 }
 
 .taskPane {
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
   background: linear-gradient(180deg, #7a99dd 0%, #637fd2 100%);
   padding: 10px 8px;
 }
@@ -269,6 +280,7 @@ $xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3
   padding: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .treeHeader {
@@ -285,8 +297,11 @@ $xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3
 }
 
 .treeBody {
-  flex: 1;
-  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.treeInner {
   padding: 4px 2px;
 }
 
@@ -343,35 +358,52 @@ $xp-arrow-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3
 }
 
 /* --------------------------------------------------------------------------
-   Barre d'état
+   Barre d'état (élément de flux, panneaux gravés façon XP)
    -------------------------------------------------------------------------- */
 .statusBar {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  height: 21px;
+  background: #ece9d8;
+  border-top: 1px solid #d8d5c7;
+  box-shadow: inset 0 1px 0 #ffffff;
+  font-size: 11px;
+  color: #000;
+  padding: 0 1px;
+}
+
+.statusPanel {
+  display: flex;
+  align-items: center;
+  height: 17px;
+  padding: 0 8px;
+  margin: 0 1px;
+  // Bordure gravée (sunken) : sombre en haut/gauche, clair en bas/droite.
+  border: 1px solid;
+  border-color: #9a9784 #ffffff #ffffff #9a9784;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 
 .statusMain {
   flex: 0 0 auto;
-  min-width: 120px;
+  min-width: 135px;
 }
 
 .statusSize {
   flex: 1 1 auto;
+  min-width: 0;
 }
 
 .statusZone {
   flex: 0 0 auto;
-  display: flex;
-  align-items: center;
   gap: 5px;
-  min-width: 110px;
-}
+  min-width: 118px;
 
-.zoneIcon {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  background: linear-gradient(180deg, #d7e4fb 0%, #9db8e8 100%);
-  border: 1px solid #6f8fc4;
-  border-radius: 2px;
-  flex-shrink: 0;
+  img {
+    display: block;
+  }
 }

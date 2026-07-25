@@ -7,9 +7,12 @@ import { useTaskbarStore } from '@/common/stores/taskbarStore';
 import { useAppsStore } from '@/common/stores/appsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-// Icône « Poste de travail » (l'ancienne icône scanner était un placeholder).
-import iconLarge from '@/assets/windows-icons/explorer.exe_14_100-9.png';
-import iconSmall from '@/assets/windows-icons/explorer.exe_14_100-10.png';
+// Icône « Poste de travail » multi-tailles (16/24/32/48) : évite le débordement
+// dans la barre des tâches et le Gestionnaire (qui affichent en 16px).
+import icon48 from '@/assets/windows-icons/mycomputer-48.png';
+import icon32 from '@/assets/windows-icons/mycomputer-32.png';
+import icon24 from '@/assets/windows-icons/mycomputer-24.png';
+import icon16 from '@/assets/windows-icons/mycomputer-16.png';
 
 /**
  * Emplacement d'ouverture de la PROCHAINE instance d'Explorateur. `startApp`
@@ -28,10 +31,10 @@ export const ExplorerApp: AppTemplate<object> = {
   id: 'explorer.exe',
   name: 'Poste de travail',
   icons: {
-    large: iconLarge,
-    medium: iconLarge,
-    small: iconSmall,
-    xsmall: iconSmall,
+    large: icon48,
+    medium: icon32,
+    small: icon24,
+    xsmall: icon16,
   },
   multiInstance: true,
   MainWindow: ExplorerMainWindow as unknown as AppTemplate<object>['MainWindow'],
@@ -53,7 +56,12 @@ export const ExplorerApp: AppTemplate<object> = {
 
     return {
       killInstance: () => {
-        useWindowsStore.getState().closeWindow(windowId);
+        // IMPORTANT : fermer par `pid` (et non `windowId`). `closeWindow` appelle
+        // `killInstance` en cascade DANS son `set()` ; refermer par `windowId`
+        // relancerait la cascade (récursion infinie). La fenêtre est déjà retirée
+        // par le `closeWindow(windowId)` du bouton de fermeture ; ici on ne fait
+        // que le nettoyage (même patron que le Gestionnaire des tâches).
+        useWindowsStore.getState().closeWindow(pid);
         useTaskbarStore.getState().removeToolIcon(pid);
       },
     };
