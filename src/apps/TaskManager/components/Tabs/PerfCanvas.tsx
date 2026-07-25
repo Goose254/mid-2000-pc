@@ -179,22 +179,18 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
     ctx.fillStyle = BACKGROUND;
     ctx.fillRect(0, 0, w, h);
 
-    // Texte (%/Mo) en vert, en haut de la boîte.
-    ctx.fillStyle = GAUGE_ON;
-    ctx.font = 'bold 10px "Lucida Console", Consolas, monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(label, Math.round(w / 2), 3);
-
-    // Bargraph LED à deux colonnes, sous le texte.
-    const top = 17;
-    const bottom = h - 3;
-    const padX = 4;
-    const colGap = 3;
+    // Bargraph LED à deux colonnes, avec du padding interne (la boîte noire
+    // remplit la section, l'espace est reporté à l'intérieur autour des LED).
+    // Le texte est réservé dans une bande en bas de la boîte.
+    const padX = 24;
+    const ledTop = 8;
+    const textH = 24;
+    const ledBottom = h - textH;
+    const colGap = 1;
     const cellH = 3;
     const cellGap = 1;
     const slot = cellH + cellGap;
-    const areaH = bottom - top;
+    const areaH = ledBottom - ledTop;
     const numCells = Math.max(1, Math.floor(areaH / slot));
     const ratio = Math.max(0, Math.min(1, value / max));
     const litCells = Math.round(ratio * numCells);
@@ -203,7 +199,7 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
     for (let col = 0; col < 2; col++) {
       const x = padX + col * (colW + colGap);
       for (let i = 0; i < numCells; i++) {
-        const y = bottom - (i + 1) * slot + cellGap;
+        const y = ledBottom - (i + 1) * slot + cellGap;
         if (i < litCells) {
           ctx.fillStyle = GAUGE_ON;
           ctx.fillRect(x, y, colW, cellH);
@@ -213,6 +209,13 @@ export const GaugeCanvas: React.FC<GaugeCanvasProps> = ({
         }
       }
     }
+
+    // Texte (%/Mo) en vert, SOUS la jauge (non gras).
+    ctx.fillStyle = GAUGE_ON;
+    ctx.font = '11px "Tahoma", "Lucida Console", Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(label, Math.round(w / 2), h - 6);
   };
 
   // Redessine à chaque changement de valeur / libellé.

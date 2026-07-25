@@ -46,6 +46,9 @@
     flex: 0 0 auto;
     width: 100px;
     align-items: center;
+    // Moins de padding latéral : la boîte noire remplit la section (le padding
+    // est reporté à l'intérieur de la boîte, autour des LED).
+    padding: 2px 5px 6px;
 }
 
 .graphBox {
@@ -62,12 +65,12 @@
     box-sizing: border-box;
 }
 
-// La jauge LED s'étire verticalement dans son encadré (comme sous XP).
+// La jauge LED remplit son encadré (la boîte noire prend toute la place).
 .gaugeCanvas {
     composes: graphBezel;
     display: block;
     background: #000;
-    width: 60px;
+    width: 100%;
     flex: 1 1 auto;
     min-height: 0;
 }
