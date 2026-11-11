@@ -31,7 +31,7 @@ complet avec ses fenêtres, sa barre des tâches et son menu Démarrer.
 ## Stack technique
 
 - [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- [Vite 5](https://vitejs.dev/)
+- [Vite 6](https://vitejs.dev/)
 - [Zustand](https://zustand-demo.pmnd.rs/) pour l'état global
 - SCSS Modules
 - [i18next](https://www.i18next.com/) / react-i18next (fr / en)
