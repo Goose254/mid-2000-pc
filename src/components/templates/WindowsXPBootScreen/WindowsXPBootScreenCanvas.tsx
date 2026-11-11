@@ -220,7 +220,7 @@ const WindowsXPBootScreenCanvas: React.FC<{ onComplete: (bootStage?: BootStage) 
     return () => clearTimeout(timer);
   }, [onComplete]);
 
-  return <canvas id="windows-boot-canvas" ref={canvasRef} width={WIDTH} height={HEIGHT} className={`${styles.windowsBootCanvas} cursor-none`} />;
+  return <canvas id="windows-boot-canvas" ref={canvasRef} width={WIDTH} height={HEIGHT} className={styles.windowsBootCanvas} />;
 };
 
 export default WindowsXPBootScreenCanvas;

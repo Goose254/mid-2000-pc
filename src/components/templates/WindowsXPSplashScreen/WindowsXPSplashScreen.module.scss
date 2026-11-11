@@ -1,4 +1,7 @@
 .splashScreenContainer {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
     background-size: 100% 100%;
     background-position: 0px 0px, 0px 0px;
     background-image: radial-gradient(50% 50% at 100px 100%, #F4953830 0%, #F4953800 100%), linear-gradient(0deg, #00309c 0%, #00309c 100%);

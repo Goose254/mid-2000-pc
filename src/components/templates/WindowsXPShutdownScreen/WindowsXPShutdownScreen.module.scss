@@ -1,6 +1,9 @@
 $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
 
 .shutdown {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;

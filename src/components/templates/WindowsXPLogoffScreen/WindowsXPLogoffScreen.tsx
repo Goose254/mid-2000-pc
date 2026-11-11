@@ -52,7 +52,7 @@ export const WindowsXPLogoffScreen: React.FC<WindowsXPLogoffScreenProps> = ({
   const message = variant === 'shutdown' ? t('shuttingDown') : t('loggingOff');
 
   return (
-    <div className={`${styles.logoff} min-h-screen relative overflow-hidden`}>
+    <div className={styles.logoff}>
       <div className={styles.topSeparator} />
       <div className={styles.content}>
         <div className={styles.spinner} aria-hidden="true">

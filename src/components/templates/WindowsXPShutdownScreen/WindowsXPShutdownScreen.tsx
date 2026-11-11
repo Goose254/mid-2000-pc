@@ -19,7 +19,7 @@ export const WindowsXPShutdownScreen: React.FC<WindowsXPShutdownScreenProps> = (
   const { t } = useTranslation('common', { keyPrefix: 'session' });
 
   return (
-    <div className={`${styles.shutdown} min-h-screen relative overflow-hidden`}>
+    <div className={styles.shutdown}>
       <div className={styles.message}>{t('poweroff.message')}</div>
 
       <button type="button" className={styles.powerButton} onClick={onPowerOn} title={t('poweroff.restart')}>

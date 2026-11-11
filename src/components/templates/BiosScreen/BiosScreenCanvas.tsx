@@ -231,8 +231,7 @@ const BiosScreenCanvas: React.FC<{ onComplete: (bootStage: BootStage) => void }>
       ref={canvasRef}
       width={800}
       height={600}
-      className="cursor-none"
-      style={{ display: 'block' }}
+      style={{ display: 'block', cursor: 'none' }}
     />
   );
 };

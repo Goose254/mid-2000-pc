@@ -1,0 +1,9 @@
+// Conteneur plein écran du Bureau : le fond d'écran (posé en style inline)
+// couvre toute la zone, et rien ne déborde de l'écran.
+.desktop {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}

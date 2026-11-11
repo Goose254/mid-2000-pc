@@ -929,8 +929,7 @@ const BiosSetupCanvas: React.FC<BiosSetupCanvasProps> = ({ onExit }) => {
       ref={canvasRef}
       width={WIDTH}
       height={HEIGHT}
-      style={{ outline: 'none', display: 'block' }}
-      className="cursor-none"
+      style={{ outline: 'none', display: 'block', cursor: 'none' }}
     />
   );
 };

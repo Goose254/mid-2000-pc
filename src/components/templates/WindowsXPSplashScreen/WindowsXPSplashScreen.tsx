@@ -20,7 +20,7 @@ export const WindowsXPSplashScreen: React.FC<{ onComplete: (bootStage?: BootStag
   }, [onComplete]);
 
   return (
-    <div className={`${styles.splashScreenContainer} min-h-screen relative overflow-hidden`}>
+    <div className={styles.splashScreenContainer}>
       <div className={styles.splashScreenTopSeparator}></div>
       <div className={styles.splashScreenContent}>
         <div className={styles.splashScreenWelcome}>{t('welcome')}</div>

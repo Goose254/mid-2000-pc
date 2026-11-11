@@ -136,7 +136,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div style={{ minHeight: '100vh' }}>
       <DisplayProvider>
         {renderStage()}
       </DisplayProvider>

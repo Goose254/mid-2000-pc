@@ -19,6 +19,7 @@ import { openExplorerAt } from '@/apps/Explorer/main';
 import { COMPUTER, TRASH, folderLocation, SPECIAL_PATHS } from '@/apps/Explorer/model';
 import { MinesweeperApp } from '@/apps/Minesweeper/main';
 import { DesktopContextMenu } from './DesktopContextMenu';
+import styles from './Desktop.module.scss';
 
 const ICON_GRID_CELL_WIDTH = 94;
 const ICON_GRID_CELL_HEIGHT = 80;
@@ -532,7 +533,7 @@ export const Desktop: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative overflow-hidden"
+      className={styles.desktop}
       style={{
         backgroundImage: `url(${XPWallpaper})`,
       }}

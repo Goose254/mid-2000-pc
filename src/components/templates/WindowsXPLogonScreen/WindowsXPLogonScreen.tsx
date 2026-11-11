@@ -29,7 +29,7 @@ export const WindowsXPLogonScreen: React.FC<WindowsXPLogonScreenProps> = ({ onLo
   };
 
   return (
-    <div className={`${styles.logon} min-h-screen relative overflow-hidden`}>
+    <div className={styles.logon}>
       <div className={styles.topSeparator} />
 
       <div className={styles.body}>

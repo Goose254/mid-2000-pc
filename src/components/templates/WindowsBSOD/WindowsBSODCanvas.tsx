@@ -96,7 +96,7 @@ export const WindowsBSODCanvas: React.FC<WindowsBSODCanvasProps> = ({
     return () => clearTimeout(timer);
   }, [onComplete, delayMs]);
 
-  return <canvas ref={canvasRef} className="cursor-none" style={{ display: 'block' }} />;
+  return <canvas ref={canvasRef} style={{ display: 'block', cursor: 'none' }} />;
 };
 
 export default WindowsBSODCanvas;

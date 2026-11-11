@@ -4,6 +4,9 @@ $mid-blue: #5a7edc;
 $font-stack: Tahoma, 'Segoe UI', Verdana, sans-serif;
 
 .logon {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background-size: 100% 100%;
