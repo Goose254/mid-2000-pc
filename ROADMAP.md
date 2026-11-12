@@ -1,6 +1,7 @@
 # Roadmap
 
-État du projet **mid-2000-pc**, vérifié dans le code le 11 novembre 2026. Ce
+État du projet **mid-2000-pc**, vérifié dans le code le 11 novembre 2026 et
+mis à jour le 12 novembre 2026 après un second lot de travaux de qualité. Ce
 fichier ne décrit que ce qui existe réellement ; les idées sont rangées dans
 « Applications envisagées ».
 
@@ -18,10 +19,16 @@ fichier ne décrit que ce qui existe réellement ; les idées sont rangées dans
 **Bureau et fenêtres** (`src/components/`, `src/common/stores/`)
 
 - Gestionnaire de fenêtres : déplacement, redimensionnement dans les
-  8 directions, réduction / agrandissement animés, ordre d'empilement,
-  placement en cascade, mémoire de placement par application.
+  8 directions avec une taille minimale, réduction / agrandissement animés,
+  ordre d'empilement, placement en cascade, mémoire de placement par
+  application. Une seule fenêtre est active à la fois ; fermer ou réduire la
+  fenêtre active donne le focus à celle du dessus.
 - Barre des tâches (boutons de fenêtres, zone de notification, horloge), menu
   Démarrer, boîte de dialogue Exécuter, overlay d'arrêt.
+- Exécuter lance toute application du registre par son nom d'exécutable, sans
+  tenir compte de la casse : `explorer.exe`, `notepad.exe`, `taskmgr.exe`,
+  `winmine.exe`, `nusrmgr.cpl` (ou `control`). Un nom inconnu affiche
+  « Windows ne trouve pas... ».
 - Icônes du bureau déplaçables sur une grille, positions conservées dans le
   `localStorage`.
 
@@ -42,7 +49,9 @@ fichier ne décrit que ce qui existe réellement ; les idées sont rangées dans
   saisissable, arborescence des dossiers, cinq modes d'affichage, tri,
   sélection multiple, création de dossier et de document texte, renommage,
   suppression vers la Corbeille, couper / copier / coller, menu contextuel,
-  propriétés.
+  propriétés. Corbeille : restauration d'un élément, de la sélection ou de
+  tout son contenu (menu contextuel et volet des tâches), vidage avec la
+  boîte de confirmation de Windows XP.
 - **Bloc-notes** : ouvre un fichier texte depuis l'Explorateur et l'enregistre
   dans le système de fichiers (« Enregistrer sous » écrit directement dans
   `C:\Mes documents`, sans boîte de dialogue).
@@ -55,67 +64,68 @@ fichier ne décrit que ce qui existe réellement ; les idées sont rangées dans
 - **Démineur** : complet (niveaux, partie personnalisée, marques, meilleurs
   temps, sons).
 
-**Outillage**
+**Architecture et outillage**
 
+- Registre central des applications (`src/apps/registry.ts`) : chaque
+  application y est décrite une seule fois (identifiant, noms d'exécutable,
+  nom, icônes, taille de fenêtre, icônes du bureau, entrées du menu Démarrer,
+  chargeur). Le bureau, le menu Démarrer et Exécuter le lisent ; aucun
+  n'importe une application.
+- Applications chargées à la demande : le JavaScript initial pèse 451 kB
+  (189 kB gzip) au lieu de 811 kB (317 kB gzip) ; chaque application est un
+  fichier séparé (Explorateur 128 kB, Gestionnaire des tâches 104 kB, Démineur
+  101 kB, Comptes d'utilisateurs 11 kB, Bloc-notes 5 kB), téléchargé à son
+  premier lancement. La fenêtre ne s'ouvre qu'une fois le code arrivé ; en
+  attendant, le bureau affiche le curseur « flèche + sablier ».
+- Hauteur de la barre des tâches définie une seule fois (`TASKBAR_HEIGHT`,
+  `src/common/constants/layout.ts`), publiée aux feuilles SCSS par la
+  propriété CSS `--taskbar-height`.
+- 137 tests Vitest : système de fichiers (46), gestionnaire de fenêtres (47),
+  géométrie de redimensionnement (7), registre des applications (20),
+  lancement à la demande (7), actions de la Corbeille (10).
 - CI GitHub Actions : lint, vérification des types, tests, build.
+- ESLint : aucune erreur, aucun avertissement.
 - `npm audit` : aucun avis sur les dépendances de production.
 
 ## Dette technique connue
 
-Chaque point a été constaté dans le code à la date ci-dessus.
+Chaque point a été constaté dans le code aux dates ci-dessus.
 
-- **Pas de registre central des applications.** Les applications sont
-  importées à la main dans `Desktop.tsx` (icônes du bureau) et `StartMenu.tsx`,
-  et redéclarées dans l'`executableMap` de
-  `src/components/organisms/RunDialog/RunDialog.tsx`. Cette table ne connaît
-  que `explorer.exe`, `taskmgr.exe` et `winmine.exe` : le Bloc-notes et les
-  Comptes d'utilisateurs ne se lancent pas depuis Exécuter.
-- **Internationalisation partielle.** 8 fichiers `.tsx` sur 79 utilisent
-  `useTranslation`. Sont traduits (fr / en, 90 clés chacun) : les écrans de
+- **Internationalisation partielle.** 11 fichiers `.tsx` sur 79 utilisent
+  `useTranslation`. Sont traduits (fr / en, 107 clés chacun) : les écrans de
   session (ouverture, bienvenue, fermeture, arrêt, extinction), le libellé du
   bouton Démarrer et le format de l'horloge, le menu contextuel des boutons de
-  la barre des tâches, le menu contextuel du bureau et les Comptes
-  d'utilisateurs. Tout le reste est en français codé en dur : menu Démarrer,
-  icônes du bureau, Explorateur, Bloc-notes, Gestionnaire des tâches, Démineur,
-  Exécuter, overlay d'arrêt.
-- **Mutation d'un objet du store pendant le rendu.**
-  `src/components/organisms/Window/Window.tsx` (lignes 61 à 93) affecte
-  `buttons.maximize.action`, `minimize.action` et `close.action` directement
-  sur l'objet lu dans le store, dans le corps du composant.
-- **Hauteur de la barre des tâches en dur.** La valeur `30` est répétée dans
-  `Window.tsx` (`window.innerHeight - 30`, deux fois) et `Desktop.tsx`
-  (`window.innerHeight - 30` et `calc(100vh - 30px)`).
-- **Un seul bundle JavaScript** d'environ 811 kB (317 kB gzip) : aucune
-  application n'est chargée à la demande, et Vite signale le dépassement à
-  chaque build.
-- **Tests limités au système de fichiers.** Les stores (fenêtres,
-  applications, comptes), la logique du Démineur et les composants n'ont aucun
-  test.
-- **Corbeille incomplète côté interface.** L'Explorateur affiche la Corbeille
-  et y envoie les éléments supprimés, mais ni « Restaurer » ni « Vider la
-  Corbeille » ne sont proposés, alors que le système de fichiers les
-  implémente.
-- **Curseur par défaut introuvable en production.** Trois règles pointent vers
-  un chemin relatif faux pour `default.cur` (`Window.module.scss` ligne 183,
-  `WindowsXpArrowsPlugin.css` lignes 33 et 158) : le build les laisse telles
-  quelles et le navigateur reçoit une erreur 404 (il retombe sur le curseur
-  système).
+  la barre des tâches, le menu contextuel du bureau, les Comptes
+  d'utilisateurs et les actions de la Corbeille dans l'Explorateur. Tout le
+  reste est en français codé en dur : menu Démarrer, icônes du bureau, le
+  reste de l'Explorateur, Bloc-notes, Gestionnaire des tâches, Démineur,
+  Exécuter, overlay d'arrêt. Les noms d'application du registre sont eux aussi
+  en français.
+- **Tests encore partiels.** Les stores des comptes, de la barre des tâches
+  et de session, la logique du Démineur et les composants React n'ont aucun
+  test ; Vitest tourne sans DOM.
+- **Déplacement des fenêtres non borné.** Rien n'empêche de déposer une
+  fenêtre avec sa barre de titre sous la barre des tâches, où l'on ne peut
+  plus l'attraper ; « Déplacer » et « Taille » du menu de la barre des tâches
+  sont inertes.
 - **Entrées inertes.** Plusieurs éléments visibles sont désactivés ou sans
   action : la plupart des entrées du menu Démarrer (Internet, Calculatrice, le
   contenu de « Tous les programmes »...), le menu contextuel du bureau,
   « Mettre en veille », « Ouvrir... » et la recherche dans le Bloc-notes, les
-  boutons de l'onglet Utilisateurs du Gestionnaire des tâches.
+  boutons de l'onglet Utilisateurs du Gestionnaire des tâches, « Couper » et
+  « Supprimer » sur un élément de la Corbeille (on ne peut la vider qu'en
+  entier).
 - **Mot de passe cosmétique.** Le mot de passe d'un compte est stocké en clair
   dans le `localStorage` et n'est jamais demandé à l'ouverture de session.
 - **Styles partagés par copie.** `ProcessesTab.tsx` et `UsersTab.tsx`
   importent la feuille `ApplicationsTab.module.scss`.
-- **Dépendance inutilisée.** `lucide-react` est déclarée mais n'est importée
-  nulle part dans `src/`.
-- **Avertissements persistants.** Un avertissement ESLint
-  (`react-refresh/only-export-components` dans `ExplorerContext.tsx`), des
-  avertissements de dépréciation Sass au build, et 7 avis `npm audit` modérés
-  sur les dépendances de développement (minimatch, via typescript-eslint),
-  sans correctif publié.
+- **Son de fermeture de session absent.** `windows-xp-logoff.mp3` n'est pas
+  livré dans le dépôt (voir `public/sounds/README.txt`) : à chaque fermeture
+  de session ou arrêt, le navigateur reçoit une erreur 404, ignorée par le
+  code. C'est la seule requête en échec sur un parcours complet du site.
+- **Avertissements persistants.** Des avertissements de dépréciation Sass au
+  build, et 7 avis `npm audit` modérés sur les dépendances de développement
+  (minimatch, via typescript-eslint), sans correctif publié.
 
 ## Applications envisagées
 
@@ -136,5 +146,9 @@ d'une journée, **M** quelques jours, **L** une à plusieurs semaines.
 | **Visionneuse d'images** | Double-clic sur une image dans l'Explorateur | **S/M** | Stockage d'images |
 
 Le Bloc-notes, la Corbeille et la boîte de dialogue Propriétés, qui figuraient
-dans cette liste, sont désormais en place (voir « Fait » et, pour la Corbeille,
-« Dette technique connue »).
+dans cette liste, sont désormais en place (voir « Fait »).
+
+Une nouvelle application s'ajoute en deux temps : son code dans
+`src/apps/<Nom>/main.tsx` (un `AppImplementation`), puis une entrée dans
+`src/apps/registry.ts`. Elle se lance alors depuis Exécuter, et apparaît sur
+le bureau si l'entrée déclare une icône.

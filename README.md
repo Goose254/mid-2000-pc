@@ -18,11 +18,13 @@ complet avec ses fenêtres, sa barre des tâches et son menu Démarrer.
 - **BIOS Setup** : accessible avec la touche `Suppr` pendant le POST, navigable
   au clavier.
 - **Bureau Windows XP** : icônes, fond d'écran, barre des tâches, menu
-  Démarrer, boîte de dialogue Exécuter, fenêtres déplaçables et
-  redimensionnables (réduire / agrandir / fermer).
+  Démarrer, fenêtres déplaçables et redimensionnables (réduire / agrandir /
+  fermer), boîte de dialogue Exécuter qui lance chaque application par son
+  nom (`notepad`, `taskmgr`, `winmine`, `nusrmgr.cpl`...).
 - **Explorateur** : Poste de travail, navigation dans les dossiers, plusieurs
-  modes d'affichage, création / renommage / suppression / copier-coller, le
-  tout sur un système de fichiers virtuel conservé dans le navigateur.
+  modes d'affichage, création / renommage / suppression / copier-coller,
+  Corbeille que l'on peut restaurer ou vider, le tout sur un système de
+  fichiers virtuel conservé dans le navigateur.
 - **Bloc-notes** : ouverture et enregistrement des fichiers texte de ce
   système de fichiers.
 - **Démineur** : le jeu culte, fidèle à l'original.
@@ -40,16 +42,17 @@ Ce qui reste à faire et les limites connues sont listés dans
 
 L'interface n'est **que partiellement bilingue**. L'infrastructure i18next est
 en place (français et anglais, langue du navigateur détectée automatiquement,
-anglais par défaut, pas de sélecteur de langue), mais seuls 8 fichiers `.tsx`
+anglais par défaut, pas de sélecteur de langue), mais seuls 11 fichiers `.tsx`
 sur 79 passent par `useTranslation`.
 
 - **Traduit (fr / en)** : les écrans de session (ouverture, bienvenue,
   fermeture, arrêt, extinction), le bouton Démarrer et l'horloge de la barre
   des tâches, le menu contextuel des boutons de la barre des tâches, le menu
-  contextuel du bureau, les Comptes d'utilisateurs.
-- **En français uniquement** : le menu Démarrer, les icônes du bureau,
-  l'Explorateur, le Bloc-notes, le Gestionnaire des tâches, le Démineur, la
-  boîte de dialogue Exécuter, la fenêtre d'arrêt de l'ordinateur.
+  contextuel du bureau, les Comptes d'utilisateurs, les actions de la
+  Corbeille dans l'Explorateur.
+- **En français uniquement** : le menu Démarrer, les icônes du bureau, le
+  reste de l'Explorateur, le Bloc-notes, le Gestionnaire des tâches, le
+  Démineur, la boîte de dialogue Exécuter, la fenêtre d'arrêt de l'ordinateur.
 - **En anglais uniquement**, comme sur une vraie machine : le BIOS, le BIOS
   Setup et l'écran bleu.
 
@@ -59,11 +62,13 @@ sur 79 passent par `useTranslation`.
 src/
 ├── App.tsx            machine à états du démarrage (BIOS → boot → session → bureau)
 ├── apps/              une application par dossier (Explorer, Notepad, TaskManager,
-│                      UserAccounts, Minesweeper)
+│   │                  UserAccounts, Minesweeper)
+│   └── registry.ts    registre central : la fiche de chaque application
 ├── common/
 │   ├── stores/        état global Zustand (fenêtres, applications, session, comptes...)
 │   ├── fs/            système de fichiers virtuel et ses tests
 │   ├── types/         types partagés (AppTemplate, WindowInfo)
+│   ├── constants/     constantes de mise en page (hauteur de la barre des tâches)
 │   └── i18n/          catalogues fr / en
 ├── components/        composants du shell : atoms, molecules, organisms, templates
 └── i18n.ts            initialisation d'i18next
@@ -87,15 +92,28 @@ fermer, mettre au premier plan, déplacer, redimensionner, réduire, agrandir.
 Le bureau (`src/components/templates/Desktop/Desktop.tsx`) affiche une
 `Window` par entrée ; la barre des tâches lit le même store.
 
-**Modèle d'application.** Une application est un objet `AppTemplate`
-(`src/common/types/appTemplate.ts`) : identifiant (`notepad.exe`), nom, icônes,
-`multiInstance`, composant `MainWindow`, icône de zone de notification
-facultative, et une fonction `init(pid)` qui ouvre la fenêtre et renvoie un
-contrôleur (`killInstance`). `src/common/stores/appsStore.ts` lance les
-applications (`startApp`), attribue les `pid` et garde la liste des instances,
-sur laquelle s'appuie le Gestionnaire des tâches. Il n'existe pas encore de
-registre central : le bureau, le menu Démarrer et la boîte Exécuter importent
-chacun les applications qu'ils lancent.
+**Modèle d'application et registre.** Une application est décrite en deux
+moitiés (`src/common/types/appTemplate.ts`). Sa fiche (`AppManifest` :
+identifiant comme `notepad.exe`, nom, icônes, `multiInstance`, taille de
+fenêtre par défaut) est écrite une seule fois dans le registre central,
+`src/apps/registry.ts`, avec ses noms d'exécutable et les endroits où elle
+apparaît (icônes du bureau, entrées du menu Démarrer). Son code
+(`AppImplementation`, exporté par le `main.tsx` de son dossier) fournit le
+composant `MainWindow`, une icône de zone de notification facultative et une
+fonction `init(pid, args)` qui ouvre la fenêtre et renvoie un contrôleur
+(`killInstance`). Le bureau, le menu Démarrer et la boîte Exécuter lisent le
+registre et n'importent aucune application ; Exécuter y cherche le nom saisi
+sans tenir compte de la casse.
+
+**Chargement à la demande.** Le registre ne référence le code d'une
+application que par un `import()` dynamique : Vite en fait un fichier séparé,
+téléchargé au premier lancement. Le JavaScript initial ne contient que le
+démarrage, le bureau, le gestionnaire de fenêtres et les fiches du registre.
+`launchApp(id, args)` de `src/common/stores/appsStore.ts` charge le code, puis
+appelle `startApp`, qui attribue le `pid`, appelle `init` et garde la liste
+des instances sur laquelle s'appuie le Gestionnaire des tâches. La fenêtre
+n'est ouverte qu'une fois le code et ses styles arrivés ; en attendant, le
+bureau affiche le curseur « flèche + sablier » de Windows XP.
 
 **Système de fichiers virtuel.** `src/common/fs/` modélise le lecteur `C:`
 comme un arbre de dossiers et de fichiers texte, avec une Corbeille. Le store
@@ -104,7 +122,11 @@ comme un arbre de dossiers et de fichiers texte, avec une Corbeille. Le store
 `remove`...). Chaque modification est appliquée sur une copie puis enregistrée
 dans le `localStorage` (clé `mid-2000-pc-fs-v1`) ; au premier lancement, une
 arborescence initiale est créée. L'Explorateur et le Bloc-notes s'appuient
-dessus. C'est la seule partie du projet couverte par des tests.
+dessus.
+
+**Tests.** Vitest couvre les couches sans interface : le système de fichiers,
+le gestionnaire de fenêtres, le registre et le lancement des applications, les
+actions de la Corbeille. Les composants React ne sont pas testés.
 
 **Ce qui est conservé dans le navigateur.** Tout est local, dans le
 `localStorage` : le système de fichiers, les comptes d'utilisateurs, la
