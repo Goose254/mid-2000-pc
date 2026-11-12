@@ -3,6 +3,7 @@ import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { WindowInfo } from '@/common/types/window';
+import { ResizePole, resizeGeometry } from '@/common/utils/windowGeometry';
 
 export interface TitleBarButtonOptions {
   visible: boolean;
@@ -15,7 +16,8 @@ interface WindowProps {
   children: React.ReactNode;
 }
 
-type ResizePole = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'none';
+/** Redimensionnement en cours : le bord ou le coin tiré, ou `none`. */
+type ResizeState = ResizePole | 'none';
 
 /**
  * Complète un bouton de barre de titre par son action par défaut.
@@ -56,7 +58,7 @@ export const Window: React.FC<WindowProps> = ({
 
   // État pour le déplacement / redimensionnement
   const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState<ResizePole>('none');
+  const [isResizing, setIsResizing] = useState<ResizeState>('none');
 
   const setWindowPosition = useWindowsStore((state) => state.setWindowPosition);
   const setWindowSize = useWindowsStore((state) => state.setWindowSize);
@@ -141,53 +143,16 @@ export const Window: React.FC<WindowProps> = ({
     }
 
     if (isResizing !== 'none') {
-      const startGeometry = resizeStartGeometry.current;
-      let newWidth = startGeometry.width;
-      let newHeight = startGeometry.height;
-      let newXPosition = startGeometry.x;
-      let newYPosition = startGeometry.y;
+      // Taille bornée et bord opposé fixe : voir `resizeGeometry`.
+      const { x, y, width, height } = resizeGeometry(
+        resizeStartGeometry.current,
+        isResizing,
+        e.clientX - resizeStart.current.x,
+        e.clientY - resizeStart.current.y
+      );
 
-      switch (isResizing) {
-        case 'n':
-          newHeight -= e.clientY - resizeStart.current.y;
-          newYPosition += e.clientY - resizeStart.current.y;
-          break;
-        case 'ne':
-          newWidth += e.clientX - resizeStart.current.x;
-          newHeight -= e.clientY - resizeStart.current.y;
-          newYPosition += e.clientY - resizeStart.current.y;
-          break;
-        case 'e':
-          newWidth += e.clientX - resizeStart.current.x;
-          break;
-        case 'se':
-          newWidth += e.clientX - resizeStart.current.x;
-          newHeight += e.clientY - resizeStart.current.y;
-          break;
-        case 's':
-          newHeight += e.clientY - resizeStart.current.y;
-          break;
-        case 'sw':
-          newWidth -= e.clientX - resizeStart.current.x;
-          newXPosition = startGeometry.x + (e.clientX - resizeStart.current.x);
-          newHeight += e.clientY - resizeStart.current.y;
-          break;
-        case 'w':
-          newWidth -= e.clientX - resizeStart.current.x;
-          newXPosition = startGeometry.x + (e.clientX - resizeStart.current.x);
-          break;
-        case 'nw':
-          newWidth -= e.clientX - resizeStart.current.x;
-          newXPosition += e.clientX - resizeStart.current.x;
-          newHeight -= e.clientY - resizeStart.current.y;
-          newYPosition += e.clientY - resizeStart.current.y;
-          break;
-        default:
-          break;
-      }
-
-      setWindowSize(id, { width: newWidth, height: newHeight });
-      setWindowPosition(id, { x: newXPosition, y: newYPosition });
+      setWindowSize(id, { width, height });
+      setWindowPosition(id, { x, y });
     }
   }, [id, isDragging, isResizing, setWindowPosition, setWindowSize]);
 

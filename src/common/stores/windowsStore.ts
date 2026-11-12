@@ -33,6 +33,38 @@ const getCascadedPosition = (windows: WindowInfo[], initialPosition: WindowInfo[
   return nextPosition;
 };
 
+/**
+ * Passe le focus à la fenêtre visible la plus haute, comme le fait Windows XP
+ * quand la fenêtre active disparaît (fermée ou réduite). `leavingId` désigne
+ * cette fenêtre sur le départ, qui ne peut pas le recevoir. S'il ne reste
+ * aucune fenêtre visible, plus aucune n'est active. L'empilement ne change pas.
+ */
+const focusTopWindow = (windows: WindowInfo[], leavingId?: string): WindowInfo[] => {
+  const top = windows
+    .filter((window) => window.id !== leavingId && !window.isMinimized && window.animationState !== 'minimizing')
+    .reduce<WindowInfo | undefined>(
+      (highest, window) => (!highest || window.zIndex > highest.zIndex ? window : highest),
+      undefined
+    );
+
+  return windows.map((window) => {
+    const isActive = window.id === top?.id;
+    return window.isActive === isActive ? window : { ...window, isActive };
+  });
+};
+
+/**
+ * Fenêtres qui ont un bouton dans la barre des tâches : celles que l'on peut
+ * réduire. Les boîtes de dialogue comme « Exécuter » n'en ont pas. L'ordre est
+ * celui d'ouverture, indépendant de l'empilement.
+ */
+export const selectTaskbarWindows = (windows: WindowInfo[]): WindowInfo[] =>
+  windows.filter((window) => Boolean(window.buttons?.minimize?.visible && window.buttons.minimize.enabled));
+
+/** Fenêtres affichées sur le bureau : toutes sauf celles qui sont réduites. */
+export const selectDesktopWindows = (windows: WindowInfo[]): WindowInfo[] =>
+  windows.filter((window) => !window.isMinimized);
+
 export interface WindowsState {
   windows: WindowInfo[];
 
@@ -157,9 +189,14 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
           animationState: 'none',
         };
   
+        // Une seule fenêtre active à la fois : la nouvelle prend le focus aux
+        // autres (une application peut en ouvrir une autre sans clic sur le
+        // bureau, par exemple l'Explorateur qui lance le Bloc-notes).
+        const others = prev.windows.map((w) => (w.isActive ? { ...w, isActive: false } : w));
+
         return {
           ...prev,
-          windows: [...prev.windows, newWindow],
+          windows: [...others, newWindow],
         };
       }
     });
@@ -206,7 +243,8 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
 
       return {
         ...prev,
-        windows: updatedWindows,
+        // La fenêtre active vient de disparaître : le focus passe à celle du dessus.
+        windows: windowToClose?.isActive ? focusTopWindow(updatedWindows) : updatedWindows,
       };
     });
   },
@@ -288,6 +326,17 @@ export const useWindowsStore = create<WindowsState>((set, get) => ({
         // Les autres restent telles qu'elles sont
         return w;
       });
+
+      const willMinimize = !isMinimized && (isActive || force) && Boolean(isMinimisable);
+
+      if (willMinimize) {
+        // La fenêtre active part dans la barre des tâches : le focus passe à
+        // celle du dessus. Réduire une fenêtre inactive ne change pas le focus.
+        return {
+          ...prev,
+          windows: isActive ? focusTopWindow(updated, id) : updated,
+        };
+      }
 
       // Si on restaure (était minimisée) ou si on la ramène devant (n'était pas active),
       // on applique bringToFrontPreservingZOrder

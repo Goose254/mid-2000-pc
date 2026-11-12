@@ -1,5 +1,5 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useWindowsStore } from '@/common/stores/windowsStore';
+import { selectDesktopWindows, useWindowsStore } from '@/common/stores/windowsStore';
 import { useOverlaysStore } from '@/common/stores/overlaysStore';
 
 import { WindowsShutdownOverlay } from '@/components/templates/WindowsShutdownOverlay/WindowsShutdownOverlay';
@@ -560,13 +560,11 @@ export const Desktop: React.FC = () => {
       </div>
 
       {/* Fenêtres (non minimisées) */}
-      {windows
-        .filter((w) => !w.isMinimized)
-        .map((window) => (
-          <Window key={window.id} id={window.id}>
-            {window.content}
-          </Window>
-        ))}
+      {selectDesktopWindows(windows).map((window) => (
+        <Window key={window.id} id={window.id}>
+          {window.content}
+        </Window>
+      ))}
 
       {/* Barre des tâches */}
       <Taskbar />

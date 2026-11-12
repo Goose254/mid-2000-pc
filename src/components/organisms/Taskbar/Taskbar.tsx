@@ -3,7 +3,7 @@ import StartButtonLogo from '../../../assets/start-button-logo.png';
 import styles from './Taskbar.module.scss';
 import { StartMenu } from '../StartMenu/StartMenu';
 import { TaskbarButton } from '../../atoms/TaskbarButton/TaskbarButton';
-import { useWindowsStore } from '@/common/stores/windowsStore';
+import { selectTaskbarWindows, useWindowsStore } from '@/common/stores/windowsStore';
 import { useStartMenuStore } from '@/common/stores/startMenuStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
 import { useTranslation } from 'react-i18next';
@@ -55,10 +55,8 @@ export const Taskbar: React.FC = () => {
       </button>
 
       <div className={styles.taskbarWindowButtons}>
-        {windows.map((win) => (
-          win.buttons?.minimize?.visible && win.buttons?.minimize?.enabled ?
-            <TaskbarButton key={win.id} linkedWindow={win} /> :
-            ""
+        {selectTaskbarWindows(windows).map((win) => (
+          <TaskbarButton key={win.id} linkedWindow={win} />
         ))}
       </div>
 
