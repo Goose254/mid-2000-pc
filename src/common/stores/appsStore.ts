@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { AppTemplate, AppInstance, AppInstanceControl } from '../types/appTemplate';
 import { getAppById } from '@/apps/registry';
-import { APP_IMPLEMENTATIONS } from '@/apps/implementations';
 import { generatePid } from '../utils/pidGenerator';
 import { useWindowsStore } from './windowsStore';
 import { getWindowIdForInstance } from '../utils/windowId';
@@ -27,9 +26,18 @@ const defaultInstances: AppInstance[] = [
 interface AppsState {
   instances: AppInstance[];
   /**
+   * Nombre d'applications en cours de chargement (code demandé au serveur,
+   * fenêtre pas encore ouverte). Tant qu'il est positif, le bureau affiche le
+   * curseur « flèche + sablier » de Windows XP.
+   */
+  pendingLaunches: number;
+  /**
    * Lance une application du registre (`src/apps/registry.ts`) par son
    * identifiant, avec d'éventuels arguments de lancement. Retourne `false` si
    * l'identifiant est inconnu.
+   *
+   * Le code de l'application est chargé à la demande : la fenêtre ne s'ouvre
+   * qu'une fois ce code (et ses styles) arrivé, donc jamais sur un cadre vide.
    */
   launchApp: (appId: string, args?: unknown) => boolean;
   /** Démarre l’application en appelant sa fonction init */
@@ -42,15 +50,28 @@ interface AppsState {
 
 export const useAppsStore = create<AppsState>((set, get) => ({
   instances: [...defaultInstances],
+  pendingLaunches: 0,
   launchApp: (appId, args) => {
     const definition = getAppById(appId);
-    const implementation = definition && APP_IMPLEMENTATIONS[definition.id];
-    if (!definition || !implementation) return false;
+    if (!definition) return false;
 
-    // Le registre est indexé par des chaînes : c'est le seul endroit où le type
-    // des arguments de lancement n'est pas vérifié à la compilation.
-    const app = { ...definition, ...implementation } as AppTemplate<never, unknown>;
-    get().startApp(app, args);
+    set((state) => ({ pendingLaunches: state.pendingLaunches + 1 }));
+    definition
+      .load()
+      .then((implementation) => {
+        // Le registre est indexé par des chaînes : c'est le seul endroit où le
+        // type des arguments de lancement n'est pas vérifié à la compilation.
+        const app = { ...definition, ...implementation } as AppTemplate<never, unknown>;
+        get().startApp(app, args);
+      })
+      .catch((error: unknown) => {
+        // Fichier de l'application introuvable (hors ligne, site redéployé
+        // pendant la session...) : rien ne s'ouvre, comme un raccourci cassé.
+        console.error(`Impossible de lancer ${definition.id}`, error);
+      })
+      .finally(() => {
+        set((state) => ({ pendingLaunches: state.pendingLaunches - 1 }));
+      });
     return true;
   },
   startApp: (app, args) => {

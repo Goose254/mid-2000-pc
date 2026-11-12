@@ -7,11 +7,14 @@
  * Le bureau, le menu Démarrer et la boîte de dialogue Exécuter lisent ce
  * registre ; aucun d'eux n'importe une application directement.
  *
- * Ce module ne contient que des données et des fonctions pures (aucun
- * composant React) : il est testable sans DOM. Le lancement lui-même passe par
+ * Le code de chaque application est chargé À LA DEMANDE : `load` est un
+ * `import()` dynamique, dont Vite fait un fichier séparé. Ce module-ci, lui,
+ * fait partie du bundle initial : il ne doit importer statiquement que des
+ * données légères (icônes, types, constantes), jamais un composant d'app.
+ * Il reste ainsi testable sans DOM. Le lancement passe par
  * `useAppsStore.getState().launchApp(id, args)`.
  */
-import type { AppManifest } from '@/common/types/appTemplate';
+import type { AppImplementation, AppManifest } from '@/common/types/appTemplate';
 import { COMPUTER, SPECIAL_PATHS, TRASH } from './Explorer/locations';
 import type { ExplorerLaunchArgs } from './Explorer/locations';
 import type { NotepadLaunchArgs } from './Notepad/main';
@@ -93,6 +96,12 @@ export interface AppDefinition<Args = unknown> extends AppManifest {
   desktop?: readonly AppShortcut<Args>[];
   /** Entrées du menu Démarrer qui lancent l'application. */
   startMenu?: readonly StartMenuShortcut<Args>[];
+  /**
+   * Charge le code de l'application (son `main.tsx`) à la demande. Le
+   * navigateur ne télécharge le fichier qu'au premier lancement ; les appels
+   * suivants réutilisent le module déjà chargé.
+   */
+  load: () => Promise<AppImplementation<never, Args>>;
 }
 
 /** Raccourci prêt à l'emploi : libellé et icône résolus, application ciblée. */
@@ -106,9 +115,12 @@ export interface ResolvedShortcut {
 
 /**
  * Déclare une application en vérifiant que les arguments de ses raccourcis
- * correspondent bien à ceux qu'elle accepte (`Args`).
+ * correspondent bien à ceux que son code accepte (`Args`). Le registre, lui,
+ * est une liste homogène : le type des arguments y est effacé, et
+ * `launchApp` est le seul endroit où il n'est pas vérifié à la compilation.
  */
-const defineApp = <Args = undefined>(definition: AppDefinition<Args>): AppDefinition => definition;
+const defineApp = <Args = undefined>(definition: AppDefinition<Args>): AppDefinition =>
+  definition as unknown as AppDefinition;
 
 // ---------------------------------------------------------------------------
 // Les applications
@@ -158,6 +170,7 @@ export const APP_REGISTRY: readonly AppDefinition[] = [
       },
       { id: 'my-computer', label: 'Poste de travail', icon: StartMyComputerIcon, args: { location: COMPUTER } },
     ],
+    load: () => import('./Explorer/main').then((module) => module.ExplorerApp),
   }),
   defineApp<NotepadLaunchArgs>({
     id: 'notepad.exe',
@@ -171,6 +184,7 @@ export const APP_REGISTRY: readonly AppDefinition[] = [
     },
     multiInstance: true,
     defaultWindowSize: { width: 600, height: 440 },
+    load: () => import('./Notepad/main').then((module) => module.NotepadApp),
   }),
   defineApp({
     id: 'taskmgr.exe',
@@ -185,6 +199,7 @@ export const APP_REGISTRY: readonly AppDefinition[] = [
     multiInstance: false,
     defaultWindowSize: { width: 503, height: 493 },
     desktop: [{ id: 'task-manager', label: 'Gestionnaire des tâches' }],
+    load: () => import('./TaskManager/main').then((module) => module.TaskManagerApp),
   }),
   defineApp({
     // Applet « Comptes d'utilisateurs » du Panneau de configuration. Sous XP,
@@ -203,6 +218,7 @@ export const APP_REGISTRY: readonly AppDefinition[] = [
     multiInstance: false,
     defaultWindowSize: { width: 640, height: 480 },
     startMenu: [{ id: 'control-panel', label: 'Panneau de configuration', icon: StartControlPanelIcon }],
+    load: () => import('./UserAccounts/main').then((module) => module.UserAccountsApp),
   }),
   defineApp({
     // Pas de `defaultWindowSize` : le Démineur déduit la taille de sa fenêtre
@@ -218,6 +234,7 @@ export const APP_REGISTRY: readonly AppDefinition[] = [
     },
     multiInstance: false,
     desktop: [{ id: 'minesweeper' }],
+    load: () => import('./Minesweeper/main').then((module) => module.MinesweeperApp),
   }),
 ];
 

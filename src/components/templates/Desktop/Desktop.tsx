@@ -188,6 +188,8 @@ export const Desktop: React.FC = () => {
   );
 
   const launchApp = useAppsStore((state) => state.launchApp);
+  // Une application est en cours de chargement : curseur « flèche + sablier ».
+  const isLaunchingApp = useAppsStore((state) => state.pendingLaunches > 0);
 
   const [desktopAreaSize, setDesktopAreaSize] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
@@ -507,7 +509,7 @@ export const Desktop: React.FC = () => {
 
   return (
     <div
-      className={styles.desktop}
+      className={`${styles.desktop} ${isLaunchingApp ? styles.launching : ''}`}
       style={{
         backgroundImage: `url(${XPWallpaper})`,
       }}

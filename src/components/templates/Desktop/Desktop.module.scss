@@ -7,3 +7,11 @@
   background-size: cover;
   background-position: center;
 }
+
+// Une application se charge (voir `appsStore.launchApp`) : curseur « travail en
+// arrière-plan » de Windows XP sur tout le bureau, jusqu'à l'ouverture de la
+// fenêtre.
+.launching,
+.launching * {
+  cursor: url(../../../assets/cursors/progress.cur), progress !important;
+}

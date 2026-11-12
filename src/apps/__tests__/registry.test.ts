@@ -39,6 +39,10 @@ describe('contenu du registre', () => {
     }
   });
 
+  it('associe à chaque application un chargeur à la demande', () => {
+    for (const app of APP_REGISTRY) expect(app.load).toEqual(expect.any(Function));
+  });
+
   it('retrouve une application par son identifiant', () => {
     expect(getAppById('taskmgr.exe')?.name).toBe('Gestionnaire des tâches de Windows');
     expect(getAppById('inconnu.exe')).toBeUndefined();
