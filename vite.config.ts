@@ -8,9 +8,6 @@ export default defineConfig({
     react(),
     tsconfigPaths()
   ],
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-  },
   build: {
     rollupOptions: {
       output: {
