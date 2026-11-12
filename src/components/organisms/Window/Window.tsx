@@ -4,6 +4,7 @@ import styles from './Window.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { WindowInfo } from '@/common/types/window';
 import { ResizePole, resizeGeometry } from '@/common/utils/windowGeometry';
+import { TASKBAR_HEIGHT } from '@/common/constants/layout';
 
 export interface TitleBarButtonOptions {
   visible: boolean;
@@ -269,12 +270,12 @@ export const Window: React.FC<WindowProps> = ({
     let animatedSize = { ...size };
     let animatedOpacity = 1;
 
-    // For maximized windows when not animating, use full screen dimensions
+    // For maximized windows when not animating, use the whole screen above the taskbar
     if (isMaximized && animationState === 'none') {
       animatedPosition = { x: 0, y: 0 };
       animatedSize = {
         width: window.innerWidth,
-        height: window.innerHeight - 30,
+        height: window.innerHeight - TASKBAR_HEIGHT,
       };
     }
 
@@ -310,7 +311,7 @@ export const Window: React.FC<WindowProps> = ({
       animatedPosition = { x: 0, y: 0 };
       animatedSize = {
         width: window.innerWidth,
-        height: window.innerHeight - 30,
+        height: window.innerHeight - TASKBAR_HEIGHT,
       };
     } else if (animationState === 'unmaximizing' && preMaximizePosition && preMaximizeSize) {
       // Will animate to previous position and size

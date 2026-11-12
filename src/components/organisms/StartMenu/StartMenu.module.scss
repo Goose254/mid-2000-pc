@@ -3,7 +3,8 @@ $start-menu-bg: url(../../../assets/start-menu-background.png);
 
 .startMenu {
   position: fixed;
-  bottom: 30px;
+  // Posé sur la barre des tâches (`TASKBAR_HEIGHT`, publiée par le bureau).
+  bottom: var(--taskbar-height);
   left: 0;
   width: 380px;
   height: 478px;

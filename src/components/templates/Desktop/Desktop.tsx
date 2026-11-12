@@ -12,6 +12,7 @@ import TeamsIcon from '@/assets/program-icons/teams.exe.svg';
 
 import { useAppsStore } from '@/common/stores/appsStore';
 import { getDesktopShortcuts } from '@/apps/registry';
+import { TASKBAR_HEIGHT, TASKBAR_HEIGHT_CSS_VAR } from '@/common/constants/layout';
 import { DesktopContextMenu } from './DesktopContextMenu';
 import styles from './Desktop.module.scss';
 
@@ -193,7 +194,7 @@ export const Desktop: React.FC = () => {
 
   const [desktopAreaSize, setDesktopAreaSize] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? Math.max(0, window.innerHeight - 30) : 0,
+    height: typeof window !== 'undefined' ? Math.max(0, window.innerHeight - TASKBAR_HEIGHT) : 0,
   }));
   const [iconPositions, setIconPositions] = useState<IconPositions>({});
   const [dragState, setDragState] = useState<DragState | null>(null);
@@ -512,13 +513,16 @@ export const Desktop: React.FC = () => {
       className={`${styles.desktop} ${isLaunchingApp ? styles.launching : ''}`}
       style={{
         backgroundImage: `url(${XPWallpaper})`,
-      }}
+        // Hauteur de la barre des tâches, pour les feuilles SCSS du bureau
+        // (barre des tâches, menu Démarrer).
+        [TASKBAR_HEIGHT_CSS_VAR]: `${TASKBAR_HEIGHT}px`,
+      } as CSSProperties}
     >
-      {/* Bureau : icônes */}
+      {/* Bureau : icônes (toute la hauteur, moins la barre des tâches) */}
       <div
         ref={desktopAreaRef}
         onContextMenu={handleContextMenu}
-        style={{ height: 'calc(100vh - 30px)', position: 'relative' }}
+        style={{ height: `calc(100vh - ${TASKBAR_HEIGHT}px)`, position: 'relative' }}
       >
         {desktopIcons.map((desktopIcon, index) => {
           const fallbackPosition: IconGridPosition = {

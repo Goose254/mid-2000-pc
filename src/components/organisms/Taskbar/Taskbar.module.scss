@@ -1,5 +1,10 @@
+// Hauteur de la barre des tâches : définie une seule fois, en TypeScript
+// (`TASKBAR_HEIGHT`, src/common/constants/layout.ts), et publiée par le bureau
+// dans la propriété CSS `--taskbar-height`.
+$taskbar-height: var(--taskbar-height);
+
 // Variables pour le bouton Start
-$start-button-height: 30px;
+$start-button-height: $taskbar-height;
 $start-button-padding: 0 26px 0 6px;
 $start-button-color: white;
 $start-button-font-family: 'Franklin Gothic';
@@ -64,13 +69,13 @@ $taskbar-bg: url(../../../assets/taskbar-gradient.png);
   bottom: 0;
   left: 0;
   width: 100vw;
-  height: 30px;
+  height: $taskbar-height;
   background: $taskbar-bg repeat-x;
   z-index: 10000;
 }
 
 // Styles pour la zone des outils de la Taskbar
-$taskbar-tools-height: 30px;
+$taskbar-tools-height: $taskbar-height;
 $taskbar-tools-padding: 6px 14px;
 $taskbar-tools-color: white;
 $taskbar-tools-font-family: Tahoma, 'Segoe UI', Verdana, sans-serif;

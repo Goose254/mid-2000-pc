@@ -1,7 +1,12 @@
 import { useWindowsStore } from '@/common/stores/windowsStore';
+import { TASKBAR_HEIGHT } from '@/common/constants/layout';
 import { RunDialog } from './RunDialog';
 
 import RunDialogTitleIcon from '@/assets/windows-icons/shell32.dll_14_160-10.png';
+
+const RUN_DIALOG_SIZE = { width: 363, height: 186 };
+/** Espace laissé entre la boîte de dialogue et la barre des tâches. */
+const RUN_DIALOG_BOTTOM_GAP = 4;
 
 /**
  * Ouvre la boîte de dialogue « Exécuter ».
@@ -18,8 +23,12 @@ export function openRunDialog(): void {
     <RunDialog windowId="run" />,
     <img src={RunDialogTitleIcon} alt="Run icon" />,
     {
-      position: { x: 3, y: window.innerHeight - 220 },
-      size: { width: 363, height: 186 },
+      // En bas à gauche, juste au-dessus de la barre des tâches.
+      position: {
+        x: 3,
+        y: window.innerHeight - TASKBAR_HEIGHT - RUN_DIALOG_SIZE.height - RUN_DIALOG_BOTTOM_GAP,
+      },
+      size: RUN_DIALOG_SIZE,
       fixedSize: true,
       buttons: {
         help: { visible: true, enabled: true },
