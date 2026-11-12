@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { TitleBar } from '../../molecules/TitleBar/TitleBar';
 import styles from './Window.module.scss';
 import { useWindowsStore } from '@/common/stores/windowsStore';
@@ -16,6 +16,21 @@ interface WindowProps {
 }
 
 type ResizePole = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw' | 'none';
+
+/**
+ * Complète un bouton de barre de titre par son action par défaut.
+ *
+ * Seul un bouton visible et actif, sans action fournie par l'application, la
+ * reçoit. L'objet d'origine (lu dans le store) n'est jamais modifié : on en
+ * renvoie une copie.
+ */
+const withDefaultAction = (
+  button: TitleBarButtonOptions | undefined,
+  defaultAction: () => void
+): TitleBarButtonOptions | undefined => {
+  if (!button?.visible || !button.enabled || button.action) return button;
+  return { ...button, action: defaultAction };
+};
 
 export const Window: React.FC<WindowProps> = ({
   id,
@@ -58,38 +73,28 @@ export const Window: React.FC<WindowProps> = ({
     useWindowsStore.getState().bringToFront(id);
   };
 
-  if (
-    buttons?.maximize?.visible &&
-    buttons?.maximize?.enabled &&
-    !buttons?.maximize?.action
-  ) {
-    buttons.maximize.action = () => {
-      // Empêche la maximisation si la fenêtre est de taille fixe
-      if (fixedSize) return;
+  // Boutons de la barre de titre, complétés par les actions par défaut du
+  // gestionnaire de fenêtres. Ils sont DÉRIVÉS de l'état du store à chaque
+  // changement, sans jamais écrire dans celui-ci pendant le rendu.
+  const titleBarButtons = useMemo(() => {
+    if (!buttons) return buttons;
 
-      useWindowsStore.getState().toggleMaximizeWindow(id);
-    }
-  }
+    return {
+      help: buttons.help,
+      minimize: withDefaultAction(buttons.minimize, () => {
+        useWindowsStore.getState().toggleMinimizeWindow(id);
+      }),
+      maximize: withDefaultAction(buttons.maximize, () => {
+        // Empêche la maximisation si la fenêtre est de taille fixe
+        if (fixedSize) return;
 
-  if (
-    buttons?.minimize?.visible &&
-    buttons?.minimize?.enabled &&
-    !buttons?.minimize?.action
-  ) {
-    buttons.minimize.action = () => {
-      useWindowsStore.getState().toggleMinimizeWindow(id);
-    }
-  }
-
-  if (
-    buttons?.close?.visible &&
-    buttons?.close?.enabled &&
-    !buttons?.close?.action
-  ) {
-    buttons.close.action = () => {
-      useWindowsStore.getState().closeWindow(id);
-    }
-  }
+        useWindowsStore.getState().toggleMaximizeWindow(id);
+      }),
+      close: withDefaultAction(buttons.close, () => {
+        useWindowsStore.getState().closeWindow(id);
+      }),
+    };
+  }, [buttons, fixedSize, id]);
 
   // Gestion du déplacement
   const handleDragging = (e: React.MouseEvent) => {
@@ -418,7 +423,7 @@ export const Window: React.FC<WindowProps> = ({
             icon,
             isMaximized,
             isActive,
-            buttons,
+            buttons: titleBarButtons,
           }}
         />
       </div>
