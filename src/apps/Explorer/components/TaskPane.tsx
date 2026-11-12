@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './chrome.module.scss';
 
 import { useExplorer } from '../useExplorer';
@@ -67,6 +68,7 @@ const TaskList: React.FC<{ tasks: Task[] }> = ({ tasks }) => (
 
 /** Volet des tâches contextuel (bleu) : 3 sections repliables. */
 export const TaskPane: React.FC = () => {
+  const { t: tTrash } = useTranslation('common', { keyPrefix: 'explorer.recycleBin' });
   const explorer = useExplorer();
   const {
     state,
@@ -78,6 +80,8 @@ export const TaskPane: React.FC = () => {
     deleteSelection,
     copy,
     cut,
+    restoreFromTrash,
+    emptyTrash,
   } = explorer;
 
   const loc = state.location;
@@ -138,6 +142,17 @@ export const TaskPane: React.FC = () => {
         { label: 'Partager ce dossier', icon: OpenFolderIcon, onClick: noop },
       ];
     }
+  } else {
+    // Corbeille : la vider, ou restaurer la sélection (tout, sans sélection).
+    tasksTitle = tTrash('tasksTitle');
+    tasks = [
+      { label: tTrash('empty'), icon: RecycleIcon, onClick: emptyTrash },
+      multiple
+        ? { label: tTrash('restoreSelected'), icon: RecycleIcon, onClick: () => restoreFromTrash('selection') }
+        : single
+          ? { label: tTrash('restoreThis'), icon: single.icon, onClick: () => restoreFromTrash('selection') }
+          : { label: tTrash('restoreAll'), icon: RecycleIcon, onClick: () => restoreFromTrash('all') },
+    ];
   }
 
   // -- Section 2 : autres emplacements --------------------------------------

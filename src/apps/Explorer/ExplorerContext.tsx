@@ -8,6 +8,7 @@
  * du contexte, dans `useExplorer.ts`).
  */
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FsError, childPath, getBaseName, getParentPath, isValidName, useFsStore } from '@/common/fs';
 import type { FsFolderNode, TrashItem } from '@/common/fs';
@@ -32,6 +33,7 @@ import {
   parentLocation,
 } from './model';
 import { ExplorerItem, driveToItem, entryToItem, trashToItem } from './items';
+import { isTrashItem, restoreTrashItems } from './trash';
 import {
   canGoBack,
   canGoForward,
@@ -378,6 +380,57 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ windowId, in
     });
   }, [selectedItems, showMessage]);
 
+  // --- Corbeille ---------------------------------------------------------
+  const { t: tTrash } = useTranslation('common', { keyPrefix: 'explorer.recycleBin' });
+
+  const restoreFromTrash = useCallback(
+    (scope: 'selection' | 'all') => {
+      const targets = (scope === 'all' ? items : selectedItems).filter(isTrashItem);
+      if (targets.length === 0) return;
+
+      const failures = restoreTrashItems(targets, useFsStore.getState().restore);
+      dispatch({ type: 'clearSelection' });
+
+      if (failures.length > 0) {
+        showMessage({
+          title: tTrash('restoreErrorTitle'),
+          icon: 'error',
+          message: (
+            <>
+              {failures.map((failure, index) => (
+                <div key={index}>{tTrash(`restoreError.${failure.reason}`, { name: failure.name })}</div>
+              ))}
+            </>
+          ),
+          confirmLabel: tTrash('ok'),
+        });
+      }
+    },
+    [items, selectedItems, showMessage, tTrash],
+  );
+
+  const emptyTrash = useCallback(() => {
+    const trashed = useFsStore.getState().listTrash();
+    if (trashed.length === 0) return;
+
+    // Même boîte de confirmation que Windows XP : le nom de l'élément s'il est
+    // seul, leur nombre sinon.
+    const many = trashed.length > 1;
+    showMessage({
+      title: many ? tTrash('confirmDeleteMultipleTitle') : tTrash('confirmDeleteTitle'),
+      icon: 'warning',
+      message: many
+        ? tTrash('confirmDeleteMany', { total: trashed.length })
+        : tTrash('confirmDeleteOne', { name: trashed[0].node.name }),
+      confirmLabel: tTrash('yes'),
+      onConfirm: () => {
+        useFsStore.getState().emptyTrash();
+        dispatch({ type: 'clearSelection' });
+      },
+      cancelLabel: tTrash('no'),
+    });
+  }, [showMessage, tTrash]);
+
   const cut = useCallback(() => {
     const paths = selectedItems.filter((it) => it.editable && it.path).map((it) => it.path as string);
     if (paths.length) setClipboard({ paths, op: 'cut' });
@@ -463,6 +516,9 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ windowId, in
     paste,
     clipboard,
     canPaste,
+    trashCount: fsTrash.length,
+    restoreFromTrash,
+    emptyTrash,
     dialog,
     openDialog,
     closeDialog,

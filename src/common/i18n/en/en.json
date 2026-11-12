@@ -110,6 +110,29 @@
             "properties": "Properties"
         }
     },
+    "explorer": {
+        "recycleBin": {
+            "tasksTitle": "Recycle Bin Tasks",
+            "empty": "Empty Recycle Bin",
+            "restore": "Restore",
+            "restoreThis": "Restore this item",
+            "restoreSelected": "Restore the selected items",
+            "restoreAll": "Restore all items",
+            "confirmDeleteTitle": "Confirm File Delete",
+            "confirmDeleteMultipleTitle": "Confirm Multiple File Delete",
+            "confirmDeleteOne": "Are you sure you want to delete '{{name}}'?",
+            "confirmDeleteMany": "Are you sure you want to delete these {{total}} items?",
+            "yes": "Yes",
+            "no": "No",
+            "ok": "OK",
+            "restoreErrorTitle": "Error Restoring File or Folder",
+            "restoreError": {
+                "nameTaken": "Cannot restore '{{name}}': an item with the same name already exists in its original location.",
+                "folderMissing": "Cannot restore '{{name}}': its original folder no longer exists.",
+                "unknown": "Cannot restore '{{name}}'."
+            }
+        }
+    },
     "taskbar": {
         "start": "start"
     },

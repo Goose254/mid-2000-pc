@@ -97,6 +97,13 @@ export interface ExplorerContextValue {
   paste: () => void;
   clipboard: Clipboard | null;
   canPaste: boolean;
+  // Corbeille
+  /** Nombre d'éléments dans la Corbeille. */
+  trashCount: number;
+  /** Restaure les éléments sélectionnés (`selection`) ou toute la Corbeille (`all`). */
+  restoreFromTrash: (scope: 'selection' | 'all') => void;
+  /** Vide la Corbeille après confirmation. */
+  emptyTrash: () => void;
   // Dialogues / messages / menu contextuel
   dialog: DialogState | null;
   openDialog: (d: DialogState) => void;

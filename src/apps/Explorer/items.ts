@@ -98,12 +98,15 @@ export const driveToItem = (drive: VirtualDrive): ExplorerItem => {
   };
 };
 
+/** Préfixe de la clé de sélection des éléments de la Corbeille (`trash:<id>`). */
+export const TRASH_KEY_PREFIX = 'trash:';
+
 /** Élément de Corbeille → élément d'affichage (avec emplacement d'origine). */
 export const trashToItem = (item: TrashItem): ExplorerItem => {
   const isFolder = item.node.type === 'folder';
   const ref = { name: item.node.name, type: item.node.type, path: item.originalPath };
   return {
-    key: `trash:${item.id}`,
+    key: `${TRASH_KEY_PREFIX}${item.id}`,
     name: item.node.name,
     kind: isFolder ? 'folder' : 'file',
     icon: pickIcon(entryIconSet(ref), 32),

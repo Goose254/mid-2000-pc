@@ -110,6 +110,29 @@
             "properties": "Propriétés"
         }
     },
+    "explorer": {
+        "recycleBin": {
+            "tasksTitle": "Gestion de la Corbeille",
+            "empty": "Vider la Corbeille",
+            "restore": "Restaurer",
+            "restoreThis": "Restaurer cet élément",
+            "restoreSelected": "Restaurer les éléments sélectionnés",
+            "restoreAll": "Restaurer tous les éléments",
+            "confirmDeleteTitle": "Confirmation de la suppression du fichier",
+            "confirmDeleteMultipleTitle": "Confirmation de la suppression de plusieurs fichiers",
+            "confirmDeleteOne": "Voulez-vous vraiment supprimer « {{name}} » ?",
+            "confirmDeleteMany": "Voulez-vous vraiment supprimer ces {{total}} éléments ?",
+            "yes": "Oui",
+            "no": "Non",
+            "ok": "OK",
+            "restoreErrorTitle": "Erreur lors de la restauration du fichier ou du dossier",
+            "restoreError": {
+                "nameTaken": "Impossible de restaurer « {{name}} » : un élément du même nom existe déjà à son emplacement d'origine.",
+                "folderMissing": "Impossible de restaurer « {{name}} » : son dossier d'origine n'existe plus.",
+                "unknown": "Impossible de restaurer « {{name}} »."
+            }
+        }
+    },
     "taskbar": {
         "start": "démarrer"
     },

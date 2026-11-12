@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextMenu } from '@/apps/TaskManager/components/ContextMenu';
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
@@ -27,6 +28,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 /** Menu contextuel (clic droit) de l'Explorateur, dépendant de la cible. */
 export const ExplorerContextMenu: React.FC = () => {
+  const { t: tTrash } = useTranslation('common', { keyPrefix: 'explorer.recycleBin' });
   const explorer = useExplorer();
   const {
     contextMenu,
@@ -46,10 +48,14 @@ export const ExplorerContextMenu: React.FC = () => {
     openDialog,
     state,
     currentFolderPath,
+    trashCount,
+    restoreFromTrash,
+    emptyTrash,
   } = explorer;
 
   if (!contextMenu) return null;
   const target = contextMenu.target;
+  const inTrash = state.location.kind === 'trash';
 
   const run = (fn?: () => void) => {
     fn?.();
@@ -70,7 +76,21 @@ export const ExplorerContextMenu: React.FC = () => {
 
   let content: React.ReactNode;
 
-  if (target) {
+  if (target && inTrash) {
+    // Menu d'un élément de la Corbeille : on le restaure, on ne l'ouvre pas.
+    // (Le clic droit a déjà sélectionné l'élément ciblé.)
+    content = (
+      <>
+        <Row label={tTrash('restore')} bold onClick={() => restoreFromTrash('selection')} />
+        <MenuSeparator />
+        <Row label="Couper" disabled />
+        <MenuSeparator />
+        <Row label="Supprimer" disabled />
+        <MenuSeparator />
+        <Row label="Propriétés" onClick={() => openDialog({ kind: 'properties', item: target })} />
+      </>
+    );
+  } else if (target) {
     // Menu d'un élément (fichier / dossier / lecteur)
     const editable = target.editable;
     const isDrive = target.kind === 'drive';
@@ -144,6 +164,12 @@ export const ExplorerContextMenu: React.FC = () => {
           </FloatingMenu>
         </Row>
         <MenuSeparator />
+        {inTrash && (
+          <>
+            <Row label={tTrash('empty')} disabled={trashCount === 0} onClick={emptyTrash} />
+            <MenuSeparator />
+          </>
+        )}
         <Row label="Propriétés" onClick={() => openDialog({ kind: 'properties', item: null })} />
       </>
     );
