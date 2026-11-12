@@ -30,7 +30,7 @@
   box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030;
   border-radius: 3px;
   border: 1px solid #fff;
-  cursor: url(../../../assets/cursors/default.cur), default !important;
+  cursor: url(../../assets/cursors/default.cur), default !important;
 }
 
 .os-scrollbar-vertical .os-scrollbar-handle:hover {
@@ -155,7 +155,7 @@
   box-shadow: inset 0px 0px 0px 1px #b8cbf6, 0px 1px 0px #00000030;
   border-radius: 3px;
   border: 1px solid #fff;
-  cursor: url(../../../assets/cursors/default.cur), default !important;
+  cursor: url(../../assets/cursors/default.cur), default !important;
 }
 
 .os-scrollbar-horizontal .os-scrollbar-handle:hover {
