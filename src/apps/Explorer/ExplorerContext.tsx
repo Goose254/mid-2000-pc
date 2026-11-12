@@ -11,7 +11,8 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { FsError, childPath, getBaseName, getParentPath, isValidName, useFsStore } from '@/common/fs';
 import type { FsFolderNode, TrashItem } from '@/common/fs';
 import { useWindowsStore } from '@/common/stores/windowsStore';
-import { openNotepad } from '@/apps/Notepad/main';
+import { useAppsStore } from '@/common/stores/appsStore';
+import type { NotepadLaunchArgs } from '@/apps/Notepad/main';
 
 import {
   COMPUTER,
@@ -38,6 +39,11 @@ import {
   explorerReducer,
   initialExplorerState,
 } from './state';
+
+/** Ouvre un fichier texte dans le Bloc-notes, lancé par le registre des applications. */
+const openInNotepad = (path: string, name: string): void => {
+  useAppsStore.getState().launchApp('notepad.exe', { path, name } satisfies NotepadLaunchArgs);
+};
 
 // ---------------------------------------------------------------------------
 // Types auxiliaires (presse-papiers, dialogues, messages, menu contextuel)
@@ -302,7 +308,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ windowId, in
         return;
       }
       if (item.kind === 'file' && item.path) {
-        openNotepad(item.path, item.name);
+        openInNotepad(item.path, item.name);
       }
     },
     [navigate, showMessage],
@@ -330,7 +336,7 @@ export const ExplorerProvider: React.FC<ExplorerProviderProps> = ({ windowId, in
           return;
         }
         if (stat?.type === 'file') {
-          openNotepad(stat.path, stat.name);
+          openInNotepad(stat.path, stat.name);
           return;
         }
       }

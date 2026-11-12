@@ -1,51 +1,40 @@
-import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
+import type { ComponentProps } from 'react';
+import { AppImplementation, AppInstanceControl } from '../../common/types/appTemplate';
 import { NotepadMainWindow } from './components/MainWindow';
 
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
-import { useAppsStore } from '@/common/stores/appsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-import icon16 from '@/assets/windows-icons/file-text-16.png';
-import icon32 from '@/assets/windows-icons/file-text-32.png';
-
-interface PendingFile {
+/** Arguments de lancement du Bloc-notes (`notepad.exe`). */
+export interface NotepadLaunchArgs {
+  /** Chemin du fichier à ouvrir, ou `null` pour un document vierge. */
   path: string | null;
+  /** Nom affiché dans la barre de titre. */
   name: string;
 }
 
-/** Fichier à charger à la PROCHAINE ouverture du Bloc-notes (lu par `init`). */
-let pendingFile: PendingFile | null = null;
-
-/** Ouvre le Bloc-notes, éventuellement sur un fichier existant. */
-export const openNotepad = (path: string | null = null, name = 'Sans titre'): void => {
-  pendingFile = { path, name };
-  useAppsStore.getState().startApp(NotepadApp);
-};
-
-export const NotepadApp: AppTemplate<object> = {
-  id: 'notepad.exe',
-  name: 'Bloc-notes',
-  icons: {
-    large: icon32,
-    medium: icon32,
-    small: icon16,
-    xsmall: icon16,
-  },
-  multiInstance: true,
-  MainWindow: NotepadMainWindow as unknown as AppTemplate<object>['MainWindow'],
-  init: function (pid: string): AppInstanceControl {
+/**
+ * Bloc-notes (`notepad.exe`). Sa fiche (nom, icônes, taille) est dans le
+ * registre `src/apps/registry.ts`.
+ *
+ * Pour l'ouvrir sur un fichier existant :
+ * `useAppsStore.getState().launchApp('notepad.exe', { path, name })`.
+ */
+export const NotepadApp: AppImplementation<ComponentProps<typeof NotepadMainWindow>, NotepadLaunchArgs> = {
+  MainWindow: NotepadMainWindow,
+  init: function (pid: string, args?: NotepadLaunchArgs): AppInstanceControl {
+    const { name, icons, defaultWindowSize } = this;
     const windowId = getWindowIdForInstance(pid, 'main');
-    const file: PendingFile = pendingFile ?? { path: null, name: 'Sans titre' };
-    pendingFile = null;
+    const file: NotepadLaunchArgs = args ?? { path: null, name: 'Sans titre' };
 
     useWindowsStore.getState().openWindow(
       windowId,
       pid,
-      `${file.name} - Bloc-notes`,
+      `${file.name} - ${name}`,
       <NotepadMainWindow windowId={windowId} initialPath={file.path} initialName={file.name} />,
-      <img src={icon16} alt="" />,
-      { size: { width: 600, height: 440 } },
+      <img src={icons.xsmall} alt="" />,
+      { size: defaultWindowSize },
     );
 
     return {

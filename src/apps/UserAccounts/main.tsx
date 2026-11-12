@@ -1,13 +1,5 @@
-import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
+import { AppImplementation, AppInstanceControl } from '../../common/types/appTemplate';
 import { UserAccountsMainWindow } from './components/MainWindow';
-
-// Icône authentique « Comptes d'utilisateurs » (nusrmgr.cpl) aux bonnes tailles :
-// -6 = 48×48, -7 = 32×32, -8 = 16×16. Le xsmall DOIT être un vrai 16×16, sans quoi
-// la taskbar / barre de titre / gestionnaire des tâches l'affichent sur-dimensionné.
-import iconLarge from '@/assets/windows-icons/nusrmgr.cpl_14_200-6.png';
-import iconMedium from '@/assets/windows-icons/nusrmgr.cpl_14_200-7.png';
-import iconSmall from '@/assets/windows-icons/nusrmgr.cpl_14_200-7.png';
-import iconXsmall from '@/assets/windows-icons/nusrmgr.cpl_14_200-8.png';
 
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
@@ -15,21 +7,13 @@ import { getWindowIdForInstance } from '@/common/utils/windowId';
 /**
  * Applet « Comptes d'utilisateurs » du Panneau de configuration.
  * Réutilise le shell de fenêtre existant (windowsStore.openWindow), à l'image
- * des autres apps (Explorer, TaskManager).
+ * des autres apps (Explorer, TaskManager). Sa fiche (nom, icônes, taille,
+ * entrée du menu Démarrer) est dans le registre `src/apps/registry.ts`.
  */
-export const UserAccountsApp: AppTemplate<object> = {
-  id: 'nusrmgr.cpl',
-  name: "Comptes d'utilisateurs",
-  icons: {
-    large: iconLarge,
-    medium: iconMedium,
-    small: iconSmall,
-    xsmall: iconXsmall,
-  },
-  multiInstance: false,
+export const UserAccountsApp: AppImplementation<object> = {
   MainWindow: UserAccountsMainWindow,
   init: function (pid: string): AppInstanceControl {
-    const { name, icons, MainWindow } = this;
+    const { name, icons, defaultWindowSize, MainWindow } = this;
 
     const windowId = getWindowIdForInstance(pid, 'main');
 
@@ -39,12 +23,7 @@ export const UserAccountsApp: AppTemplate<object> = {
       name,
       <MainWindow />,
       <img src={icons.xsmall} alt="" />,
-      {
-        size: {
-          width: 640,
-          height: 480,
-        },
-      }
+      { size: defaultWindowSize }
     );
 
     return {

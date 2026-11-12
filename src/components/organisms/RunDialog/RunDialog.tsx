@@ -1,10 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import styles from './RunDialog.module.scss';
 
-import { ExplorerApp } from '@/apps/Explorer/main';
-import { MinesweeperApp } from '@/apps/Minesweeper/main';
-import { TaskManagerApp } from '@/apps/TaskManager/main';
-import { AppTemplate } from '@/common/types/appTemplate';
+import { findAppByCommand } from '@/apps/registry';
 import { useAppsStore } from '@/common/stores/appsStore';
 import { useRunDialogStore } from '@/common/stores/runDialogStore';
 import { useWindowsStore } from '@/common/stores/windowsStore';
@@ -17,27 +14,9 @@ interface RunDialogProps {
   windowId: string;
 }
 
-const executableMap: Record<string, AppTemplate> = {
-  'explorer.exe': ExplorerApp,
-  'taskmgr.exe': TaskManagerApp,
-  'winmine.exe': MinesweeperApp,
-};
-
-const parseExecutableFromCommand = (command: string): string | null => {
-  const trimmed = command.trim();
-  if (!trimmed) return null;
-
-  const quotedMatch = trimmed.match(/^"([^"]+)"/);
-  const token = quotedMatch?.[1] || trimmed.split(/\s+/)[0];
-  const baseToken = token.split(/[\\/]/).pop()?.toLowerCase();
-
-  if (!baseToken) return null;
-  return baseToken.endsWith('.exe') ? baseToken : `${baseToken}.exe`;
-};
-
 export const RunDialog: React.FC<RunDialogProps> = ({ windowId }) => {
   const closeWindow = useWindowsStore((state) => state.closeWindow);
-  const startApp = useAppsStore((state) => state.startApp);
+  const launchApp = useAppsStore((state) => state.launchApp);
   const commandHistory = useRunDialogStore((state) => state.history);
   const addHistoryEntry = useRunDialogStore((state) => state.addHistoryEntry);
 
@@ -49,17 +28,17 @@ export const RunDialog: React.FC<RunDialogProps> = ({ windowId }) => {
   const historyOptions = useMemo(() => commandHistory, [commandHistory]);
 
   const launchCommand = () => {
-    const executable = parseExecutableFromCommand(command);
-    if (!executable) return;
+    if (!canRunCommand) return;
 
-    const appToLaunch = executableMap[executable];
+    // Toute application du registre se lance par son nom d'exécutable.
+    const appToLaunch = findAppByCommand(command);
     if (!appToLaunch) {
       setErrorMessage(`Windows ne trouve pas "${command.trim()}". Vérifiez le nom, puis réessayez.`);
       return;
     }
 
     addHistoryEntry(command);
-    startApp(appToLaunch);
+    launchApp(appToLaunch.id);
     closeWindow(windowId);
   };
 
@@ -68,7 +47,7 @@ export const RunDialog: React.FC<RunDialogProps> = ({ windowId }) => {
   };
 
   const browse = () => {
-    startApp(ExplorerApp);
+    launchApp('explorer.exe');
   };
 
   return (

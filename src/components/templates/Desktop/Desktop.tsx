@@ -8,16 +8,10 @@ import { Window } from '@/components/organisms/Window/Window';
 import { Taskbar } from '@/components/organisms/Taskbar/Taskbar';
 
 import XPWallpaper from '@/assets/xp-wallpaper.jpg';
-import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-9.png';
-import MyDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_235-9.png';
-import TashbinIcon from '@/assets/windows-icons/shell32.dll_14_254-7.png';
 import TeamsIcon from '@/assets/program-icons/teams.exe.svg';
 
 import { useAppsStore } from '@/common/stores/appsStore';
-import { TaskManagerApp } from '@/apps/TaskManager/main';
-import { openExplorerAt } from '@/apps/Explorer/main';
-import { COMPUTER, TRASH, folderLocation, SPECIAL_PATHS } from '@/apps/Explorer/model';
-import { MinesweeperApp } from '@/apps/Minesweeper/main';
+import { getDesktopShortcuts } from '@/apps/registry';
 import { DesktopContextMenu } from './DesktopContextMenu';
 import styles from './Desktop.module.scss';
 
@@ -193,7 +187,7 @@ export const Desktop: React.FC = () => {
     (state) => state.isShutdownOverlayVisible
   );
 
-  const startApp = useAppsStore((state) => state.startApp);
+  const launchApp = useAppsStore((state) => state.launchApp);
 
   const [desktopAreaSize, setDesktopAreaSize] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
@@ -217,38 +211,18 @@ export const Desktop: React.FC = () => {
     window.open('https://teams-suggest.douay.me', '_blank', 'noopener,noreferrer');
   }, []);
 
+  // Les icônes d'application viennent du registre (`src/apps/registry.ts`) ;
+  // seul le raccourci vers Microsoft Teams, un lien externe, est déclaré ici.
   const desktopIcons = useMemo<DesktopIconConfig[]>(
     () => [
-      {
-        id: 'my-computer',
-        icon: <img src={MyComputerIcon} alt="MyComputer Icon" />,
-        label: 'Poste de travail',
-        onDoubleClick: () => openExplorerAt(COMPUTER),
-      },
-      {
-        id: 'my-documents',
-        icon: <img src={MyDocumentsIcon} alt="MyDocuments Icon" />,
-        label: 'Mes Documents',
-        onDoubleClick: () => openExplorerAt(folderLocation(SPECIAL_PATHS.myDocuments)),
-      },
-      {
-        id: 'recycle-bin',
-        icon: <img src={TashbinIcon} alt="Trash bin Icon" />,
-        label: 'Corbeille',
-        onDoubleClick: () => openExplorerAt(TRASH),
-      },
-      {
-        id: 'task-manager',
-        icon: <img src={TaskManagerApp.icons.medium} alt="Taskmgr Icon" />,
-        label: 'Gestionnaire des tâches',
-        onDoubleClick: () => startApp(TaskManagerApp),
-      },
-      {
-        id: 'minesweeper',
-        icon: <img src={MinesweeperApp.icons.medium} alt="Minesweeper Icon" />,
-        label: 'Démineur',
-        onDoubleClick: () => startApp(MinesweeperApp),
-      },
+      ...getDesktopShortcuts().map((shortcut) => ({
+        id: shortcut.id,
+        icon: <img src={shortcut.icon} alt="" />,
+        label: shortcut.label,
+        onDoubleClick: () => {
+          launchApp(shortcut.appId, shortcut.args);
+        },
+      })),
       {
         id: 'microsoft-teams',
         icon: <img src={TeamsIcon} alt="Microsoft Teams Icon" />,
@@ -257,7 +231,7 @@ export const Desktop: React.FC = () => {
         onDoubleClick: openTeams,
       },
     ],
-    [openTeams, startApp]
+    [launchApp, openTeams]
   );
 
   const gridBounds = useMemo(

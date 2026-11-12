@@ -17,7 +17,7 @@ import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { ContextMenu } from '../ContextMenu';
 import { useTaskManagerStore } from '../../stores/taskManagerStore';
-import { openRunDialog } from '../../utils/openRunDialog';
+import { openRunDialog } from '@/components/organisms/RunDialog/openRunDialog';
 
 interface TaskManagerApplicationsTabProps {
   taskManagerWindowId: string

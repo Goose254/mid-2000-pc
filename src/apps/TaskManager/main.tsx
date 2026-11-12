@@ -1,31 +1,21 @@
-import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
+import { AppImplementation, AppInstanceControl } from '../../common/types/appTemplate';
 import { TaskManagerMainWindow } from './components/MainWindow';
 import { TaskManagerTaskbarIcon } from './components/TaskbarIcon';
-
-import iconLarge from '@/assets/windows-icons/taskmgr-icon-32.png'
-import iconMedium from '@/assets/windows-icons/taskmgr-icon-32.png'
-import iconSmall from '@/assets/windows-icons/taskmgr-icon-32.png'
-import iconXsmall from '@/assets/windows-icons/taskmgr-icon-16.png'
 
 // Importe tes stores correspondants
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useTaskbarStore } from '@/common/stores/taskbarStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-export const TaskManagerApp: AppTemplate<{ taskManagerWindowId: string }> = {
-  id: 'taskmgr.exe',
-  name: 'Gestionnaire des tâches de Windows',
-  icons: {
-    large: iconLarge,
-    medium: iconMedium,
-    small: iconSmall,
-    xsmall: iconXsmall,
-  },
-  multiInstance: false,
+/**
+ * Gestionnaire des tâches (`taskmgr.exe`). Sa fiche (nom, icônes, taille,
+ * icône du bureau) est dans le registre `src/apps/registry.ts`.
+ */
+export const TaskManagerApp: AppImplementation<{ taskManagerWindowId: string }> = {
   MainWindow: TaskManagerMainWindow,
   TaskbarIcon: TaskManagerTaskbarIcon,
   init: function (pid: string): AppInstanceControl {
-    const { name, icons, MainWindow, TaskbarIcon } = this
+    const { name, icons, defaultWindowSize, MainWindow, TaskbarIcon } = this
 
     // Génère un ID de fenêtre stable pour cette instance
     const windowId = getWindowIdForInstance(pid, 'main');
@@ -37,12 +27,7 @@ export const TaskManagerApp: AppTemplate<{ taskManagerWindowId: string }> = {
       name,
       <MainWindow taskManagerWindowId={windowId} />,
       <img src={icons.xsmall} />,
-      {
-        size: {
-          width: 503,
-          height: 493,
-        },
-      },
+      { size: defaultWindowSize },
     );
 
     // Si une TaskbarIcon est définie, on l'ajoute dans le store dédié

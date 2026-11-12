@@ -1,14 +1,14 @@
 import { useWindowsStore } from '@/common/stores/windowsStore';
-import { RunDialog } from '@/components/organisms/RunDialog/RunDialog';
+import { RunDialog } from './RunDialog';
 
 import RunDialogTitleIcon from '@/assets/windows-icons/shell32.dll_14_160-10.png';
 
 /**
- * Ouvre la boîte de dialogue « Exécuter » (Nouvelle tâche).
+ * Ouvre la boîte de dialogue « Exécuter ».
  *
- * On reproduit exactement la configuration de fenêtre utilisée par le menu
- * Démarrer (`StartMenu`) afin de conserver un comportement identique quel que
- * soit le point d'entrée.
+ * Point d'entrée unique, partagé par le menu Démarrer et par le Gestionnaire
+ * des tâches (« Nouvelle tâche... ») : la fenêtre a la même configuration quel
+ * que soit l'endroit d'où on l'ouvre.
  */
 export function openRunDialog(): void {
   useWindowsStore.getState().openWindow(

@@ -1,16 +1,12 @@
 import React from 'react';
 import styles from './StartMenu.module.scss';
 
-import { useWindowsStore } from '@/common/stores/windowsStore';
 import { useOverlaysStore } from '@/common/stores/overlaysStore';
 import { useStartMenuStore } from '@/common/stores/startMenuStore';
 import { useSystemStore } from '@/common/stores/systemStore';
 import { useCurrentUser } from '@/common/stores/usersStore';
 import { useAppsStore } from '@/common/stores/appsStore';
-import { UserAccountsApp } from '@/apps/UserAccounts/main';
-import { openExplorerAt } from '@/apps/Explorer/main';
-import { COMPUTER, folderLocation, SPECIAL_PATHS } from '@/apps/Explorer/model';
-import { Location } from '@/apps/Explorer/model';
+import { getStartMenuShortcut, StartMenuSlot } from '@/apps/registry';
 import { Avatar } from '@/components/atoms/Avatar/Avatar';
 
 import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
@@ -26,12 +22,7 @@ import WMMIcon from '@/assets/program-icons/WMM2RES.dll_14_128-7.png';
 import CalcIcon from '@/assets/windows-icons/calc.exe_14_SC-6.png';
 import WABIcon from '@/assets/program-icons/wab32res.dll_14_1911-6.png';
 
-import MyDocumentsIcon from '@/assets/windows-icons/mydocs.dll_14_100-10.png';
 import MyRecentDocumentsIcon from '@/assets/windows-icons/shell32.dll_14_21-9.png';
-import MyImagesIcon from '@/assets/windows-icons/mydocs.dll_14_101-10.png';
-import MyMusicIcon from '@/assets/windows-icons/shell32.dll_14_237-10.png';
-import MyComputerIcon from '@/assets/windows-icons/explorer.exe_14_100-10.png';
-import ConfigurationPanelIcon from '@/assets/windows-icons/shell32.dll_14_137-10.png';
 import DefaultProgramsIcon from '@/assets/windows-icons/moricons.dll_14_114-10.png';
 import PrintersIcon from '@/assets/windows-icons/shell32.dll_14_138-9.png';
 import HelpAndSupportIcon from '@/assets/windows-icons/shell32.dll_14_263-10.png';
@@ -52,8 +43,7 @@ import WMMSmallIcon from '@/assets/windows-icons/wmm2res.dll_14_128-8.png';
 
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
-import { RunDialog } from '@/components/organisms/RunDialog/RunDialog';
-import RunDialogTitleIcon from '@/assets/windows-icons/shell32.dll_14_160-10.png';
+import { openRunDialog } from '@/components/organisms/RunDialog/openRunDialog';
 
 interface StartMenuProps extends React.HTMLAttributes<HTMLDivElement> {
   isVisible: boolean;
@@ -64,7 +54,7 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
     const toggleStartMenu = useStartMenuStore((state) => state.toggleStartMenu);
     const toggleShutdownOverlay = useOverlaysStore((state) => state.toggleShutdownOverlay);
     const requestLogoff = useSystemStore((state) => state.requestLogoff);
-    const startApp = useAppsStore((state) => state.startApp);
+    const launchApp = useAppsStore((state) => state.launchApp);
     const currentUser = useCurrentUser();
 
     const handleShutdownOverlayShow = () => {
@@ -78,45 +68,33 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
     };
 
     const openUserAccounts = () => {
-      startApp(UserAccountsApp);
+      launchApp('nusrmgr.cpl');
       toggleStartMenu();
     };
 
-    const openExplorer = (location: Location) => {
-      openExplorerAt(location);
-      toggleStartMenu();
-    };
-
-    
-    const openWindow = useWindowsStore((state) => state.openWindow);
     const openRun = () => {
-      openWindow(
-        'run',
-        'run.exe',
-        'Exécuter',
-        <RunDialog windowId="run" />,
-        <img src={RunDialogTitleIcon} alt="Run icon" />,
-        {
-          position: { x: 3, y: window.innerHeight - 220 },
-          size: { width: 363, height: 186 },
-          fixedSize: true,
-          buttons: {
-            help: {
-              visible: true,
-              enabled: true,
-            },
-            minimize: {
-              visible: false,
-              enabled: false,
-            },
-            maximize: {
-              visible: false,
-              enabled: false,
-            },
-          },
-        }
-      );
+      openRunDialog();
       toggleStartMenu();
+    };
+
+    // Entrée de la colonne de droite tenue par une application : le libellé,
+    // l'icône et l'application à lancer viennent du registre.
+    const renderAppEntry = (slot: StartMenuSlot, primary = false) => {
+      const shortcut = getStartMenuShortcut(slot);
+      if (!shortcut) return null;
+
+      return (
+        <MenuItem
+          variant="startSecondary"
+          label={shortcut.label}
+          icon={shortcut.icon}
+          primary={primary}
+          onClick={() => {
+            launchApp(shortcut.appId, shortcut.args);
+            toggleStartMenu();
+          }}
+        />
+      );
     };
 
     return (
@@ -163,37 +141,13 @@ export const StartMenu = React.forwardRef<HTMLDivElement, StartMenuProps>(
                 </MenuItem>
               </div>
               <div className={styles.startMenuRightList}>
-                <MenuItem
-                  variant="startSecondary"
-                  label="Mes documents"
-                  icon={MyDocumentsIcon}
-                  primary={true}
-                  onClick={() => openExplorer(folderLocation(SPECIAL_PATHS.myDocuments))}
-                />
+                {renderAppEntry('my-documents', true)}
                 <MenuItem variant="startSecondary" label="Mes documents récents" icon={MyRecentDocumentsIcon} primary={true} />
-                <MenuItem
-                  variant="startSecondary"
-                  label="Mes images"
-                  icon={MyImagesIcon}
-                  primary={true}
-                  onClick={() => openExplorer(folderLocation(SPECIAL_PATHS.myPictures))}
-                />
-                <MenuItem
-                  variant="startSecondary"
-                  label="Ma musique"
-                  icon={MyMusicIcon}
-                  primary={true}
-                  onClick={() => openExplorer(folderLocation(SPECIAL_PATHS.myMusic))}
-                />
-                <MenuItem
-                  variant="startSecondary"
-                  label="Poste de travail"
-                  icon={MyComputerIcon}
-                  primary={true}
-                  onClick={() => openExplorer(COMPUTER)}
-                />
+                {renderAppEntry('my-pictures', true)}
+                {renderAppEntry('my-music', true)}
+                {renderAppEntry('my-computer', true)}
                 <MenuSeparator variant="startSecondary" />
-                <MenuItem variant="startSecondary" label="Panneau de configuration" icon={ConfigurationPanelIcon} onClick={openUserAccounts} />
+                {renderAppEntry('control-panel')}
                 <MenuItem variant="startSecondary" label="Configurer les programmes par défaut" icon={DefaultProgramsIcon} />
                 <MenuItem variant="startSecondary" label="Imprimantes et télécopieurs" icon={PrintersIcon} />
                 <MenuSeparator variant="startSecondary" />

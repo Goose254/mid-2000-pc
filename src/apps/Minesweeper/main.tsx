@@ -1,26 +1,14 @@
-import { AppTemplate, AppInstanceControl } from '../../common/types/appTemplate';
+import { AppImplementation, AppInstanceControl } from '../../common/types/appTemplate';
 import { MinesweeperMainWindow } from './components/MainWindow';
 import { getWindowSize } from './components/useMinesweeper';
-
-import iconLarge from '@/assets/windows-icons/winmine.exe_14_100-6.png'
-import iconMedium from '@/assets/windows-icons/winmine.exe_14_100-6.png'
-import iconSmall from '@/assets/windows-icons/winmine.exe_14_100-6.png'
-import iconXsmall from '@/assets/windows-icons/winmine.exe_14_100-7.png'
 
 // Importe tes stores correspondants
 import { useWindowsStore } from '@/common/stores/windowsStore';
 import { getWindowIdForInstance } from '@/common/utils/windowId';
 
-export const MinesweeperApp: AppTemplate<{ windowId: string }> = {
-  id: 'winmine.exe',
-  name: 'Démineur',
-  icons: {
-    large: iconLarge,
-    medium: iconMedium,
-    small: iconSmall,
-    xsmall: iconXsmall,
-  },
-  multiInstance: false,
+// La fiche du Démineur (identifiant, nom, icônes, icône du bureau) est dans le
+// registre `src/apps/registry.ts`.
+export const MinesweeperApp: AppImplementation<{ windowId: string }> = {
   MainWindow: MinesweeperMainWindow,
   init: function (pid: string): AppInstanceControl {
     const { name, icons, MainWindow } = this

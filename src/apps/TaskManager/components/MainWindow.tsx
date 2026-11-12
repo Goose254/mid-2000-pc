@@ -22,7 +22,7 @@ import { AboutDialog, SelectColumnsDialog } from './dialogs/TaskManagerDialogs';
 
 import { getRefreshIntervalMs, RefreshRate, useTaskManagerStore } from '../stores/taskManagerStore';
 import { formatMo } from '../utils/processMetrics';
-import { openRunDialog } from '../utils/openRunDialog';
+import { openRunDialog } from '@/components/organisms/RunDialog/openRunDialog';
 
 interface TaskManagerMainWindowProps {
   taskManagerWindowId: string;

@@ -12,6 +12,13 @@
  */
 import { DRIVE, ROOT_PATH, SEPARATOR, getBaseName, getParentPath, normalizePath } from '@/common/fs';
 import type { FsDirEntry, FsNodeType } from '@/common/fs';
+import { COMPUTER, SPECIAL_PATHS, TRASH } from './locations';
+import type { Location } from './locations';
+
+// Types et constantes d'emplacement : définis dans `locations.ts` (module sans
+// dépendance, utilisable par le registre des applications) et réexportés ici.
+export { COMPUTER, SPECIAL_PATHS, TRASH };
+export type { Location };
 
 // --- Icônes multi-tailles (16/24/32/48) ------------------------------------
 // Chaque entité expose un jeu d'icônes ; les vues choisissent la taille adaptée
@@ -105,14 +112,6 @@ export const CdDriveIcon = Cd48;
 // Emplacements
 // ---------------------------------------------------------------------------
 
-/** Un emplacement navigable de l'Explorateur. */
-export type Location =
-  | { kind: 'computer' } // « Poste de travail » (racine virtuelle : les lecteurs)
-  | { kind: 'folder'; path: string } // un dossier réel du lecteur C:
-  | { kind: 'trash' }; // la Corbeille (liste `trash` du store FS)
-
-export const COMPUTER: Location = { kind: 'computer' };
-export const TRASH: Location = { kind: 'trash' };
 export const folderLocation = (path: string): Location => ({ kind: 'folder', path: normalizePath(path) });
 
 /** Deux emplacements sont-ils identiques ? */
@@ -121,19 +120,6 @@ export const sameLocation = (a: Location, b: Location): boolean => {
   if (a.kind === 'folder' && b.kind === 'folder') return a.path === b.path;
   return true;
 };
-
-// ---------------------------------------------------------------------------
-// Dossiers spéciaux (chemins canoniques de la simulation)
-// ---------------------------------------------------------------------------
-
-/** Chemins spéciaux reconnus (icônes + libellés dédiés). */
-export const SPECIAL_PATHS = {
-  myDocuments: 'C:\\Mes documents',
-  myPictures: 'C:\\Mes documents\\Mes images',
-  myMusic: 'C:\\Mes documents\\Ma musique',
-  favoris: 'C:\\Documents and Settings\\Utilisateur\\Favoris',
-  sharedDocuments: 'C:\\Documents and Settings\\All Users',
-} as const;
 
 /** Un dossier « images » (vue Miniatures + tâches « Gestion des images » par défaut). */
 export const isPictureFolder = (path: string): boolean =>
