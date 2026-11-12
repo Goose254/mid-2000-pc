@@ -5,7 +5,7 @@ import { TmDialog, MessageBox } from '@/apps/TaskManager/components/dialogs/TmDi
 import { Button } from '@/components/atoms/Button/Button';
 import { getBaseName, getParentPath, useFsStore } from '@/common/fs';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { ExplorerItem } from '../items';
 import {
   FileTextIcon,

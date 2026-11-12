@@ -4,9 +4,10 @@
  * presse-papiers, les boîtes de dialogue/messages et le menu contextuel.
  *
  * Toute la logique « métier » de l'Explorateur vit ici ; les composants de vue
- * ne font que consommer ce contexte via `useExplorer()`.
+ * ne font que consommer ce contexte via `useExplorer()` (défini, avec les types
+ * du contexte, dans `useExplorer.ts`).
  */
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 
 import { FsError, childPath, getBaseName, getParentPath, isValidName, useFsStore } from '@/common/fs';
 import type { FsFolderNode, TrashItem } from '@/common/fs';
@@ -32,121 +33,25 @@ import {
 } from './model';
 import { ExplorerItem, driveToItem, entryToItem, trashToItem } from './items';
 import {
-  ExplorerState,
   canGoBack,
   canGoForward,
   canGoUp,
   explorerReducer,
   initialExplorerState,
 } from './state';
+import {
+  Clipboard,
+  ContextMenuState,
+  DialogState,
+  ExplorerContext,
+  ExplorerContextValue,
+  ExplorerGroup,
+  MessageState,
+} from './useExplorer';
 
 /** Ouvre un fichier texte dans le Bloc-notes, lancé par le registre des applications. */
 const openInNotepad = (path: string, name: string): void => {
   useAppsStore.getState().launchApp('notepad.exe', { path, name } satisfies NotepadLaunchArgs);
-};
-
-// ---------------------------------------------------------------------------
-// Types auxiliaires (presse-papiers, dialogues, messages, menu contextuel)
-// ---------------------------------------------------------------------------
-
-export interface Clipboard {
-  /** Chemins FS des éléments copiés/coupés. */
-  paths: string[];
-  op: 'copy' | 'cut';
-}
-
-export type DialogState =
-  | { kind: 'properties'; item: ExplorerItem | null } // null = propriétés du dossier courant
-  | { kind: 'folderOptions' }
-  | { kind: 'about' };
-
-export interface MessageState {
-  title: string;
-  icon: 'warning' | 'error' | 'info';
-  message: React.ReactNode;
-  confirmLabel: string;
-  onConfirm?: () => void;
-  cancelLabel?: string;
-  onCancel?: () => void;
-}
-
-export interface ContextMenuState {
-  x: number;
-  y: number;
-  /** Élément ciblé, ou null pour un clic dans le vide. */
-  target: ExplorerItem | null;
-}
-
-export interface ExplorerGroup {
-  title: string;
-  items: ExplorerItem[];
-}
-
-interface ExplorerContextValue {
-  windowId: string;
-  state: ExplorerState;
-  // Données affichées
-  items: ExplorerItem[];
-  groups: ExplorerGroup[] | null; // regroupement (vue Poste de travail) ou null
-  selectedItems: ExplorerItem[];
-  currentFolderPath: string | null;
-  // Capacités de navigation
-  canBack: boolean;
-  canForward: boolean;
-  canUp: boolean;
-  // Navigation
-  navigate: (loc: Location) => void;
-  goBack: () => void;
-  goForward: () => void;
-  goUp: () => void;
-  refresh: () => void;
-  open: (item: ExplorerItem) => void;
-  navigatePath: (path: string) => void;
-  // Sélection
-  isSelected: (key: string) => boolean;
-  clickSelect: (key: string, e: { ctrlKey: boolean; shiftKey: boolean; metaKey: boolean }) => void;
-  selectKeys: (keys: string[]) => void;
-  clearSelection: () => void;
-  selectAll: () => void;
-  // Affichage
-  setView: (m: ViewMode) => void;
-  toggleTree: () => void;
-  setTree: (v: boolean) => void;
-  toggleStatusBar: () => void;
-  setSort: (k: SortKey) => void;
-  sortKey: SortKey;
-  sortDir: SortDir;
-  // Opérations
-  createFolder: () => void;
-  createTextFile: () => void;
-  beginRename: (key: string) => void;
-  commitRename: (key: string, newName: string) => void;
-  cancelRename: () => void;
-  deleteSelection: () => void;
-  cut: () => void;
-  copy: () => void;
-  paste: () => void;
-  clipboard: Clipboard | null;
-  canPaste: boolean;
-  // Dialogues / messages / menu contextuel
-  dialog: DialogState | null;
-  openDialog: (d: DialogState) => void;
-  closeDialog: () => void;
-  message: MessageState | null;
-  showMessage: (m: MessageState) => void;
-  clearMessage: () => void;
-  contextMenu: ContextMenuState | null;
-  openContextMenu: (x: number, y: number, target: ExplorerItem | null) => void;
-  closeContextMenu: () => void;
-}
-
-const ExplorerContext = createContext<ExplorerContextValue | null>(null);
-
-/** Hook d'accès au contexte de l'Explorateur (lève si hors provider). */
-export const useExplorer = (): ExplorerContextValue => {
-  const ctx = useContext(ExplorerContext);
-  if (!ctx) throw new Error('useExplorer doit être utilisé dans <ExplorerProvider>');
-  return ctx;
 };
 
 // ---------------------------------------------------------------------------

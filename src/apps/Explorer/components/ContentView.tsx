@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import styles from './content.module.scss';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { ExplorerItem } from '../items';
 import { IconSize, SortKey, pickIcon } from '../model';
 import { RenameInput } from './RenameInput';

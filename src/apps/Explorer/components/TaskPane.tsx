@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './chrome.module.scss';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import {
   COMPUTER,
   ControlPanelIcon,

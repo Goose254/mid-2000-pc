@@ -10,7 +10,7 @@ import { useWindowsStore } from '@/common/stores/windowsStore';
 
 import WindowsBrand from '@/assets/explorer-toolbar-windows-icon.png';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { SortKey, VIEW_MODES } from '../model';
 
 const closeMenu = () => (document.activeElement as HTMLElement | null)?.blur();

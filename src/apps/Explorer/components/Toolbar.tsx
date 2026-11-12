@@ -14,7 +14,7 @@ import SearchIcon from '@/assets/explorer-icons/search.png';
 import FoldersIcon from '@/assets/explorer-icons/folders.png';
 import ViewsIcon from '@/assets/explorer-icons/views.png';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { VIEW_MODES } from '../model';
 
 const closeMenu = () => (document.activeElement as HTMLElement | null)?.blur();

@@ -2,7 +2,8 @@ import React from 'react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import styles from './chrome.module.scss';
 
-import { ExplorerProvider, useExplorer } from '../ExplorerContext';
+import { ExplorerProvider } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { Location } from '../model';
 
 import { MenuBar } from './MenuBar';

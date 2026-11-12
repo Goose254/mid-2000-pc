@@ -3,7 +3,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import styles from './chrome.module.scss';
 
 import { useFsStore } from '@/common/fs';
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import {
   COMPUTER,
   FolderIcon,

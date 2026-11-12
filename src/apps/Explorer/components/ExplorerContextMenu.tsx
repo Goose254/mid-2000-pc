@@ -5,7 +5,7 @@ import { MenuItem } from '@/components/atoms/MenuItem/MenuItem';
 import { MenuSeparator } from '@/components/atoms/MenuSeparator/MenuSeparator';
 import { FloatingMenu } from '@/components/molecules/FloatingMenu/FloatingMenu';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { VIEW_MODES } from '../model';
 import type { SortKey } from '../model';
 

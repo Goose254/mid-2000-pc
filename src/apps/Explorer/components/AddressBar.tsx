@@ -5,7 +5,7 @@ import { WindowToolbar } from '@/components/atoms/WindowToolbar/WindowToolbar';
 import { Input } from '@/components/atoms/Input/Input';
 import { Button } from '@/components/atoms/Button/Button';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { COMPUTER, Location, SPECIAL_PATHS, TRASH, folderLocation, locationIcon } from '../model';
 import { ROOT_PATH } from '@/common/fs';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './chrome.module.scss';
 
-import { useExplorer } from '../ExplorerContext';
+import { useExplorer } from '../useExplorer';
 import { MyComputerIcon, objectCount } from '../model';
 
 /** Somme d'octets formatée façon barre d'état XP (Ko / Mo). */
